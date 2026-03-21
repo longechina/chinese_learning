@@ -372,6 +372,31 @@ st.markdown(f"""
         border-top: 1px solid #e0e0e0;
     }}
 
+    /* 统一输入区域容器 */
+    .unified-input-container {{
+        background-color: #2d3748 !important;
+        border-radius: 40px !important;
+        padding: 12px 16px !important;
+    }}
+
+    /* 语音输入样式优化 - 紧凑设计 */
+    .unified-input-container div[data-testid="stAudioInput"] {{
+        margin: 0 0 8px 0 !important;
+    }}
+    
+    .unified-input-container div[data-testid="stAudioInput"] > div {{
+        background-color: rgba(255,255,255,0.1) !important;
+        border: none !important;
+        border-radius: 30px !important;
+        margin: 0 !important;
+        padding: 4px 12px !important;
+    }}
+    
+    .unified-input-container div[data-testid="stAudioInput"] button {{
+        color: #ffffff !important;
+        background-color: transparent !important;
+    }}
+
     .chat-message {{
         margin-bottom: 12px;
         font-size: 28px;
@@ -383,21 +408,27 @@ st.markdown(f"""
         margin-right: 8px;
     }}
 
-    .stChatInput {{ margin-top: 8px; }}
-    .stChatInput > div {{
-        background-color: #2d3748 !important;
-        border: none !important;
-        border-radius: 40px !important;
+    /* 文字输入框样式 - 整合到统一容器中 */
+    .unified-input-container .stChatInput {{
+        margin: 0 !important;
     }}
-    .stChatInput input {{
-        font-size: 28px !important;
-        padding: 16px 24px !important;
+    .unified-input-container .stChatInput > div {{
+        background-color: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
+    .unified-input-container .stChatInput input {{
+        font-size: 26px !important;
+        padding: 8px 4px !important;
         background-color: transparent !important;
         color: #ffffff !important;
-        min-height: 54px !important;
+        min-height: 40px !important;
+        border: none !important;
     }}
-    .stChatInput input::placeholder {{
-        font-size: 28px !important;
+    .unified-input-container .stChatInput input::placeholder {{
+        font-size: 26px !important;
         color: #a0aec0 !important;
     }}
 
@@ -565,9 +596,10 @@ with st.container():
 
         # 输入区域
         st.markdown('<div class="chat-input-area">', unsafe_allow_html=True)
+        st.markdown('<div class="unified-input-container">', unsafe_allow_html=True)
 
         # 语音输入 — 防止死循环
-        audio_input = st.audio_input("Record", key="voice_input", label_visibility="collapsed")
+        audio_input = st.audio_input("🎤 Voice", key="voice_input", label_visibility="collapsed")
         if audio_input is not None:
             audio_id = f"{audio_input.name}_{audio_input.size}"
             if audio_id != st.session_state.last_audio_id:
@@ -580,11 +612,12 @@ with st.container():
                     st.rerun()
 
         # 文字输入
-        if prompt := st.chat_input("Ask a question...", key="text_input"):
+        if prompt := st.chat_input("Type a message...", key="text_input"):
             with st.spinner("Thinking..."):
                 get_ai_reply(prompt)
             st.rerun()
 
+        st.markdown('</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
