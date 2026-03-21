@@ -582,6 +582,19 @@ with st.container():
 
     if st.session_state.chat_open:
         st.markdown('<div class="chat-panel">', unsafe_allow_html=True)
+        
+        # 初始化音频上下文（绕过浏览器自动播放限制）
+        st.markdown('''
+        <script>
+            if (!window.audioContextInitialized) {
+                window.audioContextInitialized = true;
+                // 创建静默音频上下文以启用自动播放
+                var silentAudio = document.createElement('audio');
+                silentAudio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+                silentAudio.play().catch(function() {});
+            }
+        </script>
+        ''', unsafe_allow_html=True)
 
         # Clear 按钮
         st.markdown('<div class="clear-button-container" style="display:flex;justify-content:flex-end;padding:8px 16px 0;">', unsafe_allow_html=True)
@@ -613,14 +626,39 @@ with st.container():
         </script>
         ''', unsafe_allow_html=True)
 
-        # 自动播放（隐藏，无播放器）
+        # 自动播放（完全隐藏，智能播放）
         if st.session_state.pending_tts:
             audio_bytes, fmt = st.session_state.pending_tts
             b64 = base64.b64encode(audio_bytes).decode()
-            st.markdown(
-                f'<audio autoplay style="display:none"><source src="data:{fmt};base64,{b64}" type="{fmt}"></audio>',
-                unsafe_allow_html=True
-            )
+            st.markdown(f'''
+            <audio id="ai-voice-player" preload="auto" style="display:none;">
+                <source src="data:{fmt};base64,{b64}" type="{fmt}">
+            </audio>
+            <script>
+                (function() {{
+                    setTimeout(function() {{
+                        var player = document.getElementById('ai-voice-player');
+                        if (player) {{
+                            player.volume = 1.0;
+                            // 等待音频加载
+                            player.addEventListener('canplay', function() {{
+                                var playPromise = player.play();
+                                if (playPromise !== undefined) {{
+                                    playPromise.catch(function(error) {{
+                                        console.log("Autoplay prevented. User interaction may be required.");
+                                    }});
+                                }}
+                            }}, {{ once: true }});
+                            
+                            // 如果已经可以播放，直接播放
+                            if (player.readyState >= 2) {{
+                                player.play().catch(function(e) {{ console.log(e); }});
+                            }}
+                        }}
+                    }}, 200);
+                }})();
+            </script>
+            ''', unsafe_allow_html=True)
             st.session_state.pending_tts = None
 
         # 输入区域
