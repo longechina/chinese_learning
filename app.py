@@ -42,6 +42,23 @@ levels_data = load_level_data()
 # ---------- Groq 客户端 ----------
 client = groq.Client(api_key=os.environ.get("GROQ_API_KEY") or st.secrets["GROQ_API_KEY"])
 
+# ---------- 加载 Kokoro TTS ----------
+@st.cache_resource
+def load_kokoro():
+    try:
+        from kokoro_onnx import Kokoro
+        candidates = [
+            ("kokoro-v1.0.onnx", "voices-v1.0.bin"),
+            ("onnx/model_quantized.onnx", "voices-v1.0.bin"),
+            ("kokoro-v1.0.onnx", "voices/voices-v1.0.bin"),
+        ]
+        for model_path, voices_path in candidates:
+            if os.path.exists(model_path) and os.path.exists(voices_path):
+                return Kokoro(model_path, voices_path)
+        return None
+    except Exception:
+        return None
+
 # ---------- 语音转文字（Whisper）----------
 def transcribe_audio(audio_bytes):
     try:
@@ -59,34 +76,34 @@ def has_chinese(text):
 
 # ---------- 文字转语音 ----------
 def text_to_speech(text):
-    try:
-        if has_chinese(text):
-            # 中文用 gTTS
-            from gtts import gTTS
-            tts = gTTS(text=text, lang="zh")
+    kokoro = load_kokoro()
+    if kokoro is not None:
+        try:
+            import soundfile as sf
+            voice = "zf_xiaobei" if has_chinese(text) else "af_heart"
+            samples, sample_rate = kokoro.create(text, voice=voice, speed=1.0)
             buf = io.BytesIO()
-            tts.write_to_fp(buf)
+            sf.write(buf, samples, sample_rate, format="WAV")
             buf.seek(0)
-            return buf, "audio/mp3"
-        else:
-            # 英文用 Groq Orpheus
-            response = client.audio.speech.create(
-                model="canopylabs/orpheus-v1-english",
-                voice="autumn",
-                input=text,
-                response_format="wav",
-            )
-            buf = io.BytesIO(response.read())
-            buf.seek(0)
-            return buf, "audio/wav"
-    except Exception as e:
-        st.error(f"TTS 失败: {e}")
+            return buf.read(), "audio/wav"
+        except Exception:
+            pass
+    # Fallback: Groq Orpheus
+    try:
+        response = client.audio.speech.create(
+            model="canopylabs/orpheus-v1-english",
+            voice="autumn",
+            input=text,
+            response_format="wav",
+        )
+        return response.read(), "audio/wav"
+    except Exception:
         return None, None
 
-# ---------- 构建系统提示（包含所有词汇和例句）----------
+# ---------- 构建系统提示 ----------
 def build_system_prompt(levels):
     prompt = "You are a Chinese learning assistant. Below is the outline of the learning content (Levels 1-3). The user may ask about specific items, but detailed vocabulary and examples are not listed here to save tokens. Please answer based on your knowledge, but if needed, you can ask the user to provide more details and make your answer structured, do not give messy information.\n\n"
-    
+
     def extract_outline(node, indent=0):
         outline = ""
         if isinstance(node, dict):
@@ -101,35 +118,53 @@ def build_system_prompt(levels):
         prompt += f"=== {level_name} ===\n"
         prompt += extract_outline(data)
         prompt += "\n"
-    
+
     prompt += "Answer the user's questions based on this outline. If you need specific vocabulary or example sentences, ask the user to provide them."
     return prompt
 
 system_prompt = build_system_prompt(levels_data)
 
-# ---------- 初始化聊天记录 ----------
+# ---------- 初始化状态 ----------
 if "messages" not in st.session_state:
-    st.session_state.messages = [
-        {"role": "system", "content": system_prompt}
-    ]
-
-# ---------- 初始化导航状态 ----------
+    st.session_state.messages = [{"role": "system", "content": system_prompt}]
 if "level" not in st.session_state:
     st.session_state.level = None
 if "path" not in st.session_state:
     st.session_state.path = []
 if "chat_open" not in st.session_state:
     st.session_state.chat_open = False
-if "pending_audio_reply" not in st.session_state:
-    st.session_state.pending_audio_reply = None
+if "last_audio_id" not in st.session_state:
+    st.session_state.last_audio_id = None
+if "pending_tts" not in st.session_state:
+    st.session_state.pending_tts = None  # (bytes, fmt)
+
+# ---------- AI 回复 ----------
+def get_ai_reply(user_text):
+    st.session_state.messages.append({"role": "user", "content": user_text})
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": m["role"], "content": m["content"]} for m in st.session_state.messages],
+            temperature=0.7,
+            max_tokens=500
+        )
+        reply = response.choices[0].message.content
+    except Exception as e:
+        err = str(e)
+        if "rate_limit_exceeded" in err:
+            reply = "Token limit reached. Please try again later."
+        else:
+            reply = f"Error: {err}"
+    st.session_state.messages.append({"role": "assistant", "content": reply})
+    audio_bytes, fmt = text_to_speech(reply)
+    if audio_bytes:
+        st.session_state.pending_tts = (audio_bytes, fmt)
 
 # ---------- 自定义CSS ----------
 st.markdown(f"""
 <style>
-    /* 导入Google字体 Manrope */
     @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
 
-    /* 背景图片设置 */
     body {{
         {bg_css}
         background-size: cover;
@@ -139,30 +174,21 @@ st.markdown(f"""
         background-color: #f0f0f0;
     }}
 
-    /* 所有容器背景透明 */
-    html, body, .stApp, .main, div[data-testid="stAppViewContainer"], 
+    html, body, .stApp, .main, div[data-testid="stAppViewContainer"],
     div[data-testid="stHeader"], div[data-testid="stToolbar"],
     div[data-testid="stVerticalBlock"], div[data-testid="column"],
     header, footer {{
         background-color: transparent !important;
     }}
 
-    /* 隐藏Streamlit默认footer */
-    #stFooter {{
-        display: none !important;
-    }}
+    #stFooter {{ display: none !important; }}
+    .main {{ padding: 2rem 1rem !important; }}
 
-    .main {{
-        padding: 2rem 1rem !important;
-    }}
-
-    /* 所有文字颜色纯黑，无阴影 */
     html, body, [class*="css"], h1, h2, h3, p, div, span, .stMarkdown {{
         color: #000000 !important;
         text-shadow: none !important;
     }}
 
-    /* 主标题：大写加粗纯黑 */
     h1 {{
         font-size: 72px !important;
         font-weight: 800 !important;
@@ -186,7 +212,6 @@ st.markdown(f"""
         margin: 16px 0 8px 0 !important;
     }}
 
-    /* ---------- 模仿项目标题的 Level 按钮样式 ---------- */
     div[data-testid="column"] .stButton > button {{
         font-size: 56px !important;
         font-weight: 700 !important;
@@ -207,7 +232,6 @@ st.markdown(f"""
         background-color: transparent !important;
     }}
 
-    /* 其他按钮（目录按钮）保持原有透明样式 */
     .stButton > button {{
         font-size: 28px !important;
         font-weight: 500 !important;
@@ -226,7 +250,6 @@ st.markdown(f"""
         border-color: #000000 !important;
     }}
 
-    /* 所有内容卡片：半透明白色背景（不透明度0.6/），纯黑文字 */
     div[data-testid="stVerticalBlock"] > div {{
         background-color: rgba(255,255,255,0.4) !important;
         border: none !important;
@@ -235,7 +258,6 @@ st.markdown(f"""
         border-radius: 16px !important;
     }}
 
-    /* 词汇卡片内文字 */
     div[data-testid="stVerticalBlock"] > div h3 {{
         font-size: 48px !important;
         font-weight: 500 !important;
@@ -243,20 +265,17 @@ st.markdown(f"""
         margin: 0 0 8px 0 !important;
     }}
 
-    /* 拼音 */
     div[data-testid="stVerticalBlock"] > div div {{
         font-size: 32px !important;
         color: #333333 !important;
         margin-bottom: 8px !important;
     }}
 
-    /* 例句、notes 文字 */
     div[data-testid="stVerticalBlock"] > div p {{
         font-size: 32px !important;
         color: #000000 !important;
     }}
 
-    /* 面包屑导航 */
     .breadcrumb {{
         font-size: 28px !important;
         color: #333333 !important;
@@ -266,7 +285,6 @@ st.markdown(f"""
         font-weight: 400;
     }}
 
-    /* 返回按钮 */
     .back-button .stButton > button {{
         background-color: transparent !important;
         color: #000000 !important;
@@ -284,17 +302,13 @@ st.markdown(f"""
         border-bottom: 2px solid #000000 !important;
     }}
 
-    /* 列间距 */
-    div[data-testid="column"] {{
-        padding: 8px !important;
-    }}
+    div[data-testid="column"] {{ padding: 8px !important; }}
 
     hr {{
         margin: 24px 0 !important;
         border-color: rgba(0,0,0,0.1) !important;
     }}
 
-    /* ---------- 悬浮聊天窗 ---------- */
     .chat-float-container {{
         position: fixed;
         bottom: 30px;
@@ -303,28 +317,6 @@ st.markdown(f"""
         display: flex;
         flex-direction: column;
         align-items: flex-end;
-    }}
-
-    .chat-toggle-btn {{
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
-        background-color: #ea4c89;
-        border: none;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        font-weight: 600;
-        color: white;
-        margin-bottom: 10px;
-        transition: transform 0.2s;
-    }}
-
-    .chat-toggle-btn:hover {{
-        transform: scale(1.05);
     }}
 
     .chat-panel {{
@@ -346,11 +338,10 @@ st.markdown(f"""
     }}
 
     .chat-input-area {{
-        padding: 16px;
+        padding: 12px 16px;
         border-top: 1px solid #e0e0e0;
     }}
 
-    /* 聊天消息纯文本，无任何气泡或背景 */
     .chat-message {{
         margin-bottom: 12px;
         font-size: 28px;
@@ -362,10 +353,7 @@ st.markdown(f"""
         margin-right: 8px;
     }}
 
-    /* 聊天输入框放大 */
-    .stChatInput {{
-        margin-top: 8px;
-    }}
+    .stChatInput {{ margin-top: 8px; }}
     .stChatInput > div {{
         background-color: transparent !important;
         border: 1px solid #dddddd !important;
@@ -383,7 +371,6 @@ st.markdown(f"""
         color: #666666 !important;
     }}
 
-    /* 清除聊天文本链接样式 */
     .clear-button-container .stButton > button {{
         background-color: transparent !important;
         border: none !important;
@@ -401,24 +388,14 @@ st.markdown(f"""
         color: #000000 !important;
     }}
 
-    /* 音频播放器缩小 */
-    .stAudio {{
-        margin-top: 4px !important;
-        margin-bottom: 4px !important;
-    }}
-    .stAudio audio {{
-        height: 36px !important;
-        width: 100% !important;
-    }}
+    /* 完全隐藏所有音频播放器 */
+    .stAudio {{ display: none !important; }}
 
-    /* 录音组件缩小 */
-    div[data-testid="stAudioInput"] {{
-        margin: 4px 0 !important;
-    }}
+    div[data-testid="stAudioInput"] {{ margin: 4px 0 !important; }}
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- 上半部分：导航和卡片显示 ----------
+# ---------- 导航和卡片显示 ----------
 st.title("CHINESE LEARNING ASSISTANT")
 
 col1, col2, col3 = st.columns(3)
@@ -511,85 +488,54 @@ with st.container():
     if st.session_state.chat_open:
         st.markdown('<div class="chat-panel">', unsafe_allow_html=True)
 
-        # 顶部：Clear 按钮
-        st.markdown('<div class="clear-button-container" style="display: flex; justify-content: flex-end; padding: 8px 16px 0;">', unsafe_allow_html=True)
+        # Clear 按钮
+        st.markdown('<div class="clear-button-container" style="display:flex;justify-content:flex-end;padding:8px 16px 0;">', unsafe_allow_html=True)
         if st.button("Clear", key="clear_chat"):
-            st.session_state.messages = [msg for msg in st.session_state.messages if msg["role"] == "system"]
-            st.session_state.pending_audio_reply = None
+            st.session_state.messages = [m for m in st.session_state.messages if m["role"] == "system"]
+            st.session_state.pending_tts = None
+            st.session_state.last_audio_id = None
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-        # 聊天消息区域
+        # 消息区域
         st.markdown('<div class="chat-messages-area">', unsafe_allow_html=True)
-        for i, msg in enumerate(st.session_state.messages):
-            if msg["role"] != "system":
-                if msg["role"] == "user":
-                    st.markdown(f'<div class="chat-message"><strong>You:</strong> {msg["content"]}</div>', unsafe_allow_html=True)
-                else:
-                    st.markdown(f'<div class="chat-message"><strong>AI:</strong> {msg["content"]}</div>', unsafe_allow_html=True)
-                    # 🔊 朗读按钮
-                    if st.button("🔊", key=f"tts_{i}"):
-                        audio_buf, fmt = text_to_speech(msg["content"])
-                        if audio_buf:
-                            st.audio(audio_buf, format=fmt, autoplay=True)
+        for msg in st.session_state.messages:
+            if msg["role"] == "user":
+                st.markdown(f'<div class="chat-message"><strong>You:</strong> {msg["content"]}</div>', unsafe_allow_html=True)
+            elif msg["role"] == "assistant":
+                st.markdown(f'<div class="chat-message"><strong>AI:</strong> {msg["content"]}</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
-        # 如果有待播放的 AI 回复音频，自动播放
-        if st.session_state.pending_audio_reply:
-            st.audio(st.session_state.pending_audio_reply["buf"],
-                     format=st.session_state.pending_audio_reply["fmt"],
-                     autoplay=True)
-            st.session_state.pending_audio_reply = None
+        # 自动播放（隐藏，无播放器）
+        if st.session_state.pending_tts:
+            audio_bytes, fmt = st.session_state.pending_tts
+            b64 = base64.b64encode(audio_bytes).decode()
+            st.markdown(
+                f'<audio autoplay style="display:none"><source src="data:{fmt};base64,{b64}" type="{fmt}"></audio>',
+                unsafe_allow_html=True
+            )
+            st.session_state.pending_tts = None
 
         # 输入区域
         st.markdown('<div class="chat-input-area">', unsafe_allow_html=True)
 
-        # 🎤 语音输入
-        audio_input = st.audio_input("🎤 录音发送", key="voice_input", label_visibility="collapsed")
-
+        # 语音输入 — 防止死循环
+        audio_input = st.audio_input("Record", key="voice_input", label_visibility="collapsed")
         if audio_input is not None:
-            with st.spinner("转录中..."):
-                transcript = transcribe_audio(audio_input.read())
-            if transcript and not transcript.startswith("[转录失败"):
-                st.session_state.messages.append({"role": "user", "content": transcript})
-                with st.spinner("AI 思考中..."):
-                    try:
-                        response = client.chat.completions.create(
-                            model="llama-3.3-70b-versatile",
-                            messages=[{"role": m["role"], "content": m["content"]} for m in st.session_state.messages],
-                            temperature=0.7,
-                            max_tokens=500
-                        )
-                        reply = response.choices[0].message.content
-                    except Exception as e:
-                        reply = f"Error: {e}"
-                st.session_state.messages.append({"role": "assistant", "content": reply})
-                # 生成 TTS 并存储待播放
-                audio_buf, fmt = text_to_speech(reply)
-                if audio_buf:
-                    st.session_state.pending_audio_reply = {"buf": audio_buf, "fmt": fmt}
-                st.rerun()
+            audio_id = f"{audio_input.name}_{audio_input.size}"
+            if audio_id != st.session_state.last_audio_id:
+                st.session_state.last_audio_id = audio_id
+                with st.spinner("Transcribing..."):
+                    transcript = transcribe_audio(audio_input.read())
+                if transcript and not transcript.startswith("[转录失败"):
+                    with st.spinner("Thinking..."):
+                        get_ai_reply(transcript)
+                    st.rerun()
 
-        # 💬 文字输入
+        # 文字输入
         if prompt := st.chat_input("Ask a question...", key="text_input"):
-            st.session_state.messages.append({"role": "user", "content": prompt})
-            st.markdown(f'<div class="chat-message"><strong>You:</strong> {prompt}</div>', unsafe_allow_html=True)
             with st.spinner("Thinking..."):
-                try:
-                    response = client.chat.completions.create(
-                        model="llama-3.3-70b-versatile",
-                        messages=[{"role": m["role"], "content": m["content"]} for m in st.session_state.messages],
-                        temperature=0.7,
-                        max_tokens=500
-                    )
-                    reply = response.choices[0].message.content
-                except Exception as e:
-                    reply = f"Error: {e}"
-            st.session_state.messages.append({"role": "assistant", "content": reply})
-            # 生成 TTS 并存储待播放
-            audio_buf, fmt = text_to_speech(reply)
-            if audio_buf:
-                st.session_state.pending_audio_reply = {"buf": audio_buf, "fmt": fmt}
+                get_ai_reply(prompt)
             st.rerun()
 
         st.markdown('</div>', unsafe_allow_html=True)
