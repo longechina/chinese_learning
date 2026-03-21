@@ -3,6 +3,7 @@ import base64
 import io
 import re
 import os
+import time
 import streamlit as st
 import groq
 
@@ -129,8 +130,12 @@ if "conv_history" not in st.session_state:
 if "user_msg_count" not in st.session_state:
     st.session_state.user_msg_count = 0                 # 用户消息计数器（用于触发总结）
 
-# ---------- 获取当前页面内容 ----------
-def get_current_page_context():
+# ========== 自动参考相关状态 ==========
+if "auto_ref_pushed" not in st.session_state:
+    st.session_state.auto_ref_pushed = False   # 标记当前水平是否已自动推送
+
+# ---------- 获取当前页面全部内容（完整喂给 AI） ----------
+def get_current_page_full_content():
     if not st.session_state.level or not st.session_state.path:
         return None
     data = levels_data[f"Level {st.session_state.level}"]
@@ -149,10 +154,97 @@ def get_current_page_context():
     if "examples" in node and node["examples"]:
         parts.append("Example sentences:\n" + "\n".join(f"  - {e}" for e in node["examples"]))
     if "vocabulary" in node and node["vocabulary"]:
-        parts.append("Vocabulary on this page:\n" + "\n".join(f"  - {v}" for v in node["vocabulary"]))
-    return "\n".join(parts) if len(parts) > 1 else None
+        parts.append("Vocabulary:\n" + "\n".join(f"  - {v}" for v in node["vocabulary"]))
+    return "\n".join(parts)
 
-# ========== 新增：缓存的 AI 回复函数 ==========
+# ========== 自动生成参考消息（启用联网搜索，输出 Markdown） ==========
+def auto_generate_reference(level, full_page_content, path_string):
+    """
+    根据当前水平、页面全部内容，让 AI 使用联网搜索生成具体的权威链接。
+    输出为结构化 Markdown（标题、列表、可点击链接）。
+    增加重试机制以应对速率限制（429）。
+    """
+    # 提取主题（从页面内容中尝试获取 name，如果没有则用路径最后一部分）
+    topic = ""
+    if "Section:" in full_page_content:
+        # 提取 Section 行后的内容
+        import re
+        match = re.search(r"Section: (.+)", full_page_content)
+        if match:
+            topic = match.group(1)
+    if not topic:
+        parts = path_string.split(" > ")
+        topic = parts[-1] if parts else "general"
+    
+    prompt = f"""You are a Chinese learning assistant. The user is at Level {level} (beginner) and studying the topic: "{topic}".
+
+The complete content of the current page is provided below. Use it to understand exactly what the user is learning.
+
+{full_page_content}
+
+Your task:
+- Use the web search tool to find specific, authoritative online resources (BBC, YouTube, university courses, etc.) that directly cover the same or very similar content at a beginner level.
+- Based on the search results, provide a structured recommendation in Markdown format.
+- Include a brief heading (## Recommended Resources), then list each resource with a short description and a clickable hyperlink (e.g., [BBC](URL)).
+- Keep the answer concise but informative.
+
+Example output:
+## Recommended Resources
+
+- **BBC Bitesize**: A lesson on greetings with audio and quizzes. [View](https://www.bbc.co.uk/bitesize/topics/zwd88hv/articles/z8g7jxs)
+- **YouTube**: A beginner video on introducing yourself. [Watch](https://www.youtube.com/watch?v=xxxxx)
+
+Now generate for the topic: {topic}
+"""
+    
+    max_retries = 3
+    retry_delay = 5  # 秒
+    for attempt in range(max_retries):
+        try:
+            response = client.chat.completions.create(
+                model="groq/compound",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7,
+                max_tokens=800,
+                tools=[{"type": "web_search"}]   # 启用联网搜索
+            )
+            # 返回的内容可能是文本，也可能包含工具调用，直接取 content
+            return response.choices[0].message.content
+        except Exception as e:
+            if "429" in str(e) or "rate_limit_exceeded" in str(e):
+                if attempt < max_retries - 1:
+                    time.sleep(retry_delay * (attempt + 1))  # 递增等待
+                    continue
+            return f"Auto-generation error: {e}"
+    return "Auto-generation error: Rate limit exceeded after retries."
+
+def auto_push_reference(level, path_string):
+    """
+    自动推送参考消息到聊天记录，并生成语音（可选）。
+    只在未推送时执行一次。
+    """
+    if st.session_state.auto_ref_pushed:
+        return
+
+    # 获取当前页面的完整内容
+    full_page_content = get_current_page_full_content()
+    if not full_page_content:
+        return
+
+    ref_content = auto_generate_reference(level, full_page_content, path_string)
+    if ref_content:
+        # 直接使用 AI 生成的 Markdown 内容（无需额外包装）
+        final_msg = ref_content.strip()
+        st.session_state.messages.append({"role": "assistant", "content": final_msg})
+
+        # 可选：生成语音（如果不需要可注释掉）
+        audio_bytes, fmt = text_to_speech(final_msg)
+        if audio_bytes:
+            st.session_state.pending_tts = (audio_bytes, fmt)
+
+        st.session_state.auto_ref_pushed = True
+
+# ========== 缓存的 AI 回复函数 ==========
 @st.cache_data(ttl=3600, max_entries=100)
 def cached_chat_completion(system_prompt, page_context, summary_text, user_text):
     """缓存 AI 回复，参数必须可哈希"""
@@ -177,7 +269,7 @@ def cached_chat_completion(system_prompt, page_context, summary_text, user_text)
         else:
             return f"Sorry, I encountered an error: {err}"
 
-# ========== 新增：生成总结的函数 ==========
+# ========== 生成总结的函数 ==========
 def generate_summary(history, old_summary=""):
     """基于历史对话和旧总结生成新总结（使用 AI 自身）"""
     if not history:
@@ -219,7 +311,7 @@ def get_ai_reply(user_text):
         st.session_state.conv_history.clear()
 
     # 3. 获取当前页面上下文
-    page_context = get_current_page_context()
+    page_context = get_current_page_full_content()  # 注意：这里是用于聊天时的上下文，我们保留原逻辑但改用了完整内容
 
     # 4. 调用缓存的 AI 回复（只传递总结，不传递全部历史）
     reply = cached_chat_completion(
@@ -553,16 +645,19 @@ with col1:
     if st.button("Level 1", use_container_width=True):
         st.session_state.level = 1
         st.session_state.path = ["LEVEL_I"]
+        st.session_state.auto_ref_pushed = False   # 重置标记，以便重新推送
         st.rerun()
 with col2:
     if st.button("Level 2", use_container_width=True):
         st.session_state.level = 2
         st.session_state.path = ["LEVEL_II"]
+        st.session_state.auto_ref_pushed = False   # 重置标记
         st.rerun()
 with col3:
     if st.button("Level 3", use_container_width=True):
         st.session_state.level = 3
         st.session_state.path = ["LEVEL_III"]
+        st.session_state.auto_ref_pushed = False   # 重置标记
         st.rerun()
 
 if st.session_state.level:
@@ -626,6 +721,11 @@ if st.session_state.level:
                             st.rerun()
 
     display_node(current_node)
+    
+    # ========== 自动推送参考消息（在页面显示后触发） ==========
+    # 如果还没有为当前水平推送过，则生成并推送
+    if not st.session_state.auto_ref_pushed:
+        auto_push_reference(st.session_state.level, bread)
 
 # ---------- 悬浮聊天窗 ----------
 with st.container():
@@ -661,6 +761,7 @@ with st.container():
             st.session_state.conversation_summary = ""
             st.session_state.conv_history = []
             st.session_state.user_msg_count = 0
+            st.session_state.auto_ref_pushed = False   # 重置自动推送标记
             # 可选：删除总结文件
             if os.path.exists("conversation_summary.txt"):
                 os.remove("conversation_summary.txt")
