@@ -129,14 +129,7 @@ if "conv_history" not in st.session_state:
 if "user_msg_count" not in st.session_state:
     st.session_state.user_msg_count = 0                 # 用户消息计数器（用于触发总结）
 
-# ========== 新增：自动参考链接相关功能 ==========
-if "reference_links" not in st.session_state:
-    # 配置每个水平对应的参考链接源（可随意增删改，支持多个链接）
-    st.session_state.reference_links = {
-        1: ["https://www.bbc.co.uk/bitesize/subjects/zwd88hv"],   # Level 1 链接列表
-        2: ["https://www.bbc.co.uk/bitesize/subjects/zwd88hv"],   # Level 2 链接列表
-        3: ["https://www.bbc.co.uk/bitesize/subjects/zwd88hv"],   # Level 3 链接列表
-    }
+# ========== 自动参考相关状态（不再需要 reference_links） ==========
 if "auto_ref_pushed" not in st.session_state:
     st.session_state.auto_ref_pushed = False   # 标记当前水平是否已自动推送
 
@@ -163,46 +156,34 @@ def get_current_page_context():
         parts.append("Vocabulary on this page:\n" + "\n".join(f"  - {v}" for v in node["vocabulary"]))
     return "\n".join(parts) if len(parts) > 1 else None
 
-# ========== 新增：自动生成参考消息的函数（增强版） ==========
+# ========== 自动生成参考消息（AI 直接生成具体链接，无需用户提供的链接源） ==========
 def auto_generate_reference(level, topic_name, path_string):
     """
-    根据当前水平、主题名称、路径字符串以及配置的链接源，让 AI 生成一条参考消息。
-    只传递主题描述，避免上下文过大。
-    返回纯文本（无 Markdown），英文回复。
+    根据当前水平、主题名称，让 AI 直接生成具体的权威链接（BBC, YouTube, 大学等）。
+    输出格式：关键词 + 链接，纯文本，无 Markdown，无 emoji。
     """
-    links = st.session_state.reference_links.get(level, [])
-    if not links:
-        return None
-
-    links_text = "\n".join([f"- {link}" for link in links])
-    
-    # 构建更精确的主题描述
+    # 获取主题（优先使用节点 name，否则用路径最后一部分）
     if topic_name:
         main_topic = topic_name
     else:
-        # 从路径中提取最后一个部分作为主题
         parts = path_string.split(" > ")
         main_topic = parts[-1] if parts else "general"
     
-    prompt = f"""You are a Chinese learning assistant. The user is at **Level {level}** (beginner level) and currently studying the topic: **"{main_topic}"**.  
-Full path: {path_string}
+    prompt = f"""You are a Chinese learning assistant. The user is at Level {level} (beginner) and studying the topic: "{main_topic}".
 
-The user has provided these reference websites:
-{links_text}
+Your task:
+- Provide a list of specific, authoritative online resources (BBC, YouTube, university courses, etc.) that directly cover this topic at a beginner level.
+- For each resource, output a line in the exact format: Keyword: URL
+- Do not include any other text, no markdown, no emojis, no descriptions.
+- Only output lines in the format "Keyword: URL". Use keywords like "BBC", "YouTube", "Coursera", "ChinesePod", etc.
+- Ensure URLs are real and specific (not homepage, but direct to the relevant lesson/page if possible). Use your knowledge to produce valid URLs.
 
-**Your task:**
-- Find the most relevant resources that directly match the topic "{main_topic}" and are suitable for a Level {level} beginner.
-- If the provided websites contain specific pages/subpages directly related to this topic, please include those exact links.  
-- If the provided websites do not have direct content, search your knowledge for other authoritative sources (BBC, China Daily, universities, mainstream news, Stack Exchange Chinese, Wikipedia, etc.) and provide **specific links** to pages that cover the topic at a beginner level.
-- Do NOT just give homepage links. Give the most specific URL possible.
+Example output:
+BBC: https://www.bbc.co.uk/bitesize/topics/zwd88hv/articles/z8g7jxs
+YouTube: https://www.youtube.com/watch?v=xxxxx
+ChinesePod: https://chinesepod.com/lessons/introducing-yourself-beginner
 
-**Output format:**
-- Use plain text only (no Markdown).
-- Write in English.
-- Structure: start with a brief statement, then list each resource with a short description and the specific link.
-- End with a short suggestion on how to use these resources.
-
-**Important:** The recommended resources must be directly about "{main_topic}" and at a beginner (Level {level}) difficulty. If you cannot find any such resources, say so and recommend general beginner resources as a fallback, but still try to be specific.
+Now generate for topic: {main_topic}
 """
     
     try:
@@ -210,7 +191,7 @@ The user has provided these reference websites:
             model="groq/compound",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
-            max_tokens=800
+            max_tokens=400
         )
         return response.choices[0].message.content
     except Exception as e:
@@ -229,10 +210,11 @@ def auto_push_reference(level, current_node, path_string):
 
     ref_content = auto_generate_reference(level, topic_name, path_string)
     if ref_content:
-        final_msg = f"📚 **Recommended Learning Resources**\n\n{ref_content}"
+        # 直接使用 AI 生成的纯文本，不加额外标题
+        final_msg = ref_content.strip()
         st.session_state.messages.append({"role": "assistant", "content": final_msg})
 
-        # 可选：生成语音（如果不需要可注释）
+        # 可选：生成语音（如果不需要可注释掉）
         audio_bytes, fmt = text_to_speech(final_msg)
         if audio_bytes:
             st.session_state.pending_tts = (audio_bytes, fmt)
@@ -717,9 +699,9 @@ if st.session_state.level:
 
     display_node(current_node)
     
-    # ========== 新增：自动推送参考消息（在页面显示后触发） ==========
+    # ========== 自动推送参考消息（在页面显示后触发） ==========
     # 如果还没有为当前水平推送过，则生成并推送
-    if not st.session_state.auto_ref_pushed and st.session_state.level in st.session_state.reference_links:
+    if not st.session_state.auto_ref_pushed:
         auto_push_reference(st.session_state.level, current_node, bread)
 
 # ---------- 悬浮聊天窗 ----------
@@ -756,7 +738,7 @@ with st.container():
             st.session_state.conversation_summary = ""
             st.session_state.conv_history = []
             st.session_state.user_msg_count = 0
-            st.session_state.auto_ref_pushed = False   # 新增：重置自动推送标记
+            st.session_state.auto_ref_pushed = False   # 重置自动推送标记
             # 可选：删除总结文件
             if os.path.exists("conversation_summary.txt"):
                 os.remove("conversation_summary.txt")
