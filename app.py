@@ -183,13 +183,13 @@ The complete content of the current page is provided below. Use it to understand
 {full_page_content}
 
 Your task:
-- Search information on web to find specific, authoritative online resources(include article, Q&A, meida, picture and videos) that about current topic, content and level.
+- Search information on web to find specific, authoritative online resources(include article, Q&A, meida, picture and videos) that about current topic, content and level.(The source must be high quality and form main stream)
 - Based on the search results, provide a structured recommendation in clear structure.
 - Include a brief heading (Recommended Resources), then list each resource with a short description and a clickable web links.
 - Keep the answer concise but informative.
 
 Example output:
-Recommended Resources
+【Recommended Resources】
 
 - BBC: A lesson on greetings with audio and quizzes. [View](https://www.bbc.co.uk/example)
 - YouTube: A beginner video on introducing yourself. [Watch](https://www.youtube.com/watch?v=xxxxx)
