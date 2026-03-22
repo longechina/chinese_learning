@@ -675,6 +675,12 @@ st.markdown(f"""
         border: none !important;             /* 去掉边框 */
     }}
 
+    .stChatInput:focus,
+    .stChatInput textarea:focus {{
+        outline: none !important;
+        box-shadow: none !important;
+    }}
+
     /* Clear按钮 */
     button[key="clear_chat"] {{
         background-color: rgba(255,255,255,0.4) !important;
