@@ -671,8 +671,7 @@ st.markdown(f"""
         font-family: 'Manrope', sans-serif !important;
         font-size: 16px !important;
         font-weight: 400 !important;
-        background: transparent !important;    /* 背景透明，与输入框一致 */
-        opacity: 1 !important;                 /* 保持完全可见 */
+
     }}
 
     /* Clear按钮 */
