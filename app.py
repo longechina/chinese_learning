@@ -764,7 +764,20 @@ st.markdown(f"""
         display: none !important;
     }}
 
-    
+    /* 取消固定定位 */
+    .chat-float-container {{
+        position: relative !important;
+        margin-top: 30px !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+    }}
+
+    button[data-testid="baseButton-secondary"][key="chat_toggle_btn"] {{
+        position: relative !important;
+        bottom: auto !important;
+        right: auto !important;
+    }}
+
 
 </style>
 """, unsafe_allow_html=True)
