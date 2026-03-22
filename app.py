@@ -473,7 +473,7 @@ st.markdown(f"""
     }}
     div[role="listbox"] {{
         background-color: white !important;
-        color: #000000 !important;
+        color: #ffffff  !important;
         display: block !important;
     }}
     div[role="option"] {{
