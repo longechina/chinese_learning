@@ -672,7 +672,6 @@ st.markdown(f"""
         font-size: 16px !important;
         font-weight: 400 !important;
         background: transparent !important;   /* 去掉黑色背景 *
-        opacity: 1 !important;                 /* 保持完全可见 */
         border: none !important;             /* 去掉边框 */
     }}
 
