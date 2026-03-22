@@ -669,6 +669,16 @@ st.markdown(f"""
         border: none !important;
     }}
 
+    /* placeholder 样式跟输入框一致 */
+    .stChatInput textarea::placeholder {{
+        color: #000000 !important;             /* 文字颜色，黑色或你想要的 */
+        font-family: 'Manrope', sans-serif !important;
+        font-size: 16px !important;
+        font-weight: 400 !important;
+        background: transparent !important;    /* 背景透明，与输入框一致 */
+        opacity: 1 !important;                 /* 保持完全可见 */
+    }}
+
     /* Clear按钮 */
     button[key="clear_chat"] {{
         background-color: rgba(255,255,255,0.4) !important;
