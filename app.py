@@ -722,16 +722,11 @@ st.markdown(f"""
         display: none !important;
     }}
 
-    /* 去掉所有焦点红框/蓝框 */
-    button:focus,
     input:focus,
     textarea:focus,
-    div[data-testid="stChatInput"] textarea:focus,
-    div[data-testid="stChatInput"] > div:focus,
-    div[data-testid="stAudioInput"] > div:focus {{
+    button:focus  {{
         outline: none !important;
         box-shadow: none !important;
-        border-color: transparent !important;
     }}
 
 </style>
