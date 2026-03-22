@@ -357,6 +357,12 @@ st.markdown(f"""
         background-attachment: scroll;
         font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }}
+
+    /* ↓ 新增代码放在这里 ↓ */
+    .stApp {{
+        background-color: rgba(255, 255, 255, 0.3) !important;
+        background-blend-mode: overlay !important;
+    }}
     
     /* 隐藏Streamlit顶部黑框和工具栏 */
     header[data-testid="stHeader"] {{
