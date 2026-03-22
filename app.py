@@ -495,7 +495,7 @@ st.markdown(f"""
         text-align: center;
         color: #000000;
         font-family: 'Manrope', sans-serif;
-        font-size: 96px;
+        font-size: 196px;
         font-weight: 800;
         margin-bottom: 40px;
         letter-spacing: -2px;
