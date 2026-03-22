@@ -724,7 +724,10 @@ st.markdown(f"""
 
     input:focus,
     textarea:focus,
-    button:focus  {{
+    button:focus,
+    input:focus-visible,
+    textarea:focus-visible,
+    button:focus-visible {{
         outline: none !important;
         box-shadow: none !important;
     }}
