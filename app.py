@@ -538,12 +538,12 @@ st.markdown(f"""
 
     /* 面包屑导航 */
     .breadcrumb {{
-        background-color: rgba(255,255,255,0.75);
+        background-color: rgba(255,255,255,0);
         padding: 12px 20px;
         border-radius: 8px;
         margin-bottom: 20px;
         font-family: 'Manrope', sans-serif;
-        font-size: 28px;
+        font-size: 12px;
         color: #000000;
         font-weight: 700;
         border: none;
