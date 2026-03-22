@@ -203,7 +203,7 @@ Topic summary: {notes if notes else "Basic Chinese learning topic"}
 
 Your task:
 - Search the web to find 3-4 high-quality learning resources(must valid, send links before comfire if links is valid) (articles, videos, exercises)
-- Provide a brief heading and list each resource with a short description and clickable link
+- Provide a brief heading and list each res-ource with a short description and clickable link
 - Keep it concise
 
 Example format:
@@ -354,7 +354,7 @@ st.markdown(f"""
         {bg_css}
         background-size: cover;
         background-position: center;
-        background-attachment: fixed;
+        background-attachment: scroll;
         font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }}
     
@@ -412,7 +412,6 @@ st.markdown(f"""
     div[data-testid="stChatInput"] > div {{
         background-color: transparent !important;
         background: transparent !important;
-        border-color: rgba(100, 100, 100, 0.3) !important;
     }}
 
     /* 聊天消息容器背景透明 */
