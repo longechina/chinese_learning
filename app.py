@@ -357,317 +357,372 @@ st.markdown(f"""
         font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }}
     
-    /* 隐藏Streamlit所有默认元素 */
-    header[data-testid="stHeader"],
-    .stDeployButton,
-    section[data-testid="stSidebar"],
-    #MainMenu,
-    footer,
-    div[role="dialog"],
-    div[data-testid="stModal"],
+    /* 隐藏Streamlit顶部黑框和工具栏 */
+    header[data-testid="stHeader"] {{
+        display: none !important;
+    }}
+    .stDeployButton {{
+        display: none !important;
+    }}
+    section[data-testid="stSidebar"] {{
+        display: none !important;
+    }}
+    #MainMenu {{
+        display: none !important;
+    }}
+    footer {{
+        display: none !important;
+    }}
+    
+    /* 隐藏弹窗和对话框 */
+    div[role="dialog"] {{
+        display: none !important;
+    }}
+    div[data-testid="stModal"] {{
+        display: none !important;
+    }}
     .stAlert {{
         display: none !important;
     }}
     
-    /* 隐藏所有Streamlit容器背景和边框 */
-    div[data-testid="stVerticalBlock"],
-    div[data-testid="stHorizontalBlock"],
-    .element-container,
-    section[data-testid="stVerticalBlock"],
-    div[data-testid="column"],
-    div[class*="st-emotion-cache"] {{
+    /* 隐藏所有覆盖层和遮罩 */
+    div[data-baseweb="drawer"] {{
+        display: none !important;
+    }}
+    div[class*="overlay"] {{
+        display: none !important;
+    }}
+    div[class*="backdrop"] {{
+        display: none !important;
+    }}
+    div[class*="Overlay"] {{
+        display: none !important;
+    }}
+    div[style*="position: fixed"][style*="inset: 0"] {{
+        pointer-events: none !important;
         background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        padding: 0 !important;
     }}
     
-    /* 强制移除所有容器的背景色 */
-    [class*="stContainer"],
-    [class*="container"],
-    div[data-testid="stExpander"],
-    div[data-testid="stForm"] {{
-        background-color: transparent !important;
-        background: transparent !important;
-        border: none !important;
+    /* 隐藏所有streamlit的内部元素 */
+    .stButton > button > div {{
+        pointer-events: none !important;
+    }}
+    button:focus {{
+        outline: none !important;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.3) !important;
     }}
     
-    /* 主容器 - 左对齐，像Teddy网站 */
-    .block-container {{
-        padding-top: 80px !important;
-        padding-left: 60px !important;
-        padding-right: 60px !important;
-        max-width: none !important;
+    /* 语言选择器容器样式 */
+    .language-selector {{
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 10px 20px;
+        border-radius: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }}
     
-    /* 主标题 - 居中大字 */
-    h1 {{
+    .language-selector label {{
         font-family: 'Manrope', sans-serif;
-        font-size: 72px;
-        font-weight: 800;
+        font-weight: 700;
         color: #000000;
-        text-align: center;
-        letter-spacing: -2px;
-        line-height: 1;
-        margin: 40px 0 80px 0;
-        text-shadow: none;
+        margin: 0;
+        font-size: 16px;
     }}
     
-    /* 小标签 - 像"UI Design" */
-    .label {{
-        font-family: 'Manrope', sans-serif;
-        font-size: 14px;
-        font-weight: 500;
-        color: #000000;
-        letter-spacing: 0.5px;
-        margin-bottom: 10px;
-        opacity: 0.7;
+    /* 语言选择下拉框样式 */
+    .language-selector div[data-baseweb="select"] {{
+        background-color: white !important;
     }}
-    
-    /* Level按钮 - 左对齐大字列表风格 */
-    .stButton {{
-        margin-bottom: 60px !important;
-    }}
-    
-    .stButton button {{
-        background: transparent !important;
-        border: none !important;
+    .language-selector div[data-baseweb="select"] > div {{
+        background-color: white !important;
         color: #000000 !important;
+        border: 1px solid #ccc !important;
         font-family: 'Manrope', sans-serif !important;
-        font-size: 80px !important;
-        font-weight: 800 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        text-align: left !important;
-        letter-spacing: -3px !important;
-        line-height: 0.95 !important;
-        width: auto !important;
-        height: auto !important;
-        box-shadow: none !important;
-        transition: all 0.3s ease !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+    }}
+    /* 下拉菜单本身 */
+    .language-selector div[data-baseweb="popover"] {{
+        z-index: 1001 !important;
         display: block !important;
     }}
-    
-    .stButton button:hover {{
-        background: transparent !important;
-        opacity: 0.6;
-        transform: translateX(10px);
+    div[role="listbox"] {{
+        background-color: white !important;
+        color: #000000 !important;
+        display: block !important;
     }}
-    
-    .stButton button:focus,
-    .stButton button:active {{
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
+    div[role="option"] {{
+        color: #000000 !important;
+        font-weight: 500 !important;
     }}
-    
-    /* 面包屑 - 左对齐 */
-    .breadcrumb {{
-        font-family: 'Manrope', sans-serif;
-        font-size: 16px;
-        font-weight: 500;
+
+    /* 主标题 */
+    h1 {{
+        text-align: center;
         color: #000000;
+        font-size: 96px;
+        font-weight: 800;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         margin-bottom: 40px;
-        opacity: 0.7;
-        background: transparent;
-        padding: 0;
-        border: none;
+        letter-spacing: -2px;
+        line-height: 1.1;
+        font-family: 'Manrope', sans-serif;
     }}
-    
-    /* Back按钮 - 箭头风格 */
+
+    /* Level按钮 */
+    .stButton button {{
+        background-color: rgba(255,255,255,0.4) !important;
+        color: #000000 !important;
+        font-family: 'Manrope', sans-serif !important;
+        font-size: 42px !important;
+        font-weight: 800 !important;
+        border: 1px solid rgba(100,100,100,0.3) !important;
+        border-radius: 12px !important;
+        padding: 30px !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+        letter-spacing: -1px !important;
+    }}
+    .stButton button:hover {{
+        background-color: rgba(255,255,255,0.6) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.3) !important;
+    }}
+
+    /* 面包屑导航 */
+    .breadcrumb {{
+        background-color: rgba(255,255,255,0.75);
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-family: 'Manrope', sans-serif;
+        font-size: 28px;
+        color: #000000;
+        font-weight: 700;
+        border: none;
+        letter-spacing: -0.5px;
+    }}
+
+    /* Back按钮 */
+    .back-button {{
+        margin-bottom: 20px;
+    }}
     button[key="back_button"] {{
-        background: transparent !important;
-        border: none !important;
+        background-color: rgba(255,255,255,0.4) !important;
         color: #000000 !important;
         font-family: 'Manrope', sans-serif !important;
         font-size: 18px !important;
-        font-weight: 500 !important;
-        padding: 0 !important;
-        margin-bottom: 40px !important;
-        box-shadow: none !important;
-        transition: all 0.3s ease !important;
+        font-weight: 700 !important;
+        border: 1px solid rgba(100,100,100,0.3) !important;
+        border-radius: 8px !important;
+        padding: 10px 24px !important;
+        letter-spacing: 0px !important;
     }}
-    
-    button[key="back_button"]:hover {{
-        background: transparent !important;
-        opacity: 0.6;
-        transform: translateX(-5px);
-    }}
-    
-    /* 内容标题 - 左对齐大字 */
-    h2 {{
-        font-family: 'Manrope', sans-serif;
-        font-size: 64px;
-        font-weight: 800;
-        color: #000000;
-        text-align: left;
-        letter-spacing: -2px;
-        line-height: 1.1;
-        margin: 60px 0 40px 0;
-    }}
-    
-    h3 {{
-        font-family: 'Manrope', sans-serif;
-        font-size: 24px;
-        font-weight: 700;
-        color: #000000;
-        text-align: left;
-        letter-spacing: -0.5px;
-        margin: 40px 0 20px 0;
-    }}
-    
-    /* 段落文字 */
-    p, div, span {{
-        font-family: 'Manrope', sans-serif !important;
-        font-size: 16px !important;
-        font-weight: 400 !important;
-        color: #000000 !important;
-        line-height: 1.6 !important;
-        text-align: left !important;
-    }}
-    
-    /* 链接 */
-    a {{
-        color: #000000 !important;
-        text-decoration: underline !important;
-        text-decoration-color: rgba(0,0,0,0.3) !important;
-        font-weight: 500 !important;
-        transition: all 0.2s !important;
-    }}
-    
-    a:hover {{
-        opacity: 0.6 !important;
-    }}
-    
-    /* 语言选择器 */
-    .language-selector {{
-        position: fixed;
-        top: 30px;
-        right: 60px;
-        z-index: 1000;
-        background: transparent;
-        padding: 0;
+
+    /* 容器样式 */
+    div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] {{
+        background-color: rgba(255,255,255,0.85);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
         border: none;
-        box-shadow: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }}
+
+    /* 标题 */
+    h2 {{
+        color: #000000;
+        font-family: 'Manrope', sans-serif;
+        font-weight: 800;
+        margin-bottom: 15px;
+        font-size: 48px;
+        letter-spacing: -1px;
+        line-height: 1.2;
+    }}
+    h3 {{
+        color: #000000;
+        font-family: 'Manrope', sans-serif;
+        font-weight: 700;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        font-size: 32px;
+        letter-spacing: -0.5px;
     }}
     
-    .language-selector label,
-    .language-selector div[data-baseweb="select"] > div {{
-        font-family: 'Manrope', sans-serif !important;
-        font-size: 14px !important;
-        font-weight: 500 !important;
+    /* 确保所有文本都是黑色并使用Manrope字体 */
+    p, div, span {{
         color: #000000 !important;
-        background: transparent !important;
-        border: none !important;
+        font-family: 'Manrope', sans-serif !important;
+        font-weight: 400 !important;
+        line-height: 1.6 !important;
     }}
     
-    /* AI按钮 - 简约风格 */
+    /* 推荐资源区域样式 */
+    hr {{
+        margin: 30px 0;
+        border: none;
+        border-top: 2px solid rgba(100,100,100,0.2);
+    }}
+    
+    /* Markdown链接样式 */
+    a {{
+        color: #0066cc !important;
+        text-decoration: none !important;
+        font-family: 'Manrope', sans-serif !important;
+        font-weight: 600 !important;
+    }}
+    a:hover {{
+        color: #0052a3 !important;
+        text-decoration: underline !important;
+    }}
+
+    /* 悬浮AI按钮 */
     .chat-float-container {{
         position: fixed;
-        bottom: 40px;
-        right: 60px;
+        bottom: 30px;
+        right: 30px;
         z-index: 999;
     }}
-    
     button[data-testid="baseButton-secondary"][key="chat_toggle_btn"],
     .chat-float-container .stButton button {{
-        width: 60px !important;
-        height: 60px !important;
+        width: 70px !important;
+        height: 70px !important;
         border-radius: 50% !important;
-        background-color: #000000 !important;
-        border: none !important;
+        background-color: rgba(255,255,255,0.4) !important;
+        border: 1px solid rgba(100,100,100,0.3) !important;
         font-family: 'Manrope', sans-serif !important;
-        font-size: 20px !important;
-        font-weight: 700 !important;
-        color: #ffffff !important;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
+        font-size: 32px !important;
+        font-weight: 800 !important;
+        color: #000000 !important;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.3) !important;
         transition: all 0.3s ease !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }}
-    
     button[data-testid="baseButton-secondary"][key="chat_toggle_btn"]:hover,
     .chat-float-container .stButton button:hover {{
+        background-color: rgba(255,255,255,0.6) !important;
         transform: scale(1.1);
     }}
-    
-    /* AI聊天面板 - 去掉白色背景 */
+
+    /* 聊天面板 */
     .chat-panel {{
         position: fixed;
         bottom: 120px;
-        right: 60px;
-        width: 400px;
-        height: 500px;
-        background: transparent !important;
-        border: 1px solid rgba(0,0,0,0.2) !important;
-        backdrop-filter: blur(20px) !important;
+        right: 30px;
+        width: 450px;
+        height: 600px;
+        background-color: rgba(255,255,255,0.85);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: column;
         z-index: 998;
+        border: none;
+        backdrop-filter: blur(10px);
     }}
-    
+
+    /* 聊天消息区域 */
     .chat-messages-area {{
         flex: 1;
         overflow-y: auto;
         padding: 20px;
-        border-bottom: 1px solid rgba(0,0,0,0.1);
+        border-bottom: 1px solid rgba(200,200,200,0.3);
     }}
-    
     .chat-message {{
         margin-bottom: 15px;
-        padding: 0;
-        background: transparent !important;
+        padding: 12px;
+        background-color: rgba(240,240,240,0.4);
+        border-radius: 8px;
         font-family: 'Manrope', sans-serif;
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 400;
         line-height: 1.6;
         color: #000000;
     }}
-    
     .chat-message strong {{
+        color: #000000;
         font-weight: 700;
     }}
-    
+
+    /* 输入区域 */
     .chat-input-area {{
-        padding: 20px;
-        background: transparent;
+        padding: 15px;
+        background-color: rgba(250,250,250,0.8);
+        border-radius: 0 0 14px 14px;
+        backdrop-filter: blur(5px);
     }}
-    
     .stChatInput {{
-        background: transparent !important;
-        border: 1px solid rgba(0,0,0,0.2) !important;
         border-radius: 25px !important;
+        border: 1px solid rgba(100,100,100,0.3) !important;
+        background-color: rgba(255,255,255,0.9) !important;
         font-family: 'Manrope', sans-serif !important;
-        font-size: 14px !important;
-        color: #000000 !important;
+        font-size: 16px !important;
+        font-weight: 400 !important;
     }}
-    
-    button[key="clear_chat"] {{
+    .stChatInput > div {{
         background: transparent !important;
-        border: 1px solid rgba(0,0,0,0.2) !important;
-        color: #000000 !important;
-        font-family: 'Manrope', sans-serif !important;
-        font-size: 12px !important;
-        font-weight: 500 !important;
-        padding: 6px 12px !important;
-        border-radius: 15px !important;
     }}
-    
-    /* 隐藏所有覆盖层 */
-    div[data-baseweb="drawer"],
-    div[class*="overlay"],
-    div[class*="backdrop"],
-    div[style*="position: fixed"][style*="inset: 0"] {{
-        display: none !important;
-    }}
-    
-    /* 音频组件 */
-    .stAudio,
-    /* 音频组件 */
-    .stAudio,
-    div[data-testid="stAudioInput"] {{
+    .stChatInput button {{
         background: transparent !important;
         border: none !important;
     }}
+
+    /* Clear按钮 */
+    button[key="clear_chat"] {{
+        background-color: rgba(255,255,255,0.4) !important;
+        border: 1px solid rgba(100,100,100,0.3) !important;
+        border-radius: 8px !important;
+        padding: 6px 16px !important;
+        font-family: 'Manrope', sans-serif !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        color: #000000 !important;
+        box-shadow: none !important;
+    }}
+    button[data-testid="baseButton-secondary"][key="chat_toggle_btn"]:hover,
+    .chat-float-container .stButton button:hover {{
+        background-color: rgba(255,255,255,0.5) !important;
+        border-color: rgba(100,100,100,0.4) !important;
+    }}
+
+    /* 完全隐藏所有音频播放器 */
+    .stAudio {{ display: none !important; }}
+
+    div[data-testid="stAudioInput"] {{ 
+        margin: 4px 0 !important;
+        background: transparent !important;
+    }}
+    div[data-testid="stAudioInput"] > div {{
+        background: transparent !important;
+        border: none !important;
+    }}
+    div[data-testid="stAudioInput"] button {{
+        background-color: rgba(255,255,255,0.3) !important;
+        border: 1px solid rgba(100,100,100,0.3) !important;
+        border-radius: 8px !important;
+    }}
+    
+    /* 隐藏所有tooltip和弹窗元素（除了语言选择器） */
+    div[data-baseweb="tooltip"]:not(.language-selector *) {{
+        display: none !important;
+    }}
+    div[data-baseweb="modal"]:not(.language-selector *) {{
+        display: none !important;
+    }}
+    .element-container:has(iframe) {{
+        display: none !important;
+    }}
 </style>
 """, unsafe_allow_html=True)
-
 
 # ---------- 语言选择器（固定在右上角） ----------
 st.markdown('<div class="language-selector">', unsafe_allow_html=True)
@@ -695,40 +750,33 @@ with language_col2:
         st.rerun()
 st.markdown('</div>', unsafe_allow_html=True)
 
-# ---------- 导航和内容显示 ----------
-if st.session_state.level is None:
-    # 主页 - 垂直列表风格
-    st.title("CHINESE LEARNING")
-    
-    # Level 1
-    st.markdown('<div class="label">Basic Chinese</div>', unsafe_allow_html=True)
-    if st.button("Level 1"):
+# ---------- 导航和卡片显示 ----------
+st.title("CHINESE LEARNING ASSISTANT")
+
+col1, col2, col3 = st.columns(3)
+with col1:
+    if st.button("Level 1", use_container_width=True):
         st.session_state.level = 1
         st.session_state.path = ["LEVEL_I"]
-        st.session_state.auto_ref_pushed = False
-        st.session_state.current_recommendations = None
+        st.session_state.auto_ref_pushed = False   # 重置标记，以便重新推送
+        st.session_state.current_recommendations = None  # 清除旧的推荐
         st.rerun()
-    
-    # Level 2
-    st.markdown('<div class="label">Intermediate Chinese</div>', unsafe_allow_html=True)
-    if st.button("Level 2"):
+with col2:
+    if st.button("Level 2", use_container_width=True):
         st.session_state.level = 2
         st.session_state.path = ["LEVEL_II"]
-        st.session_state.auto_ref_pushed = False
-        st.session_state.current_recommendations = None
+        st.session_state.auto_ref_pushed = False   # 重置标记
+        st.session_state.current_recommendations = None  # 清除旧的推荐
         st.rerun()
-    
-    # Level 3
-    st.markdown('<div class="label">Advanced Chinese</div>', unsafe_allow_html=True)
-    if st.button("Level 3"):
+with col3:
+    if st.button("Level 3", use_container_width=True):
         st.session_state.level = 3
         st.session_state.path = ["LEVEL_III"]
-        st.session_state.auto_ref_pushed = False
-        st.session_state.current_recommendations = None
+        st.session_state.auto_ref_pushed = False   # 重置标记
+        st.session_state.current_recommendations = None  # 清除旧的推荐
         st.rerun()
 
-else:
-    # 内容页面
+if st.session_state.level:
     data = levels_data[f"Level {st.session_state.level}"]
     current_node = data
     for key in st.session_state.path:
@@ -741,53 +789,67 @@ else:
     st.markdown(f"<div class='breadcrumb'>{bread}</div>", unsafe_allow_html=True)
 
     if len(st.session_state.path) > 1:
-        if st.button("← Back", key="back_button"):
+        st.markdown("<div class='back-button'>", unsafe_allow_html=True)
+        if st.button("Back", key="back_button"):
             st.session_state.path.pop()
-            st.session_state.auto_ref_pushed = False
-            st.session_state.current_recommendations = None
+            st.session_state.auto_ref_pushed = False  # 重置以便重新生成
+            st.session_state.current_recommendations = None  # 清除旧的推荐
             st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
 
     def display_node(node):
         if "name" in node:
             st.markdown(f"## {node['name']}")
         if "notes" in node and node["notes"]:
-            st.markdown(f"<p>{node['notes']}</p>", unsafe_allow_html=True)
+            with st.container(border=True):
+                st.markdown(node["notes"])
         if "examples" in node and node["examples"]:
-            st.markdown("### Examples")
-            for ex in node["examples"]:
-                st.markdown(f"<p style='font-size:20px; margin:10px 0;'>{ex}</p>", unsafe_allow_html=True)
+            st.markdown("### Example Sentences")
+            cols = st.columns(3)
+            for idx, ex in enumerate(node["examples"]):
+                with cols[idx % 3]:
+                    with st.container(border=True):
+                        st.markdown(f"<div style='font-size:32px;'>{ex}</div>", unsafe_allow_html=True)
         if "vocabulary" in node and node["vocabulary"]:
             st.markdown("### Vocabulary")
-            for item in node["vocabulary"]:
-                st.markdown(f"<p>{item}</p>", unsafe_allow_html=True)
-        
-        # 显示子分类（如果有）
+            cols = st.columns(3)
+            for idx, item in enumerate(node["vocabulary"]):
+                with cols[idx % 3]:
+                    parts = item.rsplit(" ", 1)
+                    word = parts[0]
+                    pinyin = parts[1] if len(parts) > 1 else ""
+                    with st.container(border=True):
+                        st.markdown(f"### {word}")
+                        if pinyin:
+                            st.markdown(f"<div>{pinyin}</div>", unsafe_allow_html=True)
         if not any(key in node for key in ["notes", "examples", "vocabulary"]):
             sub_keys = [k for k in node.keys() if k not in ("name", "notes", "examples", "vocabulary")]
             if not sub_keys:
                 st.info("This section has no content to display.")
             else:
-                # 垂直列表显示子分类
-                for key in sub_keys:
-                    if isinstance(node[key], dict) and "name" in node[key]:
-                        label = node[key]["name"]
-                    else:
-                        label = key
-                    
-                    st.markdown(f'<div class="label">Topic</div>', unsafe_allow_html=True)
-                    if st.button(label, key=f"dir_{key}"):
-                        st.session_state.path.append(key)
-                        st.session_state.auto_ref_pushed = False
-                        st.session_state.current_recommendations = None
-                        st.rerun()
+                cols = st.columns(3)
+                for i, key in enumerate(sub_keys):
+                    with cols[i % 3]:
+                        if isinstance(node[key], dict) and "name" in node[key]:
+                            label = node[key]["name"]
+                        else:
+                            label = key
+                        if st.button(label, key=f"dir_{key}", use_container_width=True):
+                            st.session_state.path.append(key)
+                            st.session_state.auto_ref_pushed = False  # 重置以便重新生成
+                            st.session_state.current_recommendations = None  # 清除旧的推荐
+                            st.rerun()
 
     display_node(current_node)
     
     # ========== 显示推荐资源（在页面内容下方） ==========
     if st.session_state.current_recommendations:
-        st.markdown(f"<div style='margin-top:80px; padding-top:40px; border-top:1px solid rgba(0,0,0,0.1);'>{st.session_state.current_recommendations}</div>", unsafe_allow_html=True)
+        st.markdown("---")  # 分隔线
+        with st.container():
+            st.markdown(st.session_state.current_recommendations, unsafe_allow_html=True)
     
     # ========== 自动推送参考消息（在页面显示后触发） ==========
+    # 如果还没有为当前水平推送过，则生成并推送
     if not st.session_state.auto_ref_pushed:
         auto_push_reference(st.session_state.level, bread)
 
