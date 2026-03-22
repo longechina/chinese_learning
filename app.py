@@ -461,7 +461,7 @@ st.markdown(f"""
     }}
     .language-selector div[data-baseweb="select"] > div {{
         background-color: white !important;
-        color: #000000 !important;
+        color: #ffffff !important;
         border: 1px solid #ccc !important;
         font-family: 'Manrope', sans-serif !important;
         font-size: 16px !important;
@@ -477,7 +477,7 @@ st.markdown(f"""
         display: block !important;
     }}
     div[role="option"] {{
-        color: #000000 !important;
+        color: #ffffff !important;
         font-weight: 500 !important;
     }}
 
