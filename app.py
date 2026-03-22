@@ -76,7 +76,6 @@ def transcribe_audio(audio_bytes):
         )
         return transcription.text
     except Exception as e:
-        # 显示具体错误，帮助定位问题
         st.error(f"语音识别失败: {e}")
         return None
 
@@ -615,45 +614,33 @@ st.markdown(f"""
         font-weight: 700;
     }}
 
-    /* 输入区域 */
-    .stChatInput {{
+    /* 输入区域整体容器样式（深色圆角背景） */
+    .chat-input-area {{
+        padding: 10px 15px;
         border-radius: 15px !important;
         border: 1px solid rgba(0,0,0,0.3) !important;
         background-color: rgba(18,19,28,0.9) !important;
-        font-family: 'Manrope', sans-serif !important;
-        font-size: 16px !important;
-        font-weight: 400 !important;
+        margin-top: 10px;
+    }}
+
+    /* Clear 按钮和语音按钮样式：透明背景，白色文字 */
+    button[key="clear_chat"],
+    div[data-testid="stAudioInput"] button {{
+        background-color: rgba(255,255,255,0.2) !important;
+        border: 1px solid rgba(255,255,255,0.3) !important;
         color: #ffffff !important;
-    }}
-    .stChatInput > div {{
-        background: transparent !important;
-    }}
-    .stChatInput button {{
-        background: transparent !important;
-        border: none !important;
-    }}
-
-    .stChatInput textarea::placeholder {{
-        color: #bbb !important;
-        font-family: 'Manrope', sans-serif !important;
-        font-size: 16px !important;
-        font-weight: 400 !important;
-        background: transparent !important;
-        border: none !important;
-    }}
-
-    /* Clear按钮 */
-    button[key="clear_chat"] {{
-        background-color: rgba(255,255,255,0.4) !important;
-        border: 1px solid rgba(100,100,100,0.3) !important;
         border-radius: 8px !important;
-        padding: 2px 4px !important;
-        font-family: 'Manrope', sans-serif !important;
+        padding: 8px 12px !important;
         font-size: 14px !important;
         font-weight: 600 !important;
-        color: #000000 !important;
-        box-shadow: none !important;
+        transition: all 0.2s ease;
     }}
+    button[key="clear_chat"]:hover,
+    div[data-testid="stAudioInput"] button:hover {{
+        background-color: rgba(255,255,255,0.4) !important;
+    }}
+
+    /* 文本输入框（st.chat_input）样式继承自已有 .stChatInput，无需额外修改 */
 
     /* 完全隐藏所有音频播放器 */
     .stAudio {{
@@ -667,11 +654,6 @@ st.markdown(f"""
     div[data-testid="stAudioInput"] > div {{
         background: transparent !important;
         border: none !important;
-    }}
-    div[data-testid="stAudioInput"] button {{
-        background-color: rgba(255,255,255,0.3) !important;
-        border: 1px solid rgba(100,100,100,0.3) !important;
-        border-radius: 8px !important;
     }}
 
     /* 隐藏所有tooltip和弹窗元素（除了语言选择器） */
@@ -812,8 +794,7 @@ if st.session_state.level:
     if not st.session_state.auto_ref_pushed:
         auto_push_reference(st.session_state.level, bread)
 
-# ---------- 悬浮聊天窗（固定在右下角） ----------
-# 强制打开聊天面板（用户要求）
+# ---------- 悬浮聊天窗 ----------
 st.session_state.chat_open = True
 
 if st.session_state.chat_open:
@@ -858,11 +839,11 @@ if st.session_state.chat_open:
         st.audio(audio_bytes, format=fmt, autoplay=True)
         st.session_state.pending_tts = None
 
-    # 输入区域：三列布局（Clear按钮 + 语音按钮 + 文本输入）
+    # 输入区域：统一容器，三列布局（Clear / 语音 / 文本）
+    st.markdown('<div class="chat-input-area">', unsafe_allow_html=True)
     col_clear, col_voice, col_text = st.columns([1, 1, 6])
 
     with col_clear:
-        # Clear 按钮
         if st.button("Clear", key="clear_chat", use_container_width=True):
             st.session_state.messages = [m for m in st.session_state.messages if m["role"] == "system"]
             st.session_state.pending_tts = None
@@ -876,7 +857,6 @@ if st.session_state.chat_open:
             st.rerun()
 
     with col_voice:
-        # 语音输入按钮
         audio_input = st.audio_input("🎤", key="voice_input", label_visibility="collapsed")
         if audio_input is not None:
             audio_id = f"{audio_input.name}_{audio_input.size}"
@@ -892,10 +872,10 @@ if st.session_state.chat_open:
                         st.rerun()
 
     with col_text:
-        # 文本输入框
         if prompt := st.chat_input("Type a message...", key="text_input"):
             with st.spinner("Thinking..."):
                 get_ai_reply(prompt)
             st.rerun()
 
+    st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
