@@ -500,7 +500,7 @@ st.markdown(f"""
         word-break: break-word;
         max-width: 100%;
         margin-bottom: 40px;
-        letter-spacing: -2px;
+        letter-spacing: normal;
         line-height: 1.1;
     }}
 
@@ -522,7 +522,7 @@ st.markdown(f"""
         padding: 30px !important;
         transition: all 0.3s ease !important;
         box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
-        letter-spacing: -1px !important;
+        letter-spacing: normal !important;
     }}
     .stButton button:hover {{
         background-color: rgba(255,255,255,0.6) !important;
@@ -541,7 +541,7 @@ st.markdown(f"""
         color: #000000;
         font-weight: 700;
         border: none;
-        letter-spacing: -0.5px;
+        letter-spacing: normal;
     }}
 
     /* Back按钮 */
@@ -576,7 +576,7 @@ st.markdown(f"""
         font-weight: 800;
         margin-bottom: 15px;
         font-size: 56px;
-        letter-spacing: -1.5px;
+        letter-spacing: normal;
         line-height: 1.2;
     }}
     h3 {{
@@ -586,7 +586,7 @@ st.markdown(f"""
         margin-top: 20px;
         margin-bottom: 10px;
         font-size: 36px;
-        letter-spacing: -0.5px;
+        letter-spacing: normal;
     }}
     
     /* 确保所有文本都是黑色并使用Manrope字体 */
