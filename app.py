@@ -317,9 +317,9 @@ Your task:
 - No emojis!
 
 Use these rules to generate links:
-- YouTube: https://www.youtube.com/results?search_query=advanced english+key_word
-- Quizlet: https://quizlet.com/search?query=advanced english+key_words+vocabulary
-- StackExchange: https://english.stackexchange.com/search?q=only1_key_word
+- YouTube: https://www.youtube.com/results?search_query=关键词+english+learning
+- Quizlet: https://quizlet.com/search?query=关键词+english+vocabulary
+- StackExchange: https://english.stackexchange.com/search?q=关键词
 
 Example format:
 【Recommended Resources】
@@ -835,6 +835,11 @@ st.markdown(f"""
     /* 为搜索框预留空间，避免被固定语言选择器覆盖 */
     div[data-testid="stVerticalBlock"] > div:first-child {{
         margin-top: 80px;
+    }}
+
+    /* 词汇卡片按钮字体放大两倍 */
+    button[key^="btn_vocab_"] {{
+        font-size: 2em !important;
     }}
 </style>
 """, unsafe_allow_html=True)
