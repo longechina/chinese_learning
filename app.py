@@ -834,7 +834,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 with st.container():
     search_col1, search_col2 = st.columns([5, 1])
     with search_col1:
-        search_input = st.text_input("🔍 Search textbook", value=st.session_state.search_keyword, placeholder="Type to search...", key="search_box")
+        search_input = st.text_input("", value=st.session_state.search_keyword, placeholder="Type to search...", key="search_box")
     with search_col2:
         if st.button("Clear", key="clear_search"):
             st.session_state.search_keyword = ""
