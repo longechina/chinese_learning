@@ -195,13 +195,13 @@ Topic summary: {notes if notes else "Basic Chinese learning topic"}
 
 Your task:
 - Generate 3-4 high-quality learning resources using fixed trusted platforms
-- DO NOT search the web
+- DO search the web
 - Use the topic keyword to build real, valid search links
 - Keep it concise
 - No emojis!
 
 Use these rules to generate links:
-- YouTube: https://www.youtube.com/results?search_query=关键词+chinese
+- YouTube: https://www.youtube.com/results?search_query=关键词+in+chinese
 - Quizlet: https://quizlet.com/search?query=关键词+chinese
 - StackExchange: https://chinese.stackexchange.com/search?q=关键词
 
