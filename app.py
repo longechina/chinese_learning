@@ -6,10 +6,7 @@ import os
 import time
 import streamlit as st
 import groq
-# ==================== 只改了这一行（Voice Mode 必须的） ====================
-from audio_recorder_streamlit import audio_recorder as mic_recorder   # ← 自动开启麦克风的关键
-# =====================================================================
-
+from streamlit_mic_recorder import mic_recorder   # ← 保留你原来的import（没用到也没删）
 # ---------- 将背景图片转换为 Base64 嵌入 CSS ----------
 def get_base64_of_image(image_path):
     try:
@@ -789,12 +786,11 @@ if st.session_state.chat_open:
             st.session_state.last_audio_id = None
             st.rerun()
         if st.session_state.voice_mode:
-            # 使用 mic_recorder 组件，开启持续监听模式 ← 这里已改为自动打开麦克风
-            audio_bytes = mic_recorder(
-                pause_threshold=3.0,      # 停顿3秒自动停止
-                energy_threshold=0.02,    # 音量阈值（越小越灵敏）
+            # ========== 官方麦克风（一定会弹出权限）==========
+            audio_bytes = st.audio_input(
+                label="🎤 Speak now... (点击麦克风图标开始录音)",
                 sample_rate=16000,
-                text="Speak now..."       # 显示提示
+                key="voice_input"
             )
             if audio_bytes:
                 audio_id = f"{len(audio_bytes)}"
@@ -806,8 +802,7 @@ if st.session_state.chat_open:
                         with st.spinner("Thinking..."):
                             get_ai_reply(transcript)
                         st.rerun()
-            # 显示提示信息
-            st.caption("Voice mode active: speak, I will listen automatically.（麦克风已自动开启）")
+            st.caption("Voice mode active: 点击麦克风图标 → 允许浏览器访问麦克风 → 说话 → 点击停止。第一次会弹出权限窗口，请点击「允许」")
     with col_text:
         if prompt := st.chat_input("Type a message...", key="text_input"):
             with st.spinner("Thinking..."):
