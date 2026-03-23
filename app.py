@@ -779,30 +779,36 @@ if st.session_state.chat_open:
                 os.remove("conversation_summary.txt")
             st.rerun()
     with col_voice:
-        # 语音模式开关
         button_label = "Voice Mode" if not st.session_state.voice_mode else "Exit Voice Mode"
         if st.button(button_label, key="voice_toggle", use_container_width=True):
             st.session_state.voice_mode = not st.session_state.voice_mode
             st.session_state.last_audio_id = None
             st.rerun()
         if st.session_state.voice_mode:
-            # ========== 官方麦克风（一定会弹出权限）==========
-            audio_bytes = st.audio_input(
-                "Speak here", 
+            # 录音组件，必须提供 label
+            audio_obj = st.audio_input(
+                "Speak here",
                 sample_rate=16000,
                 key="voice_input"
             )
-            if audio_bytes:
-                audio_id = str(audio_bytes.size if hasattr(audio_bytes, 'size') else len(audio_bytes.getvalue()))
+            if audio_obj is not None:
+                # 立即读取为 bytes（避免后续对象状态问题）
+                if hasattr(audio_obj, 'read'):
+                    audio_data = audio_obj.read()
+                else:
+                    audio_data = audio_obj
+                # 用时间戳生成唯一 ID，避免依赖对象属性
+                audio_id = str(time.time())
                 if audio_id != st.session_state.last_audio_id:
                     st.session_state.last_audio_id = audio_id
                     with st.spinner("Transcribing..."):
-                        transcript = transcribe_audio(audio_bytes)
+                        transcript = transcribe_audio(audio_data)
                     if transcript and not transcript.startswith("[转录失败"):
                         with st.spinner("Thinking..."):
                             get_ai_reply(transcript)
                         st.rerun()
             st.caption("Voice mode active.")
+
     with col_text:
         if prompt := st.chat_input("Type a message...", key="text_input"):
             with st.spinner("Thinking..."):
