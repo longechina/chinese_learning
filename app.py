@@ -889,7 +889,6 @@ if st.session_state.chat_open:
                 key="auto_mic",
                 use_container_width=True,
                 format="wav",
-                sample_rate=16000,
                 auto_start=True,          # 自动开始录音
                 auto_stop=True,           # 自动停止（静默时）
                 continuous=True,          # 持续监听
