@@ -4,13 +4,13 @@ import io
 import re
 import os
 import time
+import queue
+import threading
+import numpy as np
+import soundfile as sf
 import streamlit as st
 import groq
 from streamlit_webrtc import webrtc_streamer, AudioProcessorBase, WebRtcMode
-import numpy as np
-import queue
-import threading
-import soundfile as sf
 
 # ---------- 将背景图片转换为 Base64 嵌入 CSS ----------
 def get_base64_of_image(image_path):
@@ -80,7 +80,7 @@ def transcribe_audio(audio_bytes):
         )
         return transcription.text
     except Exception as e:
-        st.error(f"语音识别失败: {e}")
+        st.error(f"Speech recognition failed: {e}")
         return None
 
 # ---------- 判断文本是否含中文 ----------
@@ -134,9 +134,11 @@ if "chat_open" not in st.session_state:
 if "pending_tts" not in st.session_state:
     st.session_state.pending_tts = None
 if "voice_mode" not in st.session_state:
-    st.session_state.voice_mode = False          # 语音模式开关
+    st.session_state.voice_mode = False
 if "last_audio_data" not in st.session_state:
-    st.session_state.last_audio_data = None      # 用于去重
+    st.session_state.last_audio_data = None
+if "recording_status" not in st.session_state:
+    st.session_state.recording_status = "Idle"   # Idle, Recording
 
 # ========== 对话总结相关状态 ==========
 if "conversation_summary" not in st.session_state:
@@ -337,33 +339,46 @@ class VoiceActivityDetector(AudioProcessorBase):
     def __init__(self):
         self.audio_queue = queue.Queue()
         self.recording = False
-        self.silence_frames = 0
-        self.silence_threshold = 30   # 约 3 秒 (假设 10ms 一帧)
+        self.silence_start_time = None
         self.volume_threshold = 0.02
+        self.silence_duration = 3.0
         self.audio_chunks = []
         self.lock = threading.Lock()
+        self._recording_status = "Idle"   # 用于状态显示
+
+    @property
+    def recording_status(self):
+        with self.lock:
+            return self._recording_status
 
     def recv(self, frame):
-        """接收音频帧（numpy 数组）"""
         audio = frame.to_ndarray().flatten()
         rms = np.sqrt(np.mean(audio ** 2))
+
         with self.lock:
             if rms > self.volume_threshold:
-                # 有声音，开始或继续录音
+                # 有声音
                 if not self.recording:
                     self.recording = True
+                    self._recording_status = "Recording"
                     self.audio_chunks = []
-                self.silence_frames = 0
+                    self.silence_start_time = None
                 self.audio_chunks.append(audio)
             else:
                 if self.recording:
-                    self.silence_frames += 1
-                    self.audio_chunks.append(audio)
-                    if self.silence_frames >= self.silence_threshold:
-                        # 静默超过阈值，停止录音并发送
+                    if self.silence_start_time is None:
+                        self.silence_start_time = time.time()
+                    elif time.time() - self.silence_start_time >= self.silence_duration:
+                        # 静默超时，停止录音
                         self.recording = False
+                        self._recording_status = "Idle"
                         full_audio = np.concatenate(self.audio_chunks)
                         self.audio_queue.put(full_audio)
+                        self.audio_chunks = []
+                        self.silence_start_time = None
+                    else:
+                        # 静默期间仍然累积音频
+                        self.audio_chunks.append(audio)
         return frame
 
 # ---------- CSS样式 ----------
@@ -918,47 +933,53 @@ if st.session_state.chat_open:
             st.rerun()
 
     with col_voice:
-        # 语音模式开关按钮
-        if st.button("🎤 语音模式" if not st.session_state.voice_mode else "🔴 关闭语音", key="voice_toggle", use_container_width=True):
+        # 语音模式开关按钮（无emoji）
+        button_label = "Voice Mode" if not st.session_state.voice_mode else "Exit Voice Mode"
+        if st.button(button_label, key="voice_toggle", use_container_width=True):
             st.session_state.voice_mode = not st.session_state.voice_mode
             st.rerun()
 
-        # 当语音模式开启时，启动 webrtc_streamer
         if st.session_state.voice_mode:
-            # 隐藏的 webrtc_streamer 容器，高度设为 0
-            with st.container():
-                st.markdown("""<style>iframe[title="streamlit_webrtc.streamlit_webrtc"] { height: 0px !important; min-height: 0px !important; }</style>""", unsafe_allow_html=True)
-                webrtc_ctx = webrtc_streamer(
-                    key="voice_detector",
-                    mode=WebRtcMode.SENDRECV,
-                    audio_processor_factory=VoiceActivityDetector,
-                    media_stream_constraints={"video": False, "audio": True},
-                    async_processing=True,
-                )
-                if webrtc_ctx.audio_processor:
-                    processor = webrtc_ctx.audio_processor
-                    # 从队列中取出完整音频（当一段录音结束时）
-                    try:
-                        audio_data = processor.audio_queue.get_nowait()
-                    except queue.Empty:
-                        audio_data = None
-                    if audio_data is not None:
-                        # 将 numpy 数组转换为 WAV 字节流
-                        buf = io.BytesIO()
-                        sf.write(buf, audio_data, 16000, format="WAV")
-                        buf.seek(0)
-                        audio_bytes = buf.read()
-                        # 避免重复处理同一段音频
-                        if audio_bytes != st.session_state.last_audio_data:
-                            st.session_state.last_audio_data = audio_bytes
-                            with st.spinner("正在转录..."):
-                                transcript = transcribe_audio(audio_bytes)
-                            if transcript and not transcript.startswith("[转录失败"):
-                                with st.spinner("思考中..."):
-                                    get_ai_reply(transcript)
-                                st.rerun()
-            # 显示提示
-            st.caption("语音模式已开启，开始说话即可自动录音，静默3秒后自动识别")
+            # 隐藏 webrtc_streamer 界面
+            st.markdown("""<style>iframe[title="streamlit_webrtc.streamlit_webrtc"] { height: 0px !important; min-height: 0px !important; }</style>""", unsafe_allow_html=True)
+            webrtc_ctx = webrtc_streamer(
+                key="voice_detector",
+                mode=WebRtcMode.SENDRECV,
+                audio_processor_factory=VoiceActivityDetector,
+                media_stream_constraints={"video": False, "audio": True},
+                async_processing=True,
+            )
+            if webrtc_ctx.audio_processor:
+                processor = webrtc_ctx.audio_processor
+                # 显示录音状态
+                status_placeholder = st.empty()
+                status_placeholder.info("Listening...")
+                # 轮询音频队列
+                try:
+                    audio_data = processor.audio_queue.get_nowait()
+                except queue.Empty:
+                    audio_data = None
+                if audio_data is not None:
+                    # 转换为 WAV
+                    buf = io.BytesIO()
+                    sf.write(buf, audio_data, 16000, format="WAV")
+                    buf.seek(0)
+                    audio_bytes = buf.read()
+                    if audio_bytes != st.session_state.last_audio_data:
+                        st.session_state.last_audio_data = audio_bytes
+                        with st.spinner("Transcribing..."):
+                            transcript = transcribe_audio(audio_bytes)
+                        if transcript and not transcript.startswith("[转录失败"):
+                            with st.spinner("Thinking..."):
+                                get_ai_reply(transcript)
+                            st.rerun()
+                # 更新状态显示
+                if processor.recording:
+                    status_placeholder.info("Recording...")
+                else:
+                    status_placeholder.info("Listening...")
+            else:
+                st.error("Microphone not ready. Please check permissions.")
 
     with col_text:
         if prompt := st.chat_input("Type a message...", key="text_input"):
