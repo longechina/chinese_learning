@@ -601,13 +601,13 @@ st.markdown(f"""
         display: block !important;
     }}
     div[role="listbox"] {{
-        background-color: white !important;
+        background-color: #ffffff !important;
         display: block !important;
     }}
     div[role="option"] {{
         color: #ffffff !important;
         font-weight: 500 !important;
-        background-color: white !important;
+        background-color: #ffffff !important;
     }}
 
     /* 主标题 */
