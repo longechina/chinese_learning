@@ -580,7 +580,7 @@ st.markdown(f"""
     .language-selector label {{
         font-family: 'Manrope', sans-serif;
         font-weight: 700;
-        color: #ffffff;
+        color: #000000;
         margin: 0;
         font-size: 16px;
     }}
@@ -601,13 +601,13 @@ st.markdown(f"""
         display: block !important;
     }}
     div[role="listbox"] {{
-        background-color: #ffffff !important;
+        background-color: white !important;
         display: block !important;
     }}
     div[role="option"] {{
         color: #ffffff !important;
         font-weight: 500 !important;
-        background-color: #ffffff !important;
+        background-color: white !important;
     }}
 
     /* 主标题 */
@@ -630,7 +630,7 @@ st.markdown(f"""
         }}
     }}
 
-    /* Level按钮 */
+    /* Level按钮通用样式 */
     button[kind="primary"],
     .stButton button {{
         background-color: rgba(255,255,255,0.4) !important;
@@ -642,6 +642,13 @@ st.markdown(f"""
         transition: all 0.3s ease !important;
         box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
         letter-spacing: normal !important;
+    }}
+
+    /* 放大 Level 1/2/3 按钮字体到两倍（200px） */
+    button[data-key="level_1_btn"],
+    button[data-key="level_2_btn"],
+    button[data-key="level_3_btn"] {{
+        font-size: 200px !important;
     }}
 
     .stButton button > div {{
@@ -837,7 +844,7 @@ st.markdown(f"""
         margin-top: 80px;
     }}
 
-    /* 所有卡片按钮（词汇、例句）字体放大两倍 */
+    /* 所有卡片按钮（词汇和例句）字体放大两倍 */
     button[data-key^="btn_"] {{
         font-size: 2em !important;
     }}
