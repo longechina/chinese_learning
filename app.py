@@ -4,13 +4,9 @@ import io
 import re
 import os
 import time
-import queue
-import threading
-import numpy as np
-import soundfile as sf
 import streamlit as st
 import groq
-from streamlit_webrtc import webrtc_streamer, AudioProcessorBase, WebRtcMode
+from streamlit_mic_recorder import mic_recorder
 
 # ---------- 将背景图片转换为 Base64 嵌入 CSS ----------
 def get_base64_of_image(image_path):
@@ -135,12 +131,8 @@ if "pending_tts" not in st.session_state:
     st.session_state.pending_tts = None
 if "voice_mode" not in st.session_state:
     st.session_state.voice_mode = False
-if "last_audio_data" not in st.session_state:
-    st.session_state.last_audio_data = None
-if "webrtc_initialized" not in st.session_state:
-    st.session_state.webrtc_initialized = False
-if "webrtc_ctx" not in st.session_state:
-    st.session_state.webrtc_ctx = None
+if "last_audio_id" not in st.session_state:
+    st.session_state.last_audio_id = None
 
 # ========== 对话总结相关状态 ==========
 if "conversation_summary" not in st.session_state:
@@ -249,7 +241,7 @@ def auto_push_reference(level, path_string):
             st.session_state.current_recommendations = ref_msg
         st.session_state.auto_ref_pushed = True
 
-# ========== AI 回复函数（注入语言和页面内容） ==========
+# ========== AI 回复函数 ==========
 def get_ai_reply(user_input):
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.session_state.user_msg_count += 1
@@ -267,7 +259,10 @@ def get_ai_reply(user_input):
         context_msgs.insert(insert_idx, {"role": "system", "content": full_page})
 
     if st.session_state.conversation_summary:
-        summary_msg = {"role": "system", "content": f"[Previous conversation summary]\n{st.session_state.conversation_summary}"}
+        summary_msg = {
+            "role": "system",
+            "content": f"[Previous conversation summary]\n{st.session_state.conversation_summary}"
+        }
         base = 1
         if st.session_state.language:
             base += 1
@@ -333,50 +328,6 @@ Summary:"""
         st.session_state.conv_history = []
     except Exception as e:
         st.warning(f"Failed to generate summary: {e}")
-
-# ---------- 自定义音频处理器：实现语音活动检测和自动录音 ----------
-class VoiceActivityDetector(AudioProcessorBase):
-    def __init__(self):
-        self.audio_queue = queue.Queue()
-        self.recording = False
-        self.silence_start_time = None
-        self.volume_threshold = 0.02
-        self.silence_duration = 3.0
-        self.audio_chunks = []
-        self.lock = threading.Lock()
-        self._recording_status = "Idle"
-
-    @property
-    def recording_status(self):
-        with self.lock:
-            return self._recording_status
-
-    def recv(self, frame):
-        audio = frame.to_ndarray().flatten()
-        rms = np.sqrt(np.mean(audio ** 2))
-
-        with self.lock:
-            if rms > self.volume_threshold:
-                if not self.recording:
-                    self.recording = True
-                    self._recording_status = "Recording"
-                    self.audio_chunks = []
-                    self.silence_start_time = None
-                self.audio_chunks.append(audio)
-            else:
-                if self.recording:
-                    if self.silence_start_time is None:
-                        self.silence_start_time = time.time()
-                    elif time.time() - self.silence_start_time >= self.silence_duration:
-                        self.recording = False
-                        self._recording_status = "Idle"
-                        full_audio = np.concatenate(self.audio_chunks)
-                        self.audio_queue.put(full_audio)
-                        self.audio_chunks = []
-                        self.silence_start_time = None
-                    else:
-                        self.audio_chunks.append(audio)
-        return frame
 
 # ---------- CSS样式 ----------
 st.markdown(f"""
@@ -927,64 +878,37 @@ if st.session_state.chat_open:
         button_label = "Voice Mode" if not st.session_state.voice_mode else "Exit Voice Mode"
         if st.button(button_label, key="voice_toggle", use_container_width=True):
             st.session_state.voice_mode = not st.session_state.voice_mode
-            if not st.session_state.voice_mode and st.session_state.webrtc_ctx:
-                # 关闭模式时停止音频流（webrtc_streamer会自动处理）
-                pass
+            st.session_state.last_audio_id = None
             st.rerun()
 
         if st.session_state.voice_mode:
-            # 添加手动请求麦克风的按钮
-            if st.button("Request Microphone", key="req_mic", use_container_width=True):
-                st.session_state.webrtc_initialized = True
-                st.rerun()
-
-            if st.session_state.webrtc_initialized:
-                # 隐藏 webrtc_streamer 界面
-                st.markdown("""<style>iframe[title="streamlit_webrtc.streamlit_webrtc"] { height: 0px !important; min-height: 0px !important; }</style>""", unsafe_allow_html=True)
-                webrtc_ctx = webrtc_streamer(
-                    key="voice_detector",
-                    mode=WebRtcMode.SENDRECV,
-                    audio_processor_factory=VoiceActivityDetector,
-                    media_stream_constraints={"video": False, "audio": True},
-                    async_processing=True,
-                )
-                st.session_state.webrtc_ctx = webrtc_ctx
-                if webrtc_ctx.audio_processor:
-                    processor = webrtc_ctx.audio_processor
-                    # 显示录音状态
-                    status_placeholder = st.empty()
-                    # 轮询音频队列
-                    try:
-                        audio_data = processor.audio_queue.get_nowait()
-                    except queue.Empty:
-                        audio_data = None
-                    if audio_data is not None:
-                        # 转换为 WAV
-                        buf = io.BytesIO()
-                        sf.write(buf, audio_data, 16000, format="WAV")
-                        buf.seek(0)
-                        audio_bytes = buf.read()
-                        if audio_bytes != st.session_state.last_audio_data:
-                            st.session_state.last_audio_data = audio_bytes
-                            with st.spinner("Transcribing..."):
-                                transcript = transcribe_audio(audio_bytes)
-                            if transcript and not transcript.startswith("[转录失败"):
-                                with st.spinner("Thinking..."):
-                                    get_ai_reply(transcript)
-                                st.rerun()
-                    # 更新状态显示
-                    if processor.recording:
-                        status_placeholder.info("Recording...")
-                    else:
-                        status_placeholder.info("Listening...")
-                else:
-                    st.error("Microphone not ready. Please click 'Request Microphone' again.")
-            else:
-                st.info("Click 'Request Microphone' to start voice mode.")
-        else:
-            # 退出语音模式时清理状态
-            st.session_state.webrtc_initialized = False
-            st.session_state.last_audio_data = None
+            # 使用 mic_recorder 组件，开启持续监听模式
+            audio = mic_recorder(
+                start_prompt="Listening...",
+                stop_prompt="Stop",
+                key="auto_mic",
+                use_container_width=True,
+                format="wav",
+                sample_rate=16000,
+                auto_start=True,          # 自动开始录音
+                auto_stop=True,           # 自动停止（静默时）
+                continuous=True,          # 持续监听
+                silence_timeout=3.0,      # 静默3秒后自动停止
+                threshold=0.02,           # 音量阈值
+            )
+            if audio and audio.get("bytes"):
+                audio_bytes = audio["bytes"]
+                audio_id = f"{len(audio_bytes)}"
+                if audio_id != st.session_state.last_audio_id:
+                    st.session_state.last_audio_id = audio_id
+                    with st.spinner("Transcribing..."):
+                        transcript = transcribe_audio(audio_bytes)
+                    if transcript and not transcript.startswith("[转录失败"):
+                        with st.spinner("Thinking..."):
+                            get_ai_reply(transcript)
+                        st.rerun()
+            # 显示提示信息
+            st.caption("Voice mode active: speak, I will listen automatically.")
 
     with col_text:
         if prompt := st.chat_input("Type a message...", key="text_input"):
