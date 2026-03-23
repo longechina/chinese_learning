@@ -793,7 +793,7 @@ if st.session_state.chat_open:
                 key="voice_input"
             )
             if audio_bytes:
-                audio_id = f"{len(audio_bytes)}"
+                audio_id = str(audio_bytes.size if hasattr(audio_bytes, 'size') else len(audio_bytes.getvalue()))
                 if audio_id != st.session_state.last_audio_id:
                     st.session_state.last_audio_id = audio_id
                     with st.spinner("Transcribing..."):
