@@ -1246,29 +1246,28 @@ if st.session_state.current_mode == "textbook":
 elif st.session_state.current_mode == "nemt_cet" and st.session_state.selected_nemt_cet:
     data = nemt_cet_data.get(st.session_state.selected_nemt_cet, {})
     
-    # 如果没有路径，显示根目录内容
+    # 如果没有路径，显示根目录内容（所有数字编号）
     if not st.session_state.nemt_cet_path:
         # 显示当前选择的考试名称
         st.markdown(f"## {st.session_state.selected_nemt_cet}")
         
-        # 获取所有子目录（数字编号的目录，如 "0", "1", "2"...）
-        # 过滤掉非数字键，只显示目录内容
-        sub_keys = []
-        for k in data.keys():
-            if isinstance(data[k], dict):
-                # 获取这个子目录下的第一个键作为目录名
-                inner_dict = data[k]
-                if inner_dict:
-                    first_key = list(inner_dict.keys())[0]
-                    sub_keys.append((k, first_key))  # 保存编号和目录名
+        # 获取所有数字编号（按数字排序）
+        sub_keys = sorted([k for k in data.keys() if isinstance(data[k], dict)], key=lambda x: int(x) if x.isdigit() else 0)
         
         if sub_keys:
-            cols = st.columns(3)
-            for i, (num_key, dir_name) in enumerate(sub_keys):
-                with cols[i % 3]:
-                    # 只显示目录名称，不显示数字编号
-                    if st.button(dir_name, key=f"nemt_dir_{num_key}", use_container_width=True):
-                        st.session_state.nemt_cet_path.append(num_key)
+            st.markdown("### Categories")
+            cols = st.columns(4)
+            for i, key in enumerate(sub_keys):
+                with cols[i % 4]:
+                    # 获取该编号下的目录名称
+                    inner_dict = data[key]
+                    if inner_dict:
+                        dir_name = list(inner_dict.keys())[0] if inner_dict else f"Section {key}"
+                    else:
+                        dir_name = f"Section {key}"
+                    # 显示按钮，按钮文字为目录名称，点击时存储编号
+                    if st.button(dir_name, key=f"nemt_dir_{key}", use_container_width=True):
+                        st.session_state.nemt_cet_path.append(key)
                         st.rerun()
         else:
             st.info("No content available.")
@@ -1281,87 +1280,86 @@ elif st.session_state.current_mode == "nemt_cet" and st.session_state.selected_n
                 st.error("Path error. Please go back.")
                 st.stop()
         
-        # 获取当前节点的第一个键（目录名称）作为面包屑显示
-        if isinstance(current_node, dict) and len(current_node) > 0:
-            current_dir_name = list(current_node.keys())[0] if current_node else ""
-        else:
-            current_dir_name = ""
+        # 获取实际内容节点（去掉编号层，获取真正的目录内容）
+        content_node = current_node
+        if isinstance(content_node, dict):
+            # 当前节点可能是 {"0": {"目录名": {...}}} 结构
+            # 需要取到最内层的内容
+            while len(content_node) == 1 and isinstance(list(content_node.values())[0], dict):
+                content_node = list(content_node.values())[0]
         
-        # 构建面包屑路径（只显示目录名称，不显示数字编号）
+        # 构建面包屑路径（显示目录名称）
         bread_parts = []
-        temp_path = []
         temp_data = data
-        for path_key in st.session_state.nemt_cet_path:
+        for idx, path_key in enumerate(st.session_state.nemt_cet_path):
             temp_data = temp_data.get(path_key, {})
             if isinstance(temp_data, dict) and len(temp_data) > 0:
-                dir_name = list(temp_data.keys())[0]
-                bread_parts.append(dir_name)
+                # 获取这个节点的目录名称
+                first_key = list(temp_data.keys())[0] if temp_data else ""
+                if first_key:
+                    bread_parts.append(first_key)
         bread = " > ".join(bread_parts)
-        st.markdown(f"<div class='breadcrumb'>{bread}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='breadcrumb' style='font-size: 18px;'>{bread}</div>", unsafe_allow_html=True)
         
         # Back 按钮
         if len(st.session_state.nemt_cet_path) > 0:
-            st.markdown("<div class='back-button'>", unsafe_allow_html=True)
-            if st.button("Back", key="nemt_back_button"):
+            if st.button("← Back", key="nemt_back_button"):
                 st.session_state.nemt_cet_path.pop()
                 st.rerun()
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown("<br>", unsafe_allow_html=True)
         
-        # 显示当前节点的内容
-        # 获取实际内容节点（去掉编号层）
-        content_node = current_node
-        if isinstance(content_node, dict):
-            # 获取实际内容（如果有嵌套）
-            for k, v in content_node.items():
-                if isinstance(v, dict):
-                    content_node = v
-                    break
+        # ========== 显示内容（字体放大两倍）==========
         
-        # 显示目录名称（不带编号）
+        # 显示目录名称（大字体）
         if "name" in content_node:
-            st.markdown(f"## {content_node['name']}")
-        elif current_dir_name:
-            st.markdown(f"## {current_dir_name}")
+            st.markdown(f"<h2 style='font-size: 48px; font-weight: 700;'>{content_node['name']}</h2>", unsafe_allow_html=True)
         
-        # 显示 notes（如果有）
+        # 显示 notes（如果有）- 大字体
         if "notes" in content_node and content_node["notes"]:
             with st.container(border=True):
-                st.markdown(content_node["notes"])
+                st.markdown(f"<div style='font-size: 20px; line-height: 1.6;'>{content_node['notes']}</div>", unsafe_allow_html=True)
         
-        # 显示 words（单词列表）- 直接显示所有单词，不用卡片翻转
+        # 显示 words（单词列表）- 直接显示所有单词，不用卡片
         if "words" in content_node and content_node["words"]:
-            st.markdown("### Words")
-            # 将字符串按 " / " 分割成列表
-            words_list = content_node["words"].split(" / ")
+            st.markdown("<h3 style='font-size: 36px; font-weight: 600; margin-top: 30px;'>Words</h3>", unsafe_allow_html=True)
             
-            # 直接显示所有单词，用换行或列表形式
+            # 将字符串按 " / " 分割成列表
+            if isinstance(content_node["words"], str):
+                words_list = content_node["words"].split(" / ")
+            else:
+                words_list = content_node["words"]
+            
+            # 直接显示所有单词，每行一个，大字体
             for word in words_list:
-                st.markdown(f"- {word}")
+                st.markdown(f"<div style='font-size: 20px; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.1);'>{word}</div>", unsafe_allow_html=True)
         
-        # 显示 examples（如果有）
+        # 显示 examples（如果有）- 大字体
         if "examples" in content_node and content_node["examples"]:
-            st.markdown("### Example Sentences")
+            st.markdown("<h3 style='font-size: 36px; font-weight: 600; margin-top: 30px;'>Example Sentences</h3>", unsafe_allow_html=True)
             for ex in content_node["examples"]:
-                st.markdown(f"- {ex}")
+                st.markdown(f"<div style='font-size: 20px; padding: 8px 0;'>• {ex}</div>", unsafe_allow_html=True)
         
-        # 显示子目录（下一级）
-        # 获取所有子目录（数字编号的目录）
+        # 显示子目录（下一级的数字编号）
+        # 获取所有子目录（数字编号）
         sub_items = []
         for k, v in current_node.items():
             if isinstance(v, dict):
-                # 获取子目录名称
-                if len(v) > 0:
-                    first_key = list(v.keys())[0]
-                    sub_items.append((k, first_key))
+                # 检查是否是数字编号的目录
+                if k.isdigit() or (isinstance(k, str) and k.replace(".", "").isdigit()):
+                    # 获取这个编号下的目录名称
+                    if len(v) > 0:
+                        dir_name = list(v.keys())[0] if v else f"Section {k}"
+                        sub_items.append((k, dir_name))
         
         if sub_items:
-            st.markdown("### Sections")
+            st.markdown("<h3 style='font-size: 36px; font-weight: 600; margin-top: 30px;'>Sections</h3>", unsafe_allow_html=True)
             cols = st.columns(3)
             for i, (num_key, dir_name) in enumerate(sub_items):
                 with cols[i % 3]:
                     if st.button(dir_name, key=f"nemt_subdir_{num_key}", use_container_width=True):
                         st.session_state.nemt_cet_path.append(num_key)
                         st.rerun()
+
 
 # ---------- 悬浮聊天窗（固定在右下角） ----------
 # 强制打开聊天面板（用户要求）
