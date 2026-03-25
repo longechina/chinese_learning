@@ -321,22 +321,26 @@ Generate the quiz:"""
         logger.error(f"Quiz generation error: {e}")
         return None
         
-# ========== 评估 Quiz 答案（修复版）==========
+# ========== 评估 Quiz 答案 ==========
 def evaluate_quiz(questions, user_answers):
     # 构建问题和答案的详细列表
     qa_pairs = []
     for i, q in enumerate(questions):
+        # 清理问题：移除开头的 "1. " 或 "**Q1:** " 等
+        clean_q = re.sub(r'^\d+\.\s*', '', q)
+        clean_q = re.sub(r'^\*\*Q\d+:\*\*\s*', '', clean_q)
+        clean_q = clean_q.strip()
         user_ans = user_answers.get(i+1, "No answer")
-        qa_pairs.append(f"Q{i+1}: {q}\nUser Answer: {user_ans}")
+        qa_pairs.append(f"Q{i+1}: {clean_q}\nUser Answer: {user_ans}")
     
     prompt = f"""You are a language teacher evaluating quiz answers. For each question, determine if the user's answer is CORRECT or INCORRECT.
 
 Be GENEROUS in your evaluation:
-- For multiple choice, accept the letter (A, B, C, D) or the full text
-- For fill-in-the-blank, accept synonyms or similar meaning
-- For translation, accept if the meaning is correct, even if wording differs
-- For error correction, accept if the error is correctly identified and fixed
-- For sentence making, accept if the sentence is grammatically correct and uses all words
+- Multiple choice: accept the letter (A, B, C, D) or the full text
+- Fill-in-the-blank: accept synonyms or similar meaning
+- Translation: accept if the meaning is correct, even if wording differs
+- Error correction: accept if the error is correctly identified and fixed
+- Sentence making: accept if the sentence is grammatically correct and uses all words
 
 Quiz Questions and User Answers:
 {chr(10).join(qa_pairs)}
@@ -353,9 +357,9 @@ Only return the evaluation, no extra text."""
     
     try:
         response = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
+            model="openai/gpt-oss-20b",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.3,
+            temperature=0.2,
             max_tokens=300,
         )
         evaluation = response.choices[0].message.content.strip()
@@ -390,7 +394,8 @@ Only return the evaluation, no extra text."""
         
     except Exception as e:
         logger.error(f"Quiz evaluation error: {e}")
-        return "Unable to evaluate. Please try again.", 0, len(questions), [False] * len(questions)
+        default_eval = f"Unable to evaluate. Please try again.\nScore: 0/{len(questions)}"
+        return default_eval, 0, len(questions), [False] * len(questions)
 
 # ---------- 将背景图片转换为 Base64 嵌入 CSS ----------
 def get_base64_of_image(image_path):
@@ -1060,7 +1065,7 @@ def get_ai_reply(user_input):
 
     try:
         response = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
+            model="openai/gpt-oss-20b",
             messages=context_msgs,
             temperature=0.7,
             max_tokens=512,
