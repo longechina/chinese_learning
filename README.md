@@ -54,6 +54,8 @@ For example, if the current theme is **Make small talk**, the recommended links 
 The model already knows the theme and content of the current page (set via the script).  
 You can directly ask questions about this content without providing additional background information.
 
+![Context](17.png) 
+
 ---
 ## 5. Teaching Principles & Feedback
 
@@ -62,6 +64,8 @@ The AI follows predefined teaching principles to guide its responses. Instead of
 See [teaching_principle.txt](teaching_principle.txt) for details.
 
 All interactions (your answers and AI responses) are saved in [feedback.md](feedback.md) for review.
+![Teaching Principles](18.png) 
+
 ---
 
 ## 6. OCR
@@ -126,7 +130,32 @@ This module extracts text from images and non-searchable documents for further i
 ![OCR Processed 2](13.png) 
 
 ---
+## 7. Quiz
 
+This module generates quizzes tailored to your current learning content.
+
+### Purpose
+- Mainstream AI models are smart but require extensive tuning to produce effective quizzes.
+- To simplify, a **predefined quiz template** is used to generate consistent quizzes quickly.
+![Quiz](15.png) 
+![Quiz Content](16.png) 
+
+---
+
+### Features
+- Click a quiz → generates a ready-to-use test
+- Automatically creates a **feedback markdown file** to record:
+  - AI-generated questions  
+  - Your answers  
+  - AI feedback
+
+---
+
+### Notes
+- Feedback files are organized by topic and material
+- Designed for continuous learning with structured records
+
+---
 # Chinese Learning Dataset
 
 > A very small personal dataset built purely for learning programming and natural language processing (NLP). Nothing serious here.
@@ -238,6 +267,8 @@ LLM的问题
 **Not** intended for deep reasoning or complex tasks (for those, stronger paid models such as ChatGPT or Claude should be used).
 
 This analysis focuses on **speed, multimodality, accuracy, hallucination risk, reasoning quality, and retrieval performance.**
+
+![Models Supported by Groq](14.png)  
 
 ---
 
