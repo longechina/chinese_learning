@@ -9,6 +9,14 @@ import datetime
 import streamlit as st
 import groq
 import requests
+import tempfile
+import zipfile
+from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+# 导入OCR模块
+from ocr_image_module import ocr_images_batch, BAIMIAO_CONFIG as IMAGE_OCR_CONFIG, format_results_as_text, save_results_to_txt
+from ocr_pdf_module import ocr_pdf, BAIMIAO_CONFIG as PDF_OCR_CONFIG
 
 # ---------- 配置日志记录 ----------
 if not os.path.exists("logs"):
@@ -1237,6 +1245,72 @@ def get_ai_reply_with_image(user_input, image_bytes):
     except Exception as e:
         logger.error(f"TTS error in get_ai_reply_with_image: {e}")
 
+
+# ========== OCR 处理函数 ==========
+def process_ocr_images(uploaded_files):
+    """处理图片OCR"""
+    if not uploaded_files:
+        return None
+    
+    # 限制最多300张
+    if len(uploaded_files) > 300:
+        st.warning(f"Too many images ({len(uploaded_files)}). Only first 300 will be processed.")
+        uploaded_files = uploaded_files[:300]
+    
+    # 准备图片数据
+    image_list = [(f.read(), f.name) for f in uploaded_files]
+    
+    # 进度显示
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    
+    def update_progress(current, total, filename, status, preview):
+        progress_bar.progress(current / total)
+        status_text.text(f"Processing: {current}/{total} - {filename} - {status}")
+    
+    # 执行OCR
+    results = ocr_images_batch(image_list, IMAGE_OCR_CONFIG, progress_callback=update_progress)
+    
+    progress_bar.empty()
+    status_text.empty()
+    
+    return results
+
+
+def process_ocr_pdf(uploaded_pdf):
+    """处理PDF OCR"""
+    if not uploaded_pdf:
+        return None
+    
+    pdf_bytes = uploaded_pdf.read()
+    
+    # 进度显示
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    
+    def update_progress(current, total, message):
+        progress_bar.progress(current / total)
+        status_text.text(f"OCR: {message}")
+    
+    status, text = ocr_pdf(
+        pdf_bytes,
+        uploaded_pdf.name,
+        PDF_OCR_CONFIG["cookie"],
+        PDF_OCR_CONFIG["x_auth_token"],
+        PDF_OCR_CONFIG["x_auth_uuid"],
+        progress_callback=update_progress,
+        config=PDF_OCR_CONFIG
+    )
+    
+    progress_bar.empty()
+    status_text.empty()
+    
+    if status == "success":
+        return text
+    else:
+        return None
+
+
 # ---------- CSS样式 ----------
 st.markdown(f"""
 <style>
@@ -2147,31 +2221,101 @@ if st.session_state.chat_open:
             st.rerun()
 
     with col_image:
-        # 图片上传按钮
-        uploaded_file = st.file_uploader(
-            "📷",
-            type=["jpg", "jpeg", "png", "webp"],
-            key="image_uploader",
+        # 图片上传区域
+        st.markdown("### OCR")
+        
+        # 图片上传
+        uploaded_images = st.file_uploader(
+            "Images",
+            type=["jpg", "jpeg", "png", "bmp", "webp", "tiff"],
+            accept_multiple_files=True,
+            key="ocr_images_uploader",
             label_visibility="collapsed"
         )
         
-        # 显示已上传的图片预览
-        if uploaded_file is not None:
-            # 保存图片到 session_state
-            image_bytes = uploaded_file.read()
-            st.session_state.uploaded_image = image_bytes
-            st.session_state.image_filename = uploaded_file.name
-            st.session_state.image_mime = uploaded_file.type
+        # PDF上传
+        uploaded_pdf = st.file_uploader(
+            "PDF",
+            type=["pdf"],
+            key="ocr_pdf_uploader",
+            label_visibility="collapsed"
+        )
+        
+        # ZIP上传
+        uploaded_zip = st.file_uploader(
+            "ZIP",
+            type=["zip"],
+            key="ocr_zip_uploader",
+            label_visibility="collapsed"
+        )
+        
+        # 显示预览
+        if uploaded_images:
+            st.caption(f"{len(uploaded_images)} image(s) ready")
+        if uploaded_pdf:
+            st.caption(f"PDF: {uploaded_pdf.name}")
+        if uploaded_zip:
+            st.caption(f"ZIP: {uploaded_zip.name}")
+        
+        # OCR 按钮
+        ocr_clicked = st.button("Run OCR", key="ocr_run_button", use_container_width=True)
+        
+        if ocr_clicked:
+            ocr_results = []
             
-            # 显示小预览图
-            st.image(image_bytes, width=40, caption="")
-        elif hasattr(st.session_state, 'uploaded_image') and st.session_state.uploaded_image:
-            # 如果已有上传的图片，显示预览
-            st.image(st.session_state.uploaded_image, width=40, caption="")
-            # 添加清除按钮（可选）
-            if st.button("✖", key="clear_image", help="Clear image"):
-                del st.session_state.uploaded_image
-                st.rerun()
+            # 处理图片
+            if uploaded_images:
+                with st.spinner("OCR processing images..."):
+                    results = process_ocr_images(uploaded_images)
+                    if results:
+                        ocr_results.extend(results)
+                        st.success(f"Processed {len(results)} images")
+            
+            # 处理PDF
+            if uploaded_pdf:
+                with st.spinner("OCR processing PDF..."):
+                    text = process_ocr_pdf(uploaded_pdf)
+                    if text:
+                        ocr_results.append(("PDF", "success", text))
+                        st.success("PDF processed successfully")
+            
+            # 处理ZIP
+            if uploaded_zip:
+                with st.spinner("OCR processing ZIP..."):
+                    zip_bytes = uploaded_zip.read()
+                    with tempfile.TemporaryDirectory() as temp_dir:
+                        with zipfile.ZipFile(io.BytesIO(zip_bytes), 'r') as zf:
+                            zip_images = []
+                            for file_info in zf.infolist():
+                                if not file_info.is_dir():
+                                    ext = os.path.splitext(file_info.filename)[1].lower()
+                                    if ext in ['.jpg', '.jpeg', '.png', '.bmp', '.webp', '.tiff']:
+                                        img_bytes = zf.read(file_info.filename)
+                                        zip_images.append((img_bytes, os.path.basename(file_info.filename)))
+                            
+                            if zip_images:
+                                results = ocr_images_batch(zip_images, IMAGE_OCR_CONFIG)
+                                ocr_results.extend(results)
+                                st.success(f"Processed {len(zip_images)} images from ZIP")
+            
+            # 显示结果
+            if ocr_results:
+                result_text = format_results_as_text(ocr_results)
+                st.text_area("OCR Results", result_text, height=300)
+                
+                # 下载按钮
+                st.download_button(
+                    "Download Results",
+                    result_text,
+                    file_name=f"ocr_results_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
+                    mime="text/plain"
+                )
+                
+                # 发送到AI按钮
+                if st.button("Send to AI", key="ocr_send_to_ai"):
+                    ai_prompt = f"Please analyze the following OCR results:\n\n{result_text}"
+                    get_ai_reply(ai_prompt)
+                    st.rerun()
 
     with col_text:
         if prompt := st.chat_input("Type a message...", key="text_input"):
