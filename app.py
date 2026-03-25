@@ -45,7 +45,6 @@ def upload_file_to_github(file_path, content, commit_message):
     }
     
     try:
-        # 获取现有文件
         response = requests.get(api_url, headers=headers)
         
         if response.status_code == 200:
@@ -58,7 +57,6 @@ def upload_file_to_github(file_path, content, commit_message):
         else:
             sha = None
         
-        # 上传文件
         data = {
             "message": commit_message,
             "content": base64.b64encode(content.encode("utf-8")).decode("utf-8"),
@@ -84,7 +82,6 @@ def save_to_github(file_path, content, commit_message):
     if GITHUB_ENABLED:
         return upload_file_to_github(file_path, content, commit_message)
     else:
-        # 本地保存
         try:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(content)
@@ -104,7 +101,6 @@ def load_teaching_principles():
         return """Core: Guide, Don't Answer
 NEVER give direct answers. Use guidance instead.
 Guidance: Analogy, examples, simple words, Socratic questions
-After response, generate quiz. Block non-quiz input until answered.
 Feedback: Show score, indicate correct/incorrect. DO NOT give answers unless requested.
 Log every quiz to feedback.md"""
 
@@ -120,7 +116,7 @@ if "quiz_answers" not in st.session_state:
 if "quiz_asked" not in st.session_state:
     st.session_state.quiz_asked = False
 
-# ---------- 保存 Quiz 到 feedback.md（GitHub 自动上传）----------
+# ---------- 保存 Quiz 到 feedback.md ----------
 def save_quiz_to_feedback(topic, questions, user_answers, feedback, score, total):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     entry = f"""
@@ -140,7 +136,6 @@ def save_quiz_to_feedback(topic, questions, user_answers, feedback, score, total
 
 ---
 """
-    # 获取现有内容
     existing_content = ""
     try:
         with open("feedback.md", "r", encoding="utf-8") as f:
@@ -149,11 +144,8 @@ def save_quiz_to_feedback(topic, questions, user_answers, feedback, score, total
         pass
     
     new_content = existing_content + entry if existing_content else "# Quiz Records\n\n" + entry
-    
-    # 保存到 GitHub（自动）
     save_to_github("feedback.md", new_content, f"Add quiz record - {timestamp}")
     
-    # 同时保存本地副本
     try:
         with open("feedback.md", "w", encoding="utf-8") as f:
             f.write(new_content)
@@ -178,7 +170,6 @@ def save_conversation_summary(summary):
         pass
     
     new_content = existing_content + entry if existing_content else "# Conversation Summaries\n\n" + entry
-    
     save_to_github("conversation_summary.txt", new_content, f"Add conversation summary - {timestamp}")
     
     try:
@@ -188,21 +179,15 @@ def save_conversation_summary(summary):
         logger.error(f"Failed to save local summary: {e}")
 
 
-# ========== 生成 Quiz ==========
-def generate_quiz(topic, guidance, full_page_content):
-    prompt = f"""You are a language learning assistant. Generate 3 COMPLETE quiz questions to test understanding.
+# ---------- 生成 Quiz ----------
+def generate_quiz(topic, full_page_content):
+    prompt = f"""Generate 3 DIFFERENT and COMPLETE quiz questions about: "{topic}".
 
-Topic: {topic}
-Current content: {full_page_content[:500] if full_page_content else "None"}
-
-CRITICAL RULES:
+IMPORTANT RULES:
 1. Each question must be COMPLETE and answerable on its own
-2. DO NOT create questions that reference missing context
-3. Use DIFFERENT question types:
-   - Type 1: Fill in the blank with a complete sentence
-   - Type 2: Multiple choice with complete options
-   - Type 3: Definition or explanation question
-4. NEVER include the answer in the question
+2. Each question must contain ALL necessary context
+3. Use different question types
+4. NEVER include the answer
 5. Return ONLY the 3 questions, numbered 1., 2., 3.
 
 EXAMPLES:
@@ -210,7 +195,7 @@ EXAMPLES:
 2. Choose the correct word: The hotel provided (accommodation / recommendation) for 50 guests.
 3. What does the word "abandon" mean?
 
-Generate 3 COMPLETE quiz questions:"""
+Generate 3 COMPLETE quiz questions for "{topic}":"""
     
     try:
         response = client.chat.completions.create(
@@ -221,24 +206,19 @@ Generate 3 COMPLETE quiz questions:"""
         )
         questions_text = response.choices[0].message.content.strip()
         
-        # 解析问题
         questions = []
         for line in questions_text.split('\n'):
             line = line.strip()
-            # 匹配编号行
             if re.match(r'^\d+\.', line):
-                # 提取问题内容
                 question = re.sub(r'^\d+\.\s*', '', line)
                 if question and len(question) > 10:
                     questions.append(question)
         
-        # 确保有3个完整问题
         if len(questions) < 3:
-            # 根据 topic 生成默认问题
             default_questions = [
-                f"What is the definition of {topic}? Please explain in your own words.",
-                f"Can you give an example of {topic} in a sentence?",
-                f"How would you use {topic} correctly?"
+                f"What is the definition of {topic}?",
+                f"Give one example sentence using {topic}.",
+                f"Explain {topic} in your own words."
             ]
             questions = (questions + default_questions)[:3]
         
@@ -248,8 +228,8 @@ Generate 3 COMPLETE quiz questions:"""
         logger.error(f"Quiz generation error: {e}")
         return [
             f"What is the meaning of {topic}?",
-            f"Give one example sentence using {topic}.",
-            f"How is {topic} used in context?"
+            f"Give an example of {topic}.",
+            f"Explain {topic} in your own words."
         ]
 
 
@@ -796,16 +776,45 @@ Translation:"""
         return word
 
 
-# ========== AI 回复函数（修复 UnboundLocalError）==========
+# ========== AI 回复函数（只在用户要求时才生成 Quiz）==========
 def get_ai_reply(user_input):
     logger.info(f"User input: {user_input[:100]}...")
     
+    # 检查用户是否要求 quiz
+    user_lower = user_input.lower().strip()
+    if "quiz" in user_lower or "test me" in user_lower or "问问我" in user_lower or "测试我" in user_lower:
+        full_page = get_current_page_full_content()
+        topic = "general"
+        if full_page:
+            sec_match = re.search(r"Section: (.+)", full_page)
+            if sec_match:
+                topic = sec_match.group(1)
+        
+        questions = generate_quiz(topic, full_page)
+        if questions:
+            st.session_state.quiz_active = True
+            st.session_state.current_quiz = {"questions": questions, "topic": topic}
+            st.session_state.quiz_answers = {}
+            st.session_state.quiz_asked = True
+            
+            quiz_text = "\n\n**Quiz:**\n" + "\n".join([f"{i+1}. {q}" for i, q in enumerate(questions)])
+            reply = f"I've created a quiz to test your understanding of {topic}:\n{quiz_text}\n\nPlease answer the questions above (1, 2, 3...)."
+            
+            st.session_state.messages.append({"role": "assistant", "content": reply})
+            st.session_state.conv_history.append({"role": "assistant", "content": reply})
+            
+            try:
+                audio_bytes, fmt = text_to_speech(reply)
+                if audio_bytes:
+                    st.session_state.pending_tts = (audio_bytes, fmt)
+            except Exception as e:
+                logger.error(f"TTS error: {e}")
+            return
+    
     # 如果 Quiz 处于活跃状态，处理 Quiz 答案
     if st.session_state.quiz_active and st.session_state.current_quiz:
-        # 获取当前 quiz 的问题列表 - 修复 UnboundLocalError
         questions = st.session_state.current_quiz.get("questions", [])
         
-        # 检查用户是否在请求答案
         if user_input.lower().strip() in ["give me answers", "show answers", "give answers", "show me the answers"]:
             reply = "I'd be happy to help! Let's go through the answers together. Which question would you like me to explain first?"
             st.session_state.quiz_active = False
@@ -824,21 +833,16 @@ def get_ai_reply(user_input):
                 logger.error(f"TTS error: {e}")
             return
         
-        # 收集答案
         st.session_state.quiz_answers[len(st.session_state.quiz_answers) + 1] = user_input
         
-        # 检查是否已经回答了所有问题
         if len(st.session_state.quiz_answers) >= len(questions):
-            # 评估答案
             user_answers = st.session_state.quiz_answers
             evaluation = evaluate_quiz(questions, user_answers)
             
-            # 解析分数
             score_match = re.search(r'Score:\s*(\d+)/(\d+)', evaluation)
             score = int(score_match.group(1)) if score_match else 0
             total = int(score_match.group(2)) if score_match else len(questions)
             
-            # 生成反馈列表
             feedback_list = []
             for i in range(len(questions)):
                 is_correct = False
@@ -847,7 +851,6 @@ def get_ai_reply(user_input):
                     is_correct = "Correct" in part or "correct" in part.lower()
                 feedback_list.append(is_correct)
             
-            # 保存到 feedback.md
             save_quiz_to_feedback(
                 st.session_state.current_quiz.get("topic", "General"),
                 questions,
@@ -859,7 +862,6 @@ def get_ai_reply(user_input):
             
             reply = f"{evaluation}\n\nGreat job! Let me know if you have any questions about the feedback."
             
-            # 重置 quiz 状态
             st.session_state.quiz_active = False
             st.session_state.current_quiz = None
             st.session_state.quiz_answers = {}
@@ -876,7 +878,6 @@ def get_ai_reply(user_input):
                 logger.error(f"TTS error: {e}")
             return
         else:
-            # 还有更多问题
             reply = f"Please answer question {len(st.session_state.quiz_answers) + 1}: {questions[len(st.session_state.quiz_answers)]}"
             st.session_state.messages.append({"role": "assistant", "content": reply})
             st.session_state.conv_history.append({"role": "assistant", "content": reply})
@@ -927,27 +928,6 @@ def get_ai_reply(user_input):
         logger.error(f"AI reply error: {e}")
         reply = f"[Error: {e}]"
 
-    # 生成 Quiz（如果需要）
-    if not st.session_state.quiz_active and not st.session_state.quiz_asked:
-        # 获取 topic
-        topic = "general"
-        if full_page:
-            sec_match = re.search(r"Section: (.+)", full_page)
-            if sec_match:
-                topic = sec_match.group(1)
-        
-        # 生成 quiz
-        questions = generate_quiz(topic, reply, full_page)
-        if questions:
-            st.session_state.quiz_active = True
-            st.session_state.current_quiz = {"questions": questions, "topic": topic, "guidance": reply}
-            st.session_state.quiz_answers = {}
-            st.session_state.quiz_asked = True
-            
-            # 添加 quiz 到回复
-            quiz_text = "\n\n**Quiz:**\n" + "\n".join(questions)
-            reply = reply + quiz_text + "\n\nPlease answer the questions above."
-
     st.session_state.messages.append({"role": "assistant", "content": reply})
     st.session_state.conv_history.append({"role": "assistant", "content": reply})
 
@@ -990,7 +970,6 @@ Summary:"""
         else:
             st.session_state.conversation_summary = new_summary
 
-        # 保存到 GitHub（自动）
         save_conversation_summary(st.session_state.conversation_summary)
 
         st.session_state.conv_history = []
