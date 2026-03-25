@@ -19,7 +19,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler("logs/app.log", encoding='utf-8'),
-        logging.StreamHandler()  # 同时输出到控制台
+        logging.StreamHandler()
     ]
 )
 logger = logging.getLogger(__name__)
@@ -49,7 +49,7 @@ st.set_page_config(
 
 # ---------- 初始化语言状态 ----------
 if "language" not in st.session_state:
-    st.session_state.language = "Chinese"  # 默认中文
+    st.session_state.language = "Chinese"
 
 # ---------- 加载所有 Level 数据（根据语言） ----------
 @st.cache_data
@@ -72,16 +72,12 @@ levels_data = load_level_data(st.session_state.language)
 @st.cache_data
 def load_nemt_cet_data():
     nemt_cet_data = {}
-    
-    # 定义需要加载的文件
     files_to_load = ["TEM-8.json", "NEMT.json", "CET-46.json"]
     
     for filename in files_to_load:
         try:
             with open(filename, "r", encoding="utf-8") as f:
                 nemt_cet_data[filename.replace('.json', '')] = json.load(f)
-                # 移除加载成功提示
-                # st.success(f"load......")
                 logger.info(f"Successfully loaded {filename}")
         except FileNotFoundError:
             logger.warning(f"{filename} not found")
@@ -92,12 +88,11 @@ def load_nemt_cet_data():
     
     return nemt_cet_data
 
-# 加载数据但不显示 spinner
 nemt_cet_data = load_nemt_cet_data()
 
-# 添加一个状态来跟踪当前是否在 NEMT & CET 界面
+# 状态管理
 if "current_mode" not in st.session_state:
-    st.session_state.current_mode = "textbook"  # "textbook" or "nemt_cet"
+    st.session_state.current_mode = "textbook"
 if "selected_nemt_cet" not in st.session_state:
     st.session_state.selected_nemt_cet = None
 if "nemt_cet_path" not in st.session_state:
@@ -119,7 +114,7 @@ def load_kokoro():
     except Exception:
         return None
 
-# ---------- 语音转文字（Whisper）----------
+# ---------- 语音转文字 ----------
 def transcribe_audio(audio_bytes):
     try:
         transcription = client.audio.transcriptions.create(
@@ -151,7 +146,6 @@ def text_to_speech(text):
         except Exception as e:
             logger.error(f"Kokoro TTS error: {e}")
             pass
-    # Fallback: Groq Orpheus
     try:
         response = client.audio.speech.create(
             model="canopylabs/orpheus-v1-english",
@@ -185,7 +179,7 @@ if "chat_open" not in st.session_state:
 if "last_audio_id" not in st.session_state:
     st.session_state.last_audio_id = None
 if "pending_tts" not in st.session_state:
-    st.session_state.pending_tts = None  # (bytes, fmt)
+    st.session_state.pending_tts = None
 
 # ========== 对话总结相关状态 ==========
 if "conversation_summary" not in st.session_state:
@@ -222,17 +216,22 @@ def get_current_page_full_content():
             node = node.get(key, {})
             if not node:
                 return None
+        # 获取实际内容节点
+        content_node = node
+        if isinstance(content_node, dict):
+            while len(content_node) == 1 and isinstance(list(content_node.values())[0], dict):
+                content_node = list(content_node.values())[0]
         parts = []
         location = " > ".join(st.session_state.nemt_cet_path)
         parts.append(f"The user is currently viewing: {location}")
-        if "name" in node:
-            parts.append(f"Section: {node['name']}")
-        if "notes" in node and node["notes"]:
-            parts.append(f"Notes: {node['notes']}")
-        if "examples" in node and node["examples"]:
-            parts.append("Example sentences:\n" + "\n".join(f"  - {e}" for e in node["examples"]))
-        if "words" in node and node["words"]:
-            parts.append("Words:\n" + "\n".join(f"  - {w}" for w in node["words"]))
+        if "name" in content_node:
+            parts.append(f"Section: {content_node['name']}")
+        if "notes" in content_node and content_node["notes"]:
+            parts.append(f"Notes: {content_node['notes']}")
+        if "examples" in content_node and content_node["examples"]:
+            parts.append("Example sentences:\n" + "\n".join(f"  - {e}" for e in content_node["examples"]))
+        if "words" in content_node and content_node["words"]:
+            parts.append("Words:\n" + "\n".join(f"  - {w}" for w in content_node["words"]))
         return "\n".join(parts)
     else:
         if not st.session_state.level or not st.session_state.path:
@@ -258,55 +257,26 @@ def get_current_page_full_content():
 
 # ========== 全局搜索函数 ==========
 def search_in_node(node, path_list, level_num, keyword):
-    """递归搜索节点，返回匹配项列表"""
     matches = []
     keyword_lower = keyword.lower()
     
-    # 搜索 name
     if "name" in node and keyword_lower in node["name"].lower():
-        matches.append({
-            "level": level_num,
-            "path": path_list,
-            "type": "Section",
-            "content": node["name"]
-        })
+        matches.append({"level": level_num, "path": path_list, "type": "Section", "content": node["name"]})
     
-    # 搜索 notes
     if "notes" in node and keyword_lower in node["notes"].lower():
-        # 截取前后文
         content = node["notes"][:200] + "..." if len(node["notes"]) > 200 else node["notes"]
-        matches.append({
-            "level": level_num,
-            "path": path_list,
-            "type": "Note",
-            "content": content
-        })
+        matches.append({"level": level_num, "path": path_list, "type": "Note", "content": content})
     
-    # 搜索 examples
     if "examples" in node:
         for idx, ex in enumerate(node["examples"]):
             if keyword_lower in ex.lower():
-                matches.append({
-                    "level": level_num,
-                    "path": path_list,
-                    "type": "Example",
-                    "content": ex,
-                    "index": idx
-                })
+                matches.append({"level": level_num, "path": path_list, "type": "Example", "content": ex, "index": idx})
     
-    # 搜索 vocabulary
     if "vocabulary" in node:
         for idx, item in enumerate(node["vocabulary"]):
             if keyword_lower in item.lower():
-                matches.append({
-                    "level": level_num,
-                    "path": path_list,
-                    "type": "Vocabulary",
-                    "content": item,
-                    "index": idx
-                })
+                matches.append({"level": level_num, "path": path_list, "type": "Vocabulary", "content": item, "index": idx})
     
-    # 递归搜索子节点
     for key, value in node.items():
         if isinstance(value, dict) and key not in ("name", "notes", "examples", "vocabulary", "words"):
             matches.extend(search_in_node(value, path_list + [key], level_num, keyword))
@@ -314,7 +284,6 @@ def search_in_node(node, path_list, level_num, keyword):
     return matches
 
 def global_search(keyword):
-    """全局搜索所有级别"""
     if not keyword.strip():
         return []
     results = []
@@ -322,8 +291,6 @@ def global_search(keyword):
         level_key = f"Level {level_num}"
         if level_key in levels_data:
             root_node = levels_data[level_key]
-            # 根节点可能是一个包含 LEVEL_I, LEVEL_II 等键的字典
-            # 遍历顶层所有键（这些键就是路径的起始）
             for root_key, root_value in root_node.items():
                 if isinstance(root_value, dict):
                     results.extend(search_in_node(root_value, [root_key], level_num, keyword))
@@ -333,18 +300,14 @@ def global_search(keyword):
 def auto_generate_reference(level, full_page_content, path_string, mode="textbook"):
     topic = ""
     
-    # 根据模式获取 topic
     if mode == "nemt_cet":
-        # 从 path_string 获取 topic（取最后一级目录名）
         if path_string:
             parts = path_string.split(" > ")
             topic = parts[-1] if parts else "English exam vocabulary"
         else:
             topic = "English exam vocabulary"
     else:
-        # textbook 模式：从 Section 或 path 获取
         if "Section:" in full_page_content:
-            import re
             match = re.search(r"Section: (.+)", full_page_content)
             if match:
                 topic = match.group(1)
@@ -358,9 +321,7 @@ def auto_generate_reference(level, full_page_content, path_string, mode="textboo
         if notes_match:
             notes = notes_match.group(1).strip()[:200]
 
-    # 根据模式选择不同的提示
     if mode == "nemt_cet":
-        # NEMT & CET 模式的提示 - 和 English 模式格式一样
         prompt = f"""You are an English learning assistant. The user is studying: "{topic}".
 
 Topic summary: {notes if notes else "English exam vocabulary and usage"}
@@ -373,21 +334,21 @@ Your task:
 - No emojis!
 
 Use these rules to generate links:
-- YouTube: https://www.youtube.com/results?search_query=advanced english+key_word
-- Quizlet: https://quizlet.com/search?query=advanced english+key_words+vocabulary
-- StackExchange: https://english.stackexchange.com/search?q=only1_key_word
+- YouTube: https://www.youtube.com/results?search_query={topic.replace(' ', '+')}+english+learning
+- Quizlet: https://quizlet.com/search?query={topic}+vocabulary
+- Cambridge Dictionary: https://dictionary.cambridge.org/dictionary/english/{topic.split()[-1] if topic else 'vocabulary'}
 
 Example format:
 【Recommended Resources】
 
 - YouTube: Explanation video  
-  [Watch](https://www.youtube.com/results?search_query=english+grammar+english+learning)
+  [Watch](https://www.youtube.com/results?search_query={topic.replace(' ', '+')}+english+learning)
 
 - Quizlet: Flashcards for practice  
-  [Practice](https://quizlet.com/search?query=english+grammar+english+vocabulary)
+  [Practice](https://quizlet.com/search?query={topic}+vocabulary)
 
-- English StackExchange: Community Q&A discussion  
-  [Explore](https://english.stackexchange.com/search?q=english+grammar)
+- Cambridge Dictionary: Word definition and examples  
+  [Explore](https://dictionary.cambridge.org/dictionary/english/{topic.split()[-1] if topic else 'vocabulary'})
 
 Now generate for: {topic}
 """
@@ -404,25 +365,25 @@ Your task:
 - No emojis!
 
 Use these rules to generate links:
-- YouTube: https://www.youtube.com/results?search_query=关键词+in+chinese
-- Quizlet: https://quizlet.com/search?query=关键词(中文)+chinese
-- StackExchange: https://chinese.stackexchange.com/search?q=关键词(only 1 main keyword)
+- YouTube: https://www.youtube.com/results?search_query={topic.replace(' ', '+')}+in+chinese
+- Quizlet: https://quizlet.com/search?query={topic}+chinese
+- StackExchange: https://chinese.stackexchange.com/search?q={topic.split()[-1] if topic else 'chinese'}
 
 Example format:
 【Recommended Resources】
 
 - YouTube: Beginner explanation video  
-  [Watch](https://www.youtube.com/results?search_query=chinese+grammar+chinese)
+  [Watch](https://www.youtube.com/results?search_query={topic.replace(' ', '+')}+in+chinese)
 
 - Quizlet: Flashcards for practice  
-  [Practice](https://quizlet.com/search?query=chinese+grammar+chinese)
+  [Practice](https://quizlet.com/search?query={topic}+chinese)
 
 - Chinese StackExchange: Community Q&A discussion  
-  [Explore](https://chinese.stackexchange.com/search?q=chinese+grammar)
+  [Explore](https://chinese.stackexchange.com/search?q={topic.split()[-1] if topic else 'chinese'})
 
 Now generate for: {topic}
 """
-    else:  # English textbook mode
+    else:
         prompt = f"""You are an English learning assistant. The user is at Level {level} studying: "{topic}".
 
 Topic summary: {notes if notes else "Basic English learning topic"}
@@ -435,21 +396,21 @@ Your task:
 - No emojis!
 
 Use these rules to generate links:
-- YouTube: https://www.youtube.com/results?search_query=advanced english+key_word
-- Quizlet: https://quizlet.com/search?query=advanced english+key_words+vocabulary
-- StackExchange: https://english.stackexchange.com/search?q=only1_key_word
+- YouTube: https://www.youtube.com/results?search_query={topic.replace(' ', '+')}+english+learning
+- Quizlet: https://quizlet.com/search?query={topic}+vocabulary
+- StackExchange: https://english.stackexchange.com/search?q={topic.split()[-1] if topic else 'english'}
 
 Example format:
 【Recommended Resources】
 
 - YouTube: Beginner explanation video  
-  [Watch](https://www.youtube.com/results?search_query=english+grammar+english+learning)
+  [Watch](https://www.youtube.com/results?search_query={topic.replace(' ', '+')}+english+learning)
 
 - Quizlet: Flashcards for practice  
-  [Practice](https://quizlet.com/search?query=english+grammar+english+vocabulary)
+  [Practice](https://quizlet.com/search?query={topic}+vocabulary)
 
 - English StackExchange: Community Q&A discussion  
-  [Explore](https://english.stackexchange.com/search?q=english+grammar)
+  [Explore](https://english.stackexchange.com/search?q={topic.split()[-1] if topic else 'english'})
 
 Now generate for: {topic}
 """
@@ -477,7 +438,6 @@ Now generate for: {topic}
             return None
     return None
 
-
 # ========== 自动推送参考消息 ==========
 def auto_push_reference(level, path_string, mode="textbook"):
     if st.session_state.auto_ref_pushed:
@@ -491,11 +451,18 @@ def auto_push_reference(level, path_string, mode="textbook"):
 
 # ========== 使用语言模型翻译单词 ==========
 def translate_word(word, target_lang="Chinese"):
-    """使用Groq语言模型翻译单词"""
     try:
         logger.info(f"Translating word: {word}")
-        prompt = f"""Translate the following English word to {target_lang}. Only return the translation, nothing else.
-Word: {word}
+        clean_word = re.sub(r'[^a-zA-Z\s-]', '', word).strip()
+        clean_word = clean_word.split()[0] if clean_word else word
+        clean_word = clean_word.lower()
+        
+        if not clean_word or len(clean_word) < 2:
+            logger.warning(f"Invalid word after cleaning: {word}, returning original")
+            return word
+        
+        prompt = f"""Translate the following English word to {target_lang}. Only return the translation word, nothing else.
+Word: {clean_word}
 Translation:"""
         
         response = client.chat.completions.create(
@@ -505,43 +472,37 @@ Translation:"""
             max_tokens=50,
         )
         translation = response.choices[0].message.content.strip()
-        logger.info(f"Translation for '{word}': '{translation}'")
+        
+        if not translation:
+            logger.warning(f"Empty translation for '{clean_word}', returning original")
+            return clean_word
+        
+        logger.info(f"Translation for '{clean_word}': '{translation}'")
         return translation
     except Exception as e:
         logger.error(f"Translation error for '{word}': {e}")
-        return f"(Translation unavailable)"
+        return word
 
-# ========== AI 回复函数（修改版：每次调用都注入当前语言和页面内容） ==========
+# ========== AI 回复函数 ==========
 def get_ai_reply(user_input):
     logger.info(f"User input: {user_input[:100]}...")
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.session_state.user_msg_count += 1
     st.session_state.conv_history.append({"role": "user", "content": user_input})
 
-    # 获取当前页面内容
     full_page = get_current_page_full_content()
-
-    # 构建上下文：复制对话历史，并动态插入当前语言、页面内容、对话总结
     context_msgs = st.session_state.messages.copy()
 
-    # 1. 插入当前语言信息（紧跟在原始系统提示之后）
     if st.session_state.language:
         lang_msg = {"role": "system", "content": f"The user is currently learning {st.session_state.language}."}
         context_msgs.insert(1, lang_msg)
 
-    # 2. 插入当前页面内容（如果有）
     if full_page:
-        # 根据语言信息是否插入，决定插入位置
         insert_idx = 2 if st.session_state.language else 1
         context_msgs.insert(insert_idx, {"role": "system", "content": full_page})
 
-    # 3. 插入对话总结（如果有）
     if st.session_state.conversation_summary:
-        summary_msg = {
-            "role": "system",
-            "content": f"[Previous conversation summary]\n{st.session_state.conversation_summary}"
-        }
-        # 计算插入位置：在语言和页面内容之后
+        summary_msg = {"role": "system", "content": f"[Previous conversation summary]\n{st.session_state.conversation_summary}"}
         base = 1
         if st.session_state.language:
             base += 1
@@ -565,7 +526,6 @@ def get_ai_reply(user_input):
     st.session_state.messages.append({"role": "assistant", "content": reply})
     st.session_state.conv_history.append({"role": "assistant", "content": reply})
 
-    # TTS生成（错误不会传播到页面）
     try:
         audio_bytes, fmt = text_to_speech(reply)
         if audio_bytes:
@@ -573,7 +533,6 @@ def get_ai_reply(user_input):
     except Exception as e:
         logger.error(f"TTS error in get_ai_reply: {e}")
 
-    # 每隔5轮用户消息生成总结
     if st.session_state.user_msg_count % 5 == 0 and st.session_state.user_msg_count > 0:
         generate_and_save_summary()
 
@@ -636,7 +595,6 @@ st.markdown(f"""
         background-blend-mode: overlay !important;
     }}
 
-    /* 隐藏Streamlit顶部黑框和工具栏 */
     header[data-testid="stHeader"] {{
         display: none !important;
     }}
@@ -653,7 +611,6 @@ st.markdown(f"""
         display: none !important;
     }}
 
-    /* 隐藏弹窗和对话框 */
     div[role="dialog"] {{
         display: none !important;
     }}
@@ -664,7 +621,6 @@ st.markdown(f"""
         display: none !important;
     }}
 
-    /* 隐藏所有覆盖层和遮罩 */
     div[data-baseweb="drawer"] {{
         display: none !important;
     }}
@@ -685,20 +641,17 @@ st.markdown(f"""
         background: transparent !important;
     }}
 
-    /* 聊天输入框背景透明 */
     div[data-testid="stChatInput"] textarea,
     div[data-testid="stChatInput"] > div {{
         background-color: transparent !important;
         background: transparent !important;
     }}
 
-    /* 聊天消息容器背景透明 */
     div[data-testid="stChatMessage"] {{
         background-color: rgba(240, 240, 240, 0.4) !important;
         backdrop-filter: blur(5px);
     }}
 
-    /* 输入框区域整体背景透明 */
     .stChatInputContainer,
     div[data-testid="stChatInputContainer"] {{
         background-color: transparent !important;
@@ -714,13 +667,14 @@ st.markdown(f"""
         top: 20px;
         right: 20px;
         z-index: 1000;
-        background: rgba(255, 255, 255, 0.95); 
-        padding: 10px 20px;
+        background: white;
+        padding: 8px 16px;
         border-radius: 25px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         display: flex;
         align-items: center;
         gap: 10px;
+        border: 1px solid #e0e0e0;
     }}
 
     .language-selector label {{
@@ -728,7 +682,7 @@ st.markdown(f"""
         font-weight: 700;
         color: #000000 !important;
         margin: 0;
-        font-size: 16px;
+        font-size: 14px;
     }}
 
     .language-selector div[data-baseweb="select"] {{
@@ -739,8 +693,8 @@ st.markdown(f"""
         color: #000000 !important;
         border: 1px solid #ccc !important;
         font-family: 'Manrope', sans-serif !important;
-        font-size: 16px !important;
-        font-weight: 600 !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
     }}
     .language-selector div[data-baseweb="popover"] {{
         z-index: 1001 !important;
@@ -760,7 +714,6 @@ st.markdown(f"""
         background-color: #f0f0f0 !important;
     }}
 
-    /* 主标题 */
     h1 {{
         text-align: left;
         color: #000000;
@@ -780,7 +733,6 @@ st.markdown(f"""
         }}
     }}
 
-    /* Level按钮 */
     button[kind="primary"],
     .stButton button {{
         background-color: rgba(255,255,255,0.4) !important;
@@ -805,7 +757,6 @@ st.markdown(f"""
         box-shadow: 0 6px 12px rgba(0,0,0,0.3) !important;
     }}
 
-    /* 面包屑导航 */
     .breadcrumb {{
         background-color: rgba(255,255,255,0);
         padding: 12px 20px;
@@ -819,7 +770,6 @@ st.markdown(f"""
         letter-spacing: normal;
     }}
 
-    /* Back按钮 */
     .back-button {{
         margin-bottom: 20px;
     }}
@@ -834,7 +784,6 @@ st.markdown(f"""
         padding: 10px 24px !important;
     }}
 
-    /* 容器样式 */
     div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] {{
         background-color: rgba(255,255,255,0.5);
         border-radius: 12px;
@@ -844,7 +793,6 @@ st.markdown(f"""
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }}
 
-    /* 标题 */
     h2 {{
         color: #000000;
         font-family: 'Manrope', sans-serif;
@@ -864,7 +812,6 @@ st.markdown(f"""
         letter-spacing: normal;
     }}
 
-    /* 确保所有文本都是黑色并使用Manrope字体 */
     p, div, span {{
         color: #000000 !important;
         font-family: 'Manrope', sans-serif !important;
@@ -889,7 +836,6 @@ st.markdown(f"""
         text-decoration: underline !important;
     }}
 
-    /* 聊天消息区域 */
     .chat-messages-area {{
         flex: 1;
         overflow-y: auto;
@@ -912,7 +858,6 @@ st.markdown(f"""
         font-weight: 700;
     }}
 
-    /* 输入区域 */
     .stChatInput {{
         border-radius: 15px !important;
         border: 1px solid rgba(0,0,0,0.3) !important;
@@ -920,7 +865,7 @@ st.markdown(f"""
         font-family: 'Manrope', sans-serif !important;
         font-size: 16px !important;
         font-weight: 400 !important;
-        color:  #000000 !important;
+        color: #000000 !important;
     }}
     .stChatInput > div {{
         background: transparent !important;
@@ -939,7 +884,6 @@ st.markdown(f"""
         border: none !important;
     }}
 
-    /* Clear按钮 */
     button[key="clear_chat"] {{
         background-color: rgba(255,255,255,0.4) !important;
         border: 1px solid rgba(100,100,100,0.3) !important;
@@ -952,7 +896,6 @@ st.markdown(f"""
         box-shadow: none !important;
     }}
 
-    /* 完全隐藏所有音频播放器 */
     .stAudio {{
         display: none !important;
     }}
@@ -971,7 +914,6 @@ st.markdown(f"""
         border-radius: 8px !important;
     }}
 
-    /* 隐藏所有tooltip和弹窗元素（除了语言选择器） */
     div[data-baseweb="tooltip"]:not(.language-selector *) {{
         display: none !important;
     }}
@@ -982,12 +924,10 @@ st.markdown(f"""
         display: none !important;
     }}
 
-    /* 为搜索框预留空间，避免被固定语言选择器覆盖 */
     div[data-testid="stVerticalBlock"] > div:first-child {{
         margin-top: 80px;
     }}
     
-    /* NEMT & CET 单词卡片样式 */
     .word-card {{
         background-color: rgba(255,255,255,0.9);
         border-radius: 12px;
@@ -1009,7 +949,6 @@ language_col1, language_col2 = st.columns([1, 2])
 with language_col1:
     st.markdown('<label>Select Mode:</label>', unsafe_allow_html=True)
 with language_col2:
-    # 三个选项：Chinese、English、NEMT & CET
     mode_options = ["Chinese", "English", "NEMT & CET"]
     current_index = 0
     if st.session_state.language == "English":
@@ -1027,16 +966,13 @@ with language_col2:
     if new_language != st.session_state.language:
         st.session_state.language = new_language
         
-        # 根据选择的模式设置不同的界面
         if new_language == "NEMT & CET":
-            # 切换到 NEMT & CET 模式
             st.session_state.current_mode = "nemt_cet"
             st.session_state.level = None
             st.session_state.path = []
             st.session_state.selected_nemt_cet = None
             st.session_state.nemt_cet_path = []
         else:
-            # 切换到教材模式
             st.session_state.current_mode = "textbook"
             levels_data = load_level_data(st.session_state.language)
             st.session_state.level = None
@@ -1054,14 +990,13 @@ st.markdown('</div>', unsafe_allow_html=True)
 with st.container():
     search_col1, search_col2 = st.columns([5, 1])
     with search_col1:
-        search_input = st.text_input("", value=st.session_state.search_keyword, placeholder="Type to search...", key="search_box")
+        search_input = st.text_input("Search", value=st.session_state.search_keyword, placeholder="Type to search...", key="search_box", label_visibility="collapsed")
     with search_col2:
         if st.button("Clear", key="clear_search"):
             st.session_state.search_keyword = ""
             st.session_state.search_results = []
             st.rerun()
     
-    # 如果搜索词变化，重新搜索
     if search_input != st.session_state.search_keyword:
         st.session_state.search_keyword = search_input
         if search_input.strip():
@@ -1070,13 +1005,10 @@ with st.container():
             st.session_state.search_results = []
         st.rerun()
     
-    # 显示搜索结果
     if st.session_state.search_keyword and st.session_state.search_results:
         st.markdown(f"### Search Results for '{st.session_state.search_keyword}'")
         for res in st.session_state.search_results:
-            # 构建面包屑路径
             path_str = " > ".join(res["path"])
-            # 显示类型和内容
             content_preview = res["content"].replace("\n", " ")[:150]
             with st.container(border=True):
                 cols = st.columns([1, 5])
@@ -1084,7 +1016,6 @@ with st.container():
                     st.markdown(f"**{res['type']}**")
                 with cols[1]:
                     st.markdown(f"{content_preview}")
-                # 跳转按钮
                 if st.button(f"Go to {path_str}", key=f"search_{res['level']}_{'_'.join(res['path'])}_{res['type']}_{res.get('index', '')}"):
                     st.session_state.current_mode = "textbook"
                     st.session_state.level = res["level"]
@@ -1101,7 +1032,6 @@ st.title("TEXTBOOK ASSISTANT")
 
 # 根据语言选择器显示不同的主界面
 if st.session_state.language == "NEMT & CET":
-    # 显示 NEMT & CET 的三个考试按钮
     col1, col2, col3 = st.columns(3)
     with col1:
         if st.button("TEM-8", use_container_width=True):
@@ -1134,7 +1064,6 @@ if st.session_state.language == "NEMT & CET":
             st.session_state.current_recommendations = None
             st.rerun()
 else:
-    # 显示教材的 Level 按钮
     col1, col2, col3 = st.columns(3)
     with col1:
         if st.button("Level 1", use_container_width=True):
@@ -1161,7 +1090,7 @@ else:
             st.session_state.current_recommendations = None
             st.rerun()
 
-# 如果当前在 textbook 模式且未选择级别，显示原有的 level 按钮
+# 如果当前在 textbook 模式
 if st.session_state.current_mode == "textbook":
     if st.session_state.level:
         data = levels_data[f"Level {st.session_state.level}"]
@@ -1184,16 +1113,12 @@ if st.session_state.current_mode == "textbook":
                 st.rerun()
             st.markdown("</div>", unsafe_allow_html=True)
 
-        # ========== display_node 函数 ==========
         def display_node(node):
-            # 获取当前语言和另一语言
             current_lang = st.session_state.language
             other_lang = "English" if current_lang == "Chinese" else "Chinese"
 
-            # 加载另一语言的数据
             other_levels_data = load_level_data(other_lang)
             other_node = other_levels_data[f"Level {st.session_state.level}"]
-            # 根据当前路径定位另一语言的节点
             for key in st.session_state.path:
                 other_node = other_node.get(key, {})
                 if not other_node:
@@ -1203,55 +1128,42 @@ if st.session_state.current_mode == "textbook":
             if "name" in node:
                 st.markdown(f"## {node['name']}")
 
-            # 笔记部分（不翻转）
             if "notes" in node and node["notes"]:
                 with st.container(border=True):
                     st.markdown(node["notes"])
 
-            # 例句部分（可翻转）
             if "examples" in node and node["examples"]:
                 st.markdown("### Example Sentences")
                 cols = st.columns(3)
                 for idx, ex in enumerate(node["examples"]):
                     with cols[idx % 3]:
-                        # 唯一键
                         key = f"example_{idx}"
-                        # 获取反面内容（如果另一语言节点存在且有对应索引）
                         other_ex = None
                         if other_node and "examples" in other_node and len(other_node["examples"]) > idx:
                             other_ex = other_node["examples"][idx]
 
-                        # 当前翻转状态
                         flipped = st.session_state.get("flip_states", {}).get(key, False)
 
-                        # 根据翻转状态显示内容
                         if flipped:
-                            # 显示反面
                             display_content = other_ex if other_ex else "(Translation not available)"
                         else:
-                            # 显示正面
                             display_content = ex
 
-                        # 卡片按钮
                         if st.button(display_content, key=f"btn_{key}", use_container_width=True):
-                            # 切换状态
                             if "flip_states" not in st.session_state:
                                 st.session_state.flip_states = {}
                             st.session_state.flip_states[key] = not flipped
                             st.rerun()
 
-            # 词汇部分（可翻转）
             if "vocabulary" in node and node["vocabulary"]:
                 st.markdown("### Vocabulary")
                 cols = st.columns(3)
                 for idx, item in enumerate(node["vocabulary"]):
                     with cols[idx % 3]:
-                        # 正面：解析当前语言的词汇（可能带拼音/音标）
                         parts = item.rsplit(" ", 1)
                         word = parts[0]
                         pinyin = parts[1] if len(parts) > 1 else ""
 
-                        # 反面：从另一语言获取对应词汇
                         other_item = None
                         if other_node and "vocabulary" in other_node and len(other_node["vocabulary"]) > idx:
                             other_item = other_node["vocabulary"][idx]
@@ -1259,30 +1171,24 @@ if st.session_state.current_mode == "textbook":
                         other_word = other_parts[0]
                         other_pron = other_parts[1] if len(other_parts) > 1 else ""
 
-                        # 唯一键
                         key = f"vocab_{idx}"
                         flipped = st.session_state.get("flip_states", {}).get(key, False)
 
-                        # 构建显示内容
                         if flipped:
-                            # 反面：显示另一语言的词汇 + 发音（如果有）
                             display_content = other_word
                             if other_pron:
                                 display_content += f"\n{other_pron}"
                         else:
-                            # 正面：显示当前语言词汇 + 拼音
                             display_content = word
                             if pinyin:
                                 display_content += f"\n{pinyin}"
 
-                        # 卡片按钮
                         if st.button(display_content, key=f"btn_{key}", use_container_width=True):
                             if "flip_states" not in st.session_state:
                                 st.session_state.flip_states = {}
                             st.session_state.flip_states[key] = not flipped
                             st.rerun()
 
-            # 子目录导航（保持原有逻辑）
             if not any(key in node for key in ["notes", "examples", "vocabulary"]):
                 sub_keys = [k for k in node.keys() if k not in ("name", "notes", "examples", "vocabulary")]
                 if not sub_keys:
@@ -1299,13 +1205,11 @@ if st.session_state.current_mode == "textbook":
                                 st.session_state.path.append(key)
                                 st.session_state.auto_ref_pushed = False
                                 st.session_state.current_recommendations = None
-                                # 路径改变时清空翻转状态（可选，提升体验）
                                 st.session_state.flip_states = {}
                                 st.rerun()
 
         display_node(current_node)
 
-        # 显示推荐资源
         if st.session_state.current_recommendations:
             st.markdown("---")
             with st.container():
@@ -1318,38 +1222,30 @@ if st.session_state.current_mode == "textbook":
 elif st.session_state.current_mode == "nemt_cet" and st.session_state.selected_nemt_cet:
     data = nemt_cet_data.get(st.session_state.selected_nemt_cet, {})
     
-    # 如果 data 只有一个键且该键就是考试名称本身，则取它的值（处理嵌套结构）
     if len(data) == 1 and st.session_state.selected_nemt_cet in data:
         data = data[st.session_state.selected_nemt_cet]
     
-    # 如果没有路径，显示根目录内容（所有目录名称）
     if not st.session_state.nemt_cet_path:
-        # 显示当前选择的考试名称
         st.markdown(f"## {st.session_state.selected_nemt_cet}")
         
-        # 获取所有目录（按数字排序后取目录名称）
         sub_keys = sorted([k for k in data.keys() if isinstance(data[k], dict) and str(k).isdigit()], key=lambda x: int(x))
         
         if sub_keys:
             st.markdown("### Categories")
-            # 使用网格布局显示目录按钮（每行2个）
             cols = st.columns(2)
             for i, key in enumerate(sub_keys):
                 with cols[i % 2]:
-                    # 获取该编号下的目录名称
                     inner_dict = data[key]
                     if inner_dict and isinstance(inner_dict, dict):
                         dir_name = list(inner_dict.keys())[0] if inner_dict else f"Section {key}"
                     else:
                         dir_name = f"Section {key}"
-                    # 显示目录名称按钮
                     if st.button(dir_name, key=f"nemt_dir_{key}", use_container_width=True):
                         st.session_state.nemt_cet_path.append(key)
                         st.rerun()
         else:
             st.info("No content available.")
     else:
-        # 导航到具体内容
         current_node = data
         for key in st.session_state.nemt_cet_path:
             current_node = current_node.get(key, {})
@@ -1357,23 +1253,17 @@ elif st.session_state.current_mode == "nemt_cet" and st.session_state.selected_n
                 st.error("Path error. Please go back.")
                 st.stop()
         
-        # 获取实际内容节点（去掉编号层，获取真正的目录内容）
         content_node = current_node
         if isinstance(content_node, dict):
-            # 当前节点可能是 {"0": {"目录名": {...}}} 结构
-            # 需要取到最内层的内容
             while len(content_node) == 1 and isinstance(list(content_node.values())[0], dict):
                 content_node = list(content_node.values())[0]
         
-        # 构建面包屑路径（显示目录名称）
         bread_parts = []
         temp_data = data
-        for idx, path_key in enumerate(st.session_state.nemt_cet_path):
+        for path_key in st.session_state.nemt_cet_path:
             temp_data = temp_data.get(path_key, {})
             if isinstance(temp_data, dict) and len(temp_data) > 0:
-                # 获取这个节点的目录名称（去掉数字编号层）
                 inner_data = temp_data
-                # 跳过数字编号层，获取实际目录名
                 while len(inner_data) == 1 and isinstance(list(inner_data.values())[0], dict):
                     inner_data = list(inner_data.values())[0]
                 if isinstance(inner_data, dict) and "name" in inner_data:
@@ -1386,7 +1276,6 @@ elif st.session_state.current_mode == "nemt_cet" and st.session_state.selected_n
         bread = " > ".join(bread_parts)
         st.markdown(f"<div class='breadcrumb' style='font-size: 18px;'>{bread}</div>", unsafe_allow_html=True)
         
-        # Back 按钮
         if len(st.session_state.nemt_cet_path) > 0:
             col_back, col_spacer = st.columns([1, 5])
             with col_back:
@@ -1395,22 +1284,16 @@ elif st.session_state.current_mode == "nemt_cet" and st.session_state.selected_n
                     st.rerun()
             st.markdown("<br>", unsafe_allow_html=True)
         
-        # ========== 显示内容（字体放大两倍）==========
-        
-        # 显示目录名称（大字体）
         if "name" in content_node:
             st.markdown(f"<h2 style='font-size: 48px; font-weight: 700; margin-bottom: 20px;'>{content_node['name']}</h2>", unsafe_allow_html=True)
         
-        # 显示 notes（如果有）- 大字体
         if "notes" in content_node and content_node["notes"]:
             with st.container(border=True):
                 st.markdown(f"<div style='font-size: 20px; line-height: 1.6; padding: 15px;'>{content_node['notes']}</div>", unsafe_allow_html=True)
         
-        # 显示 words（单词列表）- 使用 st.button 卡片，点击时翻译
         if "words" in content_node and content_node["words"]:
             st.markdown("<h3 style='font-size: 36px; font-weight: 600; margin-top: 30px; margin-bottom: 20px;'>Words</h3>", unsafe_allow_html=True)
             
-            # 将字符串按 " / " 分割成列表
             if isinstance(content_node["words"], str):
                 words_list = content_node["words"].split(" / ")
             elif isinstance(content_node["words"], list):
@@ -1418,31 +1301,22 @@ elif st.session_state.current_mode == "nemt_cet" and st.session_state.selected_n
             else:
                 words_list = []
             
-            # 初始化翻译缓存（按需缓存）
             if "translation_cache_nemt" not in st.session_state:
                 st.session_state.translation_cache_nemt = {}
             
-            # 目标语言
             target_lang = "Chinese"
-            
-            # 使用网格布局显示卡片（每行3个）
             cols = st.columns(3)
             
             for idx, word_item in enumerate(words_list):
-                if not word_item.strip():
+                if not word_item or not word_item.strip():
                     continue
                 
-                # 只取单词本身，去掉词性
                 word = word_item.strip().split(" ", 1)[0]
-                
-                # 卡片唯一键
                 card_key = f"nemt_word_card_{idx}"
                 flipped = st.session_state.get("flip_states", {}).get(card_key, False)
                 
-                # 卡片显示内容
                 with cols[idx % 3]:
                     if flipped:
-                        # 显示翻译 - 点击后才获取翻译
                         cache_key = f"{word}_{target_lang}"
                         if cache_key in st.session_state.translation_cache_nemt:
                             translation = st.session_state.translation_cache_nemt[cache_key]
@@ -1452,31 +1326,28 @@ elif st.session_state.current_mode == "nemt_cet" and st.session_state.selected_n
                                 st.session_state.translation_cache_nemt[cache_key] = translation
                         display_content = translation
                     else:
-                        # 显示原词
                         display_content = word
                     
-                    # 用 st.button 显示卡片 - 和 Level 界面完全一样
+                    if not display_content or display_content.strip() == "":
+                        display_content = word if not flipped else f"({word})"
+                    
                     if st.button(display_content, key=f"btn_{card_key}", use_container_width=True):
                         if "flip_states" not in st.session_state:
                             st.session_state.flip_states = {}
                         st.session_state.flip_states[card_key] = not flipped
                         st.rerun()
         
-        # 显示 examples（如果有）- 大字体
         if "examples" in content_node and content_node["examples"]:
             st.markdown("<h3 style='font-size: 36px; font-weight: 600; margin-top: 30px; margin-bottom: 15px;'>Example Sentences</h3>", unsafe_allow_html=True)
             for ex in content_node["examples"]:
                 st.markdown(f"<div style='font-size: 20px; padding: 8px 0;'>• {ex}</div>", unsafe_allow_html=True)
         
-        # 显示子目录（下一级的数字编号，但显示目录名称）
         sub_items = []
         for k, v in current_node.items():
             if isinstance(v, dict):
-                # 检查是否是数字编号的目录
                 if str(k).isdigit() or (isinstance(k, str) and k.replace(".", "").replace("-", "").isdigit()):
                     if len(v) > 0:
                         inner_v = v
-                        # 跳过可能的多层嵌套
                         while len(inner_v) == 1 and isinstance(list(inner_v.values())[0], dict):
                             inner_v = list(inner_v.values())[0]
                         if isinstance(inner_v, dict) and "name" in inner_v:
@@ -1494,40 +1365,29 @@ elif st.session_state.current_mode == "nemt_cet" and st.session_state.selected_n
                         st.session_state.nemt_cet_path.append(num_key)
                         st.rerun()
         
-        # 自动推送参考资源
-        if not st.session_state.auto_ref_pushed and st.session_state.nemt_cet_path:
-            # 构建当前路径字符串用于显示
-            current_path_parts = []
-            temp_data = data
-            for path_key in st.session_state.nemt_cet_path:
-                temp_data = temp_data.get(path_key, {})
-                if isinstance(temp_data, dict) and len(temp_data) > 0:
-                    inner_data = temp_data
-                    while len(inner_data) == 1 and isinstance(list(inner_data.values())[0], dict):
-                        inner_data = list(inner_data.values())[0]
-                    if isinstance(inner_data, dict) and "name" in inner_data:
-                        current_path_parts.append(inner_data["name"])
-                    elif len(inner_data) > 0:
-                        first_key = list(inner_data.keys())[0] if inner_data else ""
-                        if first_key:
-                            current_path_parts.append(first_key)
-            current_path_string = " > ".join(current_path_parts)
-            auto_push_reference(None, current_path_string, mode="nemt_cet")
+        # 独立生成推荐资源，不受用户消息影响
+        if not st.session_state.current_recommendations:
+            # 获取 topic 和 notes
+            topic = bread_parts[-1] if bread_parts else content_node.get("name", "English vocabulary")
+            notes = content_node.get("notes", "")[:200] if content_node.get("notes") else ""
+            
+            full_page_content = get_current_page_full_content()
+            ref_msg = auto_generate_reference(None, full_page_content or "", topic, mode="nemt_cet")
+            if ref_msg:
+                st.session_state.current_recommendations = ref_msg
         
-        # 显示推荐资源
+        # 显示推荐资源（始终在下方显示）
         if st.session_state.current_recommendations:
             st.markdown("---")
             with st.container():
                 st.markdown(st.session_state.current_recommendations, unsafe_allow_html=True)
 
-# ---------- 悬浮聊天窗（固定在右下角） ----------
-# 强制打开聊天面板（用户要求）
+# ---------- 悬浮聊天窗 ----------
 st.session_state.chat_open = True
 
 if st.session_state.chat_open:
     st.markdown('<div class="chat-panel">', unsafe_allow_html=True)
 
-    # 初始化音频上下文（绕过浏览器自动播放限制）
     st.markdown('''
     <script>
         if (!window.audioContextInitialized) {
@@ -1539,7 +1399,6 @@ if st.session_state.chat_open:
     </script>
     ''', unsafe_allow_html=True)
 
-    # 消息区域
     st.markdown('<div class="chat-messages-area" id="chat-messages">', unsafe_allow_html=True)
     for msg in st.session_state.messages:
         if msg["role"] == "user":
@@ -1548,7 +1407,6 @@ if st.session_state.chat_open:
             st.markdown(f'<div class="chat-message"><strong>AI:</strong> {msg["content"]}</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # 自动滚动到底部
     st.markdown('''
     <script>
         setTimeout(function() {
@@ -1560,17 +1418,14 @@ if st.session_state.chat_open:
     </script>
     ''', unsafe_allow_html=True)
 
-    # 播放TTS音频
     if st.session_state.pending_tts:
         audio_bytes, fmt = st.session_state.pending_tts
         st.audio(audio_bytes, format=fmt, autoplay=True)
         st.session_state.pending_tts = None
 
-    # 输入区域：三列布局（Clear按钮 + 语音按钮 + 文本输入）
     col_clear, col_voice, col_text = st.columns([1, 1, 6])
 
     with col_clear:
-        # Clear 按钮
         if st.button("Clear", key="clear_chat", use_container_width=True):
             st.session_state.messages = [m for m in st.session_state.messages if m["role"] == "system"]
             st.session_state.pending_tts = None
@@ -1584,7 +1439,6 @@ if st.session_state.chat_open:
             st.rerun()
 
     with col_voice:
-        # 语音输入按钮
         audio_input = st.audio_input("🎤", key="voice_input", label_visibility="collapsed")
         if audio_input is not None:
             audio_id = f"{audio_input.name}_{audio_input.size}"
@@ -1600,7 +1454,6 @@ if st.session_state.chat_open:
                         st.rerun()
 
     with col_text:
-        # 文本输入框
         if prompt := st.chat_input("Type a message...", key="text_input"):
             with st.spinner("Thinking..."):
                 get_ai_reply(prompt)
