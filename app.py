@@ -801,6 +801,40 @@ Translation:"""
         logger.error(f"Translation error for '{word}': {e}")
         return word
 
+# ========== 生成并保存对话总结 ==========
+def generate_and_save_summary():
+    if not st.session_state.conv_history:
+        return
+
+    conv_text = "\n".join([f"{m['role'].capitalize()}: {m['content']}" for m in st.session_state.conv_history])
+
+    summary_prompt = f"""The following is a conversation between a user and an AI Chinese learning assistant.
+Please provide a concise summary (2-3 sentences) covering the main topics discussed.
+
+Conversation:
+{conv_text}
+
+Summary:"""
+    try:
+        response = client.chat.completions.create(
+            model="openai/gpt-oss-20b",
+            messages=[{"role": "user", "content": summary_prompt}],
+            temperature=0.5,
+            max_tokens=200,
+        )
+        new_summary = response.choices[0].message.content.strip()
+
+        if st.session_state.conversation_summary:
+            st.session_state.conversation_summary += "\n\n" + new_summary
+        else:
+            st.session_state.conversation_summary = new_summary
+
+        save_conversation_summary(st.session_state.conversation_summary)
+
+        st.session_state.conv_history = []
+    except Exception as e:
+        logger.error(f"Failed to generate summary: {e}")
+        st.warning(f"Failed to generate summary: {e}")
 
 # ========== AI 回复函数 ==========
 def get_ai_reply(user_input):
