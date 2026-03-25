@@ -915,10 +915,12 @@ For each question:
 - If the answer is correct, confirm it briefly
 - If the answer is incorrect, DO NOT give the correct answer directly. Instead:
   1. Explain why it's wrong (briefly)
-  2. Ask a Socratic question to help the student discover the correct answer
+  2. Ask 3 Socratic question to help the student discover the correct answer
 
 Quiz Questions and Answers:
 {chr(10).join(qa_list)}
+
+CRITICAL: Return ONLY the evaluation in the format below. DO NOT add any extra text like "Log:", "---", or any other headers. Start directly with "1:".
 
 Return in this format:
 1: [Correct/Incorrect] - [if incorrect: brief explanation + Socratic question]
@@ -936,10 +938,12 @@ For each question:
 - If the answer is correct, confirm it briefly
 - If the answer is incorrect, DO NOT give the correct answer directly. Instead:
   1. Explain why it's wrong (briefly)
-  2. Ask a Socratic question to help the student discover the correct answer
+  2. Ask 3 Socratic question to help the student discover the correct answer
 
 Quiz Questions and Answers:
 {chr(10).join(qa_list)}
+
+CRITICAL: Return ONLY the evaluation in the format below. DO NOT add any extra text like "Log:", "---", or any other headers. Start directly with "1:".
 
 Return in this format:
 1: [Correct/Incorrect] - [if incorrect: brief explanation + Socratic question]
@@ -957,10 +961,12 @@ For each question:
 - If the answer is correct, confirm it briefly
 - If the answer is incorrect, DO NOT give the correct answer directly. Instead:
   1. Explain why it's wrong (briefly)
-  2. Ask a Socratic question to help the student discover the correct answer
+  2. Ask 3 Socratic question to help the student discover the correct answer
 
 Quiz Questions and Answers:
 {chr(10).join(qa_list)}
+
+CRITICAL: Return ONLY the evaluation in the format below. DO NOT add any extra text like "Log:", "---", or any other headers. Start directly with "1:".
 
 Return in this format:
 1: [Correct/Incorrect] - [if incorrect: brief explanation + Socratic question]
