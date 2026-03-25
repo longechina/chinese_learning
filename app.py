@@ -31,6 +31,31 @@ REPO_NAME = st.secrets.get("GITHUB_REPO_NAME")
 GITHUB_ENABLED = GITHUB_TOKEN and REPO_OWNER and REPO_NAME
 
 
+# ---------- 加载 Quiz 题型模板 ----------
+def load_quiz_template():
+    try:
+        with open("chinese_test_template.txt", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        logger.warning("chinese_test_template.txt not found, using default template")
+        return """
+1. 单选题（Multiple Choice）：
+   题目描述：...
+   A. 选项1
+   B. 选项2
+   C. 选项3
+   D. 选项4
+
+2. 填空题（Fill in the blank）：
+   题目描述：______
+
+3. 翻译题（Translation）：
+   请将以下句子翻译成中文：...
+"""
+
+QUIZ_TEMPLATE = load_quiz_template()
+
+
 # ---------- GitHub 上传函数 ----------
 def upload_file_to_github(file_path, content, commit_message):
     """上传文件到 GitHub"""
@@ -179,33 +204,35 @@ def save_conversation_summary(summary):
         logger.error(f"Failed to save local summary: {e}")
 
 
-# ---------- 生成 Quiz ----------
+# ---------- 生成 Quiz（使用模板）----------
 def generate_quiz(topic, full_page_content):
-    prompt = f"""Generate 3 DIFFERENT and COMPLETE quiz questions about: "{topic}".
+    prompt = f"""You are a Chinese language test designer. Based on the following topic and the quiz template, generate 3 COMPLETE quiz questions.
+
+**Topic:** {topic}
+**Current content:** {full_page_content[:500] if full_page_content else "None"}
+
+**Quiz Template (MUST FOLLOW THIS FORMAT):**
+{QUIZ_TEMPLATE}
 
 IMPORTANT RULES:
-1. Each question must be COMPLETE and answerable on its own
-2. Each question must contain ALL necessary context
-3. Use different question types
-4. NEVER include the answer
+1. Use the question types from the template (单选题, 填空题, 翻译题, etc.)
+2. Each question must be COMPLETE and answerable on its own
+3. Each question must contain ALL necessary context
+4. NEVER include the answer in the question
 5. Return ONLY the 3 questions, numbered 1., 2., 3.
 
-EXAMPLES:
-1. Fill in the blank: A person who designs buildings is called an ___.
-2. Choose the correct word: The hotel provided (accommodation / recommendation) for 50 guests.
-3. What does the word "abandon" mean?
-
-Generate 3 COMPLETE quiz questions for "{topic}":"""
+Generate 3 quiz questions following the template format:"""
     
     try:
         response = client.chat.completions.create(
             model="openai/gpt-oss-120b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
-            max_tokens=500,
+            max_tokens=800,
         )
         questions_text = response.choices[0].message.content.strip()
         
+        # 解析问题
         questions = []
         for line in questions_text.split('\n'):
             line = line.strip()
@@ -214,11 +241,12 @@ Generate 3 COMPLETE quiz questions for "{topic}":"""
                 if question and len(question) > 10:
                     questions.append(question)
         
+        # 确保有3个问题
         if len(questions) < 3:
             default_questions = [
-                f"What is the definition of {topic}?",
-                f"Give one example sentence using {topic}.",
-                f"Explain {topic} in your own words."
+                f"单选题：以下哪个选项最符合“{topic}”的含义？\nA. 选项1\nB. 选项2\nC. 选项3\nD. 选项4",
+                f"填空题：请用“{topic}”完成以下句子：______",
+                f"翻译题：请将以下句子翻译成中文：______"
             ]
             questions = (questions + default_questions)[:3]
         
@@ -227,9 +255,9 @@ Generate 3 COMPLETE quiz questions for "{topic}":"""
     except Exception as e:
         logger.error(f"Quiz generation error: {e}")
         return [
-            f"What is the meaning of {topic}?",
-            f"Give an example of {topic}.",
-            f"Explain {topic} in your own words."
+            f"单选题：关于“{topic}”，以下哪项描述最准确？\nA. 选项A\nB. 选项B\nC. 选项C\nD. 选项D",
+            f"填空题：请用“{topic}”的相关知识填空：______",
+            f"翻译题：请将以下句子翻译成中文：______"
         ]
 
 
