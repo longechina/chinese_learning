@@ -35,26 +35,29 @@ GITHUB_ENABLED = GITHUB_TOKEN and REPO_OWNER and REPO_NAME
 def load_quiz_template():
     try:
         with open("chinese_test_template.txt", "r", encoding="utf-8") as f:
-            return f.read()
+            content = f.read()
+            logger.info("Successfully loaded chinese_test_template.txt")
+            return content
     except FileNotFoundError:
         logger.warning("chinese_test_template.txt not found, using default template")
         return """
 1. 单选题（Multiple Choice）：
-   题目描述：...
-   A. 选项1
-   B. 选项2
-   C. 选项3
-   D. 选项4
+   题目描述：以下哪个选项最符合题意？
+   A. 选项A
+   B. 选项B
+   C. 选项C
+   D. 选项D
 
 2. 填空题（Fill in the blank）：
-   题目描述：______
+   请用正确的词语完成以下句子：
+   ______
 
 3. 翻译题（Translation）：
-   请将以下句子翻译成中文：...
+   请将以下句子翻译成中文：
+   ______
 """
 
 QUIZ_TEMPLATE = load_quiz_template()
-
 
 # ---------- GitHub 上传函数 ----------
 def upload_file_to_github(file_path, content, commit_message):
@@ -204,62 +207,88 @@ def save_conversation_summary(summary):
         logger.error(f"Failed to save local summary: {e}")
 
 
-# ---------- 生成 Quiz（使用模板）----------
+# ---------- 生成 Quiz（直接使用模板格式）----------
 def generate_quiz(topic, full_page_content):
-    prompt = f"""You are a Chinese language test designer. Based on the following topic and the quiz template, generate 3 COMPLETE quiz questions.
+    # 加载模板
+    template = QUIZ_TEMPLATE
+    
+    prompt = f"""You are a Chinese language test designer. Generate 3 COMPLETE quiz questions about "{topic}" following EXACTLY the format shown in the template below.
 
-**Topic:** {topic}
-**Current content:** {full_page_content[:500] if full_page_content else "None"}
+**TEMPLATE FORMAT (MUST FOLLOW EXACTLY):**
+{template}
 
-**Quiz Template (MUST FOLLOW THIS FORMAT):**
-{QUIZ_TEMPLATE}
+**CRITICAL RULES:**
+1. Copy the exact question types from the template
+2. For each question, replace the placeholder content with actual content about "{topic}"
+3. Each question must be COMPLETE with all options and context
+4. Multiple choice questions MUST have A, B, C, D options
+5. Fill-in-the-blank questions MUST have a complete sentence with blank
+6. Translation questions MUST have a full sentence to translate
+7. NEVER include the answer
+8. Return ONLY the 3 questions, numbered 1., 2., 3.
 
-IMPORTANT RULES:
-1. Use the question types from the template (单选题, 填空题, 翻译题, etc.)
-2. Each question must be COMPLETE and answerable on its own
-3. Each question must contain ALL necessary context
-4. NEVER include the answer in the question
-5. Return ONLY the 3 questions, numbered 1., 2., 3.
-
-Generate 3 quiz questions following the template format:"""
+Generate 3 COMPLETE quiz questions about "{topic}":"""
     
     try:
         response = client.chat.completions.create(
             model="openai/gpt-oss-120b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
-            max_tokens=800,
+            max_tokens=1200,
         )
         questions_text = response.choices[0].message.content.strip()
         
         # 解析问题
         questions = []
-        for line in questions_text.split('\n'):
-            line = line.strip()
-            if re.match(r'^\d+\.', line):
-                question = re.sub(r'^\d+\.\s*', '', line)
-                if question and len(question) > 10:
-                    questions.append(question)
+        current_question = ""
+        lines = questions_text.split('\n')
         
-        # 确保有3个问题
+        for i, line in enumerate(lines):
+            line = line.strip()
+            if not line:
+                continue
+            
+            # 匹配新问题开始
+            if re.match(r'^\d+\.', line):
+                if current_question:
+                    questions.append(current_question)
+                current_question = line
+            else:
+                if current_question:
+                    current_question += "\n" + line
+                else:
+                    current_question = line
+        
+        if current_question:
+            questions.append(current_question)
+        
+        # 确保有3个完整问题
         if len(questions) < 3:
+            # 根据模板生成默认问题
             default_questions = [
-                f"单选题：以下哪个选项最符合“{topic}”的含义？\nA. 选项1\nB. 选项2\nC. 选项3\nD. 选项4",
-                f"填空题：请用“{topic}”完成以下句子：______",
-                f"翻译题：请将以下句子翻译成中文：______"
+                f"1. 单选题：以下哪个选项最符合“{topic}”的含义？\n   A. 第一个选项\n   B. 第二个选项\n   C. 第三个选项\n   D. 第四个选项",
+                f"2. 填空题：请用与“{topic}”相关的词语完成以下句子：\n   他今天心情很好，脸上露出了___的笑容。",
+                f"3. 翻译题：请将以下句子翻译成中文：\n   He felt a sense of joy and satisfaction."
             ]
             questions = (questions + default_questions)[:3]
         
-        return questions[:3]
+        # 确保每个问题都有编号和完整格式
+        final_questions = []
+        for i, q in enumerate(questions[:3]):
+            # 确保有编号
+            if not re.match(r'^\d+\.', q):
+                q = f"{i+1}. {q}"
+            final_questions.append(q)
+        
+        return final_questions[:3]
         
     except Exception as e:
         logger.error(f"Quiz generation error: {e}")
         return [
-            f"单选题：关于“{topic}”，以下哪项描述最准确？\nA. 选项A\nB. 选项B\nC. 选项C\nD. 选项D",
-            f"填空题：请用“{topic}”的相关知识填空：______",
-            f"翻译题：请将以下句子翻译成中文：______"
+            f"1. 单选题：以下哪个选项最符合“{topic}”的含义？\n   A. 第一个选项\n   B. 第二个选项\n   C. 第三个选项\n   D. 第四个选项",
+            f"2. 填空题：请用与“{topic}”相关的词语完成以下句子：\n   ______",
+            f"3. 翻译题：请将以下句子翻译成中文：\n   ______"
         ]
-
 
 # ========== 评估 Quiz 答案（修复版）==========
 def evaluate_quiz(questions, user_answers):
@@ -696,7 +725,7 @@ Your task:
 Use these rules to generate links:
 - YouTube: https://www.youtube.com/results?search_query={topic.replace(' ', '+')}+english+learning
 - Quizlet: https://quizlet.com/search?query={topic}+vocabulary
-- StackExchange: https://english.stackexchange.com/search?q={single_keyword}
+- StackExchange: https://english.stackexchange.com/search?q={single_keyword} only 1 keyword.
 
 Example format:
 【Recommended Resources】
@@ -728,9 +757,9 @@ Your task:
 - No emojis!
 
 Use these rules to generate links:
-- YouTube: https://www.youtube.com/results?search_query={topic}+in+chinese
-- Quizlet: https://quizlet.com/search?query={topic}+chinese
-- StackExchange: https://chinese.stackexchange.com/search?q={single_keyword}
+- YouTube: https://www.youtube.com/results?search_query={Chinese topic}+in+chinese
+- Quizlet: https://quizlet.com/search?query={Chinese topic}+chinese
+- StackExchange: https://chinese.stackexchange.com/search?q={single_keyword} only 1 Chinese keyword.
 
 Example format:
 【Recommended Resources】
