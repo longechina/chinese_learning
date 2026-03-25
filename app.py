@@ -4,8 +4,25 @@ import io
 import re
 import os
 import time
+import logging
 import streamlit as st
 import groq
+
+# ---------- 配置日志记录 ----------
+# 创建 logs 目录
+if not os.path.exists("logs"):
+    os.makedirs("logs")
+
+# 配置日志格式
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("logs/app.log", encoding='utf-8'),
+        logging.StreamHandler()  # 同时输出到控制台
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # ---------- 将背景图片转换为 Base64 嵌入 CSS ----------
 def get_base64_of_image(image_path):
@@ -63,21 +80,20 @@ def load_nemt_cet_data():
         try:
             with open(filename, "r", encoding="utf-8") as f:
                 nemt_cet_data[filename.replace('.json', '')] = json.load(f)
-                st.success(f"")
+                # 移除加载成功提示
+                # st.success(f"load......")
+                logger.info(f"Successfully loaded {filename}")
         except FileNotFoundError:
-            st.warning(f"⚠️ {filename} not found. Creating empty structure.")
-            print(f"❌ {filename} not found")
+            logger.warning(f"{filename} not found")
             nemt_cet_data[filename.replace('.json', '')] = {}
         except json.JSONDecodeError as e:
-            st.error(f"❌ Error parsing {filename}: {e}")
-            print(f"❌ JSON parse error in {filename}: {e}")
+            logger.error(f"JSON parse error in {filename}: {e}")
             nemt_cet_data[filename.replace('.json', '')] = {}
     
     return nemt_cet_data
 
-# 显示加载状态
-with st.spinner("Loading NEMT & CET data..."):
-    nemt_cet_data = load_nemt_cet_data()
+# 加载数据但不显示 spinner
+nemt_cet_data = load_nemt_cet_data()
 
 # 添加一个状态来跟踪当前是否在 NEMT & CET 界面
 if "current_mode" not in st.session_state:
@@ -112,6 +128,7 @@ def transcribe_audio(audio_bytes):
         )
         return transcription.text
     except Exception as e:
+        logger.error(f"语音识别失败: {e}")
         st.error(f"语音识别失败: {e}")
         return None
 
@@ -132,7 +149,7 @@ def text_to_speech(text):
             buf.seek(0)
             return buf.read(), "audio/wav"
         except Exception as e:
-            print(f"Kokoro TTS error: {e}")
+            logger.error(f"Kokoro TTS error: {e}")
             pass
     # Fallback: Groq Orpheus
     try:
@@ -144,7 +161,7 @@ def text_to_speech(text):
         )
         return response.read(), "audio/wav"
     except Exception as e:
-        print(f"Orpheus TTS error: {e}")
+        logger.error(f"Orpheus TTS error: {e}")
         return None, None
 
 # ---------- 构建系统提示 ----------
@@ -476,6 +493,7 @@ def auto_push_reference(level, path_string, mode="textbook"):
 def translate_word(word, target_lang="Chinese"):
     """使用Groq语言模型翻译单词"""
     try:
+        logger.info(f"Translating word: {word}")
         prompt = f"""Translate the following English word to {target_lang}. Only return the translation, nothing else.
 Word: {word}
 Translation:"""
@@ -487,13 +505,15 @@ Translation:"""
             max_tokens=50,
         )
         translation = response.choices[0].message.content.strip()
+        logger.info(f"Translation for '{word}': '{translation}'")
         return translation
     except Exception as e:
-        print(f"Translation error: {e}")
+        logger.error(f"Translation error for '{word}': {e}")
         return f"(Translation unavailable)"
 
 # ========== AI 回复函数（修改版：每次调用都注入当前语言和页面内容） ==========
 def get_ai_reply(user_input):
+    logger.info(f"User input: {user_input[:100]}...")
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.session_state.user_msg_count += 1
     st.session_state.conv_history.append({"role": "user", "content": user_input})
@@ -537,7 +557,9 @@ def get_ai_reply(user_input):
             max_tokens=512,
         )
         reply = response.choices[0].message.content.strip()
+        logger.info(f"AI reply: {reply[:100]}...")
     except Exception as e:
+        logger.error(f"AI reply error: {e}")
         reply = f"[Error: {e}]"
 
     st.session_state.messages.append({"role": "assistant", "content": reply})
@@ -549,7 +571,7 @@ def get_ai_reply(user_input):
         if audio_bytes:
             st.session_state.pending_tts = (audio_bytes, fmt)
     except Exception as e:
-        print(f"TTS error in get_ai_reply: {e}")
+        logger.error(f"TTS error in get_ai_reply: {e}")
 
     # 每隔5轮用户消息生成总结
     if st.session_state.user_msg_count % 5 == 0 and st.session_state.user_msg_count > 0:
@@ -585,9 +607,11 @@ Summary:"""
 
         with open("conversation_summary.txt", "w", encoding="utf-8") as f:
             f.write(st.session_state.conversation_summary)
+        logger.info("Conversation summary saved")
 
         st.session_state.conv_history = []
     except Exception as e:
+        logger.error(f"Failed to generate summary: {e}")
         st.warning(f"Failed to generate summary: {e}")
 
 # ---------- CSS样式 ----------
@@ -684,13 +708,13 @@ st.markdown(f"""
         background: transparent !important;
     }}
 
-    /* 语言选择器容器样式 - 字体白色 */
+    /* 语言选择器容器样式 - 白色背景 */
     .language-selector {{
         position: fixed;
         top: 20px;
         right: 20px;
         z-index: 1000;
-        background: rgba(255, 255, 255, 0.9); 
+        background: rgba(255, 255, 255, 0.95); 
         padding: 10px 20px;
         border-radius: 25px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -702,18 +726,18 @@ st.markdown(f"""
     .language-selector label {{
         font-family: 'Manrope', sans-serif;
         font-weight: 700;
-        color: #FFFFFF !important;
+        color: #000000 !important;
         margin: 0;
         font-size: 16px;
     }}
 
     .language-selector div[data-baseweb="select"] {{
-        background-color: rgba(255, 255, 255, 0.2) !important;
+        background-color: white !important;
     }}
     .language-selector div[data-baseweb="select"] > div {{
-        background-color: rgba(255, 255, 255, 0.2) !important;
-        color: #FFFFFF !important;
-        border: 1px solid rgba(255, 255, 255, 0.5) !important;
+        background-color: white !important;
+        color: #000000 !important;
+        border: 1px solid #ccc !important;
         font-family: 'Manrope', sans-serif !important;
         font-size: 16px !important;
         font-weight: 600 !important;
@@ -723,13 +747,17 @@ st.markdown(f"""
         display: block !important;
     }}
     div[role="listbox"] {{
-        background-color: #333 !important;
-        color: #FFFFFF !important;
+        background-color: white !important;
+        color: #000000 !important;
         display: block !important;
     }}
     div[role="option"] {{
-        color: #FFFFFF !important;
+        color: #000000 !important;
         font-weight: 500 !important;
+        background-color: white !important;
+    }}
+    div[role="option"]:hover {{
+        background-color: #f0f0f0 !important;
     }}
 
     /* 主标题 */
