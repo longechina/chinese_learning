@@ -326,41 +326,30 @@ def evaluate_quiz(questions, user_answers):
     # 构建问题和答案的详细列表
     qa_pairs = []
     for i, q in enumerate(questions):
-        # 清理问题：移除开头的 "1. " 或 "**Q1:** " 等
         clean_q = re.sub(r'^\d+\.\s*', '', q)
         clean_q = re.sub(r'^\*\*Q\d+:\*\*\s*', '', clean_q)
         clean_q = clean_q.strip()
         user_ans = user_answers.get(i+1, "No answer")
-        qa_pairs.append(f"Q{i+1}: {clean_q}\nUser Answer: {user_ans}")
+        qa_pairs.append(f"Question: {clean_q}\nUser Answer: {user_ans}")
     
-    prompt = f"""You are a language teacher evaluating quiz answers. For each question, determine if the user's answer is CORRECT or INCORRECT.
+    prompt = f"""You are a teacher. Evaluate these quiz answers. For each question, tell me if the answer is correct or incorrect. Be generous.
 
-Be GENEROUS in your evaluation:
-- Multiple choice: accept the letter (A, B, C, D) or the full text
-- Fill-in-the-blank: accept synonyms or similar meaning
-- Translation: accept if the meaning is correct, even if wording differs
-- Error correction: accept if the error is correctly identified and fixed
-- Sentence making: accept if the sentence is grammatically correct and uses all words
-
-Quiz Questions and User Answers:
 {chr(10).join(qa_pairs)}
 
 Return format:
-- Q1: Correct/Incorrect
-- Q2: Correct/Incorrect
-- Q3: Correct/Incorrect
-- Q4: Correct/Incorrect
-- Q5: Correct/Incorrect
-Score: X/5
-
-Only return the evaluation, no extra text."""
+Q1: Correct/Incorrect
+Q2: Correct/Incorrect
+Q3: Correct/Incorrect
+Q4: Correct/Incorrect
+Q5: Correct/Incorrect
+Score: X/5"""
     
     try:
         response = client.chat.completions.create(
             model="openai/gpt-oss-20b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.2,
-            max_tokens=300,
+            max_tokens=200,
         )
         evaluation = response.choices[0].message.content.strip()
         
@@ -370,10 +359,9 @@ Only return the evaluation, no extra text."""
             score = int(score_match.group(1))
             total = int(score_match.group(2))
         else:
-            # 手动计算分数
             correct_count = 0
             for i in range(len(questions)):
-                if f"Q{i+1}: Correct" in evaluation or f"Q{i+1}: correct" in evaluation:
+                if f"Q{i+1}: Correct" in evaluation:
                     correct_count += 1
             score = correct_count
             total = len(questions)
@@ -381,21 +369,14 @@ Only return the evaluation, no extra text."""
         # 生成反馈列表
         feedback_list = []
         for i in range(len(questions)):
-            is_correct = False
-            if f"Q{i+1}: Correct" in evaluation or f"Q{i+1}: correct" in evaluation:
-                is_correct = True
+            is_correct = f"Q{i+1}: Correct" in evaluation
             feedback_list.append(is_correct)
-        
-        # 确保 evaluation 包含分数
-        if "Score:" not in evaluation:
-            evaluation += f"\nScore: {score}/{total}"
         
         return evaluation, score, total, feedback_list
         
     except Exception as e:
         logger.error(f"Quiz evaluation error: {e}")
-        default_eval = f"Unable to evaluate. Please try again.\nScore: 0/{len(questions)}"
-        return default_eval, 0, len(questions), [False] * len(questions)
+        return "Unable to evaluate", 0, len(questions), [False] * len(questions)
 
 # ---------- 将背景图片转换为 Base64 嵌入 CSS ----------
 def get_base64_of_image(image_path):
