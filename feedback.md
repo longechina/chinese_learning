@@ -25,3 +25,25 @@
 **Score:** 0/3
 
 ---
+
+## Quiz Record - 2026-03-25 02:39:14
+
+**Topic:** Give a simple narration of an experience
+**Questions:**
+1. Fill in the blank with a complete Chinese sentence describing something you did **昨天** (yesterday) using at least two of the following words: **去**, **了**, **觉得**, **非常**.
+2. Choose the correct sentence that properly uses **过** to indicate a past experience:
+3. Explain the difference in meaning and usage between the particles **了** and **过** when you are narrating a past experience in Chinese.
+
+**User Answers:**
+1. 我去过北京两次。can you explain"了“
+2. show me the question 2?
+3. i dont know
+
+**Feedback:**
+- Q1: ❌ Incorrect
+- Q2: ❌ Incorrect
+- Q3: ❌ Incorrect
+
+**Score:** 0/3
+
+---
