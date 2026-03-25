@@ -262,7 +262,7 @@ Generate the quiz:"""
             model="openai/gpt-oss-20b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
-            max_tokens=1500,
+            max_tokens=65000,
         )
         quiz_text = response.choices[0].message.content.strip()
         
@@ -705,7 +705,7 @@ Now generate for: {topic}
                 model="openai/gpt-oss-20b",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.7,
-                max_tokens=500,
+                max_tokens=65000,
             )
             ref_text = response.choices[0].message.content.strip()
             return ref_text
@@ -787,7 +787,7 @@ Translation:"""
             model="openai/gpt-oss-20b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
-            max_tokens=50,
+            max_tokens=65000,
         )
         translation = response.choices[0].message.content.strip()
         
@@ -820,7 +820,7 @@ Summary:"""
             model="openai/gpt-oss-20b",
             messages=[{"role": "user", "content": summary_prompt}],
             temperature=0.5,
-            max_tokens=200,
+            max_tokens=65000,
         )
         new_summary = response.choices[0].message.content.strip()
 
@@ -981,7 +981,7 @@ Total: X/5"""
                     model="openai/gpt-oss-20b",
                     messages=[{"role": "user", "content": eval_prompt}],
                     temperature=0.3,
-                    max_tokens=800,
+                    max_tokens=65000,
                 )
                 evaluation = eval_response.choices[0].message.content.strip()
                 
@@ -993,6 +993,13 @@ Total: X/5"""
 **Topic:** {st.session_state.current_quiz.get("topic", "General")}
 **Mode:** {st.session_state.language}
 
+### Questions:
+{chr(10).join([f"{i+1}. {q}" for i, q in enumerate(questions)])}
+
+### User Answers:
+{chr(10).join([f"{i+1}. {st.session_state.quiz_answers.get(i+1, 'No answer')}" for i in range(len(questions))])}
+
+### Evaluation:
 {evaluation}
 
 ---
@@ -1087,7 +1094,7 @@ Total: X/5"""
             model="openai/gpt-oss-20b",
             messages=context_msgs,
             temperature=0.7,
-            max_tokens=512,
+            max_tokens=65000,
         )
         reply = response.choices[0].message.content.strip()
         logger.info(f"AI reply: {reply[:100]}...")
