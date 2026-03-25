@@ -217,27 +217,66 @@ def get_current_page_full_content():
         if not st.session_state.selected_nemt_cet or not st.session_state.nemt_cet_path:
             return None
         data = nemt_cet_data.get(st.session_state.selected_nemt_cet, {})
+        
+        # 处理嵌套结构
+        if len(data) == 1 and st.session_state.selected_nemt_cet in data:
+            data = data[st.session_state.selected_nemt_cet]
+        
         node = data
         for key in st.session_state.nemt_cet_path:
             node = node.get(key, {})
             if not node:
                 return None
-        # 获取实际内容节点
+        
+        # 获取实际内容节点和目录名称
         content_node = node
+        dir_name = ""
+        
+        # 提取目录名称（如 "Education, Academic & Research"）
         if isinstance(content_node, dict):
-            while len(content_node) == 1 and isinstance(list(content_node.values())[0], dict):
-                content_node = list(content_node.values())[0]
+            # 如果当前节点只有一个键，且该键是目录名称
+            if len(content_node) == 1:
+                dir_name = list(content_node.keys())[0]
+                content_node = content_node[dir_name]
+            # 如果当前节点已经有 name 字段
+            elif "name" in content_node:
+                dir_name = content_node["name"]
+        
+        # 构建完整的面包屑路径（显示所有目录名称，不显示数字）
+        name_path_parts = []
+        temp_data = data
+        for path_key in st.session_state.nemt_cet_path:
+            temp_data = temp_data.get(path_key, {})
+            if isinstance(temp_data, dict) and len(temp_data) > 0:
+                # 获取这个数字节点下的目录名称
+                if len(temp_data) == 1:
+                    inner_dir_name = list(temp_data.keys())[0]
+                    name_path_parts.append(inner_dir_name)
+                elif "name" in temp_data:
+                    name_path_parts.append(temp_data["name"])
+        
         parts = []
-        location = " > ".join(st.session_state.nemt_cet_path)
+        location = " > ".join(name_path_parts) if name_path_parts else st.session_state.selected_nemt_cet
         parts.append(f"The user is currently viewing: {location}")
-        if "name" in content_node:
+        
+        # 添加当前目录名称 - 让 AI 知道正在学习什么主题
+        if dir_name:
+            parts.append(f"Section: {dir_name}")
+        elif "name" in content_node:
             parts.append(f"Section: {content_node['name']}")
+        
         if "notes" in content_node and content_node["notes"]:
             parts.append(f"Notes: {content_node['notes']}")
         if "examples" in content_node and content_node["examples"]:
             parts.append("Example sentences:\n" + "\n".join(f"  - {e}" for e in content_node["examples"]))
         if "words" in content_node and content_node["words"]:
-            parts.append("Words:\n" + "\n".join(f"  - {w}" for w in content_node["words"]))
+            # 如果是字符串，按 / 分割显示
+            if isinstance(content_node["words"], str):
+                words_list = content_node["words"].split(" / ")
+            else:
+                words_list = content_node["words"]
+            parts.append("Words:\n" + "\n".join(f"  - {w}" for w in words_list[:20]))
+        
         return "\n".join(parts)
     else:
         if not st.session_state.level or not st.session_state.path:
@@ -425,22 +464,43 @@ Now generate for: {topic}
 def get_page_recommendations():
     page_key = get_current_page_key()
     
-    # 如果页面已切换，清空旧的推荐资源状态
+    # 如果页面已切换，更新当前页面key
     if st.session_state.current_page_key != page_key:
         st.session_state.current_page_key = page_key
-        # 不清空缓存，但下次会重新生成
     
     # 如果当前页面还没有推荐资源，生成一个
     if page_key not in st.session_state.page_recommendations:
         full_page_content = get_current_page_full_content()
         if full_page_content:
             path_string = ""
+            mode = ""
+            level = None
+            
             if st.session_state.current_mode == "textbook":
                 path_string = " > ".join(st.session_state.path)
                 mode = "textbook"
                 level = st.session_state.level
             else:
-                path_string = " > ".join([str(p) for p in st.session_state.nemt_cet_path])
+                # NEMT & CET 模式：获取目录名称路径（不显示数字）
+                data = nemt_cet_data.get(st.session_state.selected_nemt_cet, {})
+                if len(data) == 1 and st.session_state.selected_nemt_cet in data:
+                    data = data[st.session_state.selected_nemt_cet]
+                
+                # 构建目录名称路径
+                name_path_parts = []
+                temp_data = data
+                for path_key in st.session_state.nemt_cet_path:
+                    temp_data = temp_data.get(path_key, {})
+                    if isinstance(temp_data, dict) and len(temp_data) > 0:
+                        # 获取这个数字节点下的目录名称
+                        if len(temp_data) == 1:
+                            inner_dir_name = list(temp_data.keys())[0]
+                            name_path_parts.append(inner_dir_name)
+                        elif "name" in temp_data:
+                            name_path_parts.append(temp_data["name"])
+                
+                # 使用目录名称路径作为 path_string
+                path_string = " > ".join(name_path_parts) if name_path_parts else st.session_state.selected_nemt_cet
                 mode = "nemt_cet"
                 level = None
             
