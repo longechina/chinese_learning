@@ -113,3 +113,31 @@
 **Score:** 0/3
 
 ---
+
+## Quiz Record - 2026-03-25 05:21:14
+
+**Topic:** Law / Politics / Governance / Religion
+**Questions:**
+1. 1. Which of the following best defines a tribunal?
+2. 2. The citizens were living under a state of ____ imposed by the new regime.
+3. 3. Translate into Chinese: *The tribunal convened to address the allegations of corruption.*
+4. 4. The tribunal has jurisdiction over the matters of subjection.
+5. 5. Use the following words to make a sentence: tribunal, subjection, was, the, under.
+
+**User Answers:**
+1. B
+2. subjection
+3. 法庭召开会议以处理腐败指控。
+4. The tribunal has jurisdiction over matters of subjection.
+5. The tribunal was under subjection.
+
+**Feedback:**
+- Q1: ❌ Incorrect
+- Q2: ❌ Incorrect
+- Q3: ❌ Incorrect
+- Q4: ❌ Incorrect
+- Q5: ❌ Incorrect
+
+**Score:** 0/5
+
+---
