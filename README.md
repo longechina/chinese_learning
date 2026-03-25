@@ -64,6 +64,69 @@ See [teaching_principle.txt](teaching_principle.txt) for details.
 All interactions (your answers and AI responses) are saved in [feedback.md](feedback.md) for review.
 ---
 
+## 6. OCR
+
+This module extracts text from images and non-searchable documents for further interaction with AI.
+
+### Availability
+- **Local only (for now)**  
+- The OCR service runs on a China-based server, while the online app ([Streamlit](chatgpt://generic-entity?number=0) Cloud) is hosted in the US.  
+- Due to cross-region restrictions, OCR cannot be used in the online version.
+
+> Future plan: explore making this feature available online.
+
+---
+
+### Supported Inputs
+
+#### 1. Image
+- Upload a single image  
+- Extracted text is sent directly to the chat  
+- Enables immediate interaction with the model  
+
+#### 2. ZIP (Batch Images)
+- For bulk processing (recommended)  
+- Upload up to ~300 images per batch  
+
+**Suggested workflow:**
+1. Put images into a folder  
+2. Compress into `.zip`  
+3. Upload for processing  
+
+- Output: a single processed text file  
+
+#### 3. PDF
+- Designed for **non-searchable PDFs** (e.g., scanned textbooks, old books)  
+- Converts scanned content into readable text  
+
+**Limits & Processing:**
+- Max **50 pages per run**  
+- For large PDFs (e.g., 1000 pages):  
+  - Split into multiple parts (e.g., 20 × 50 pages)  
+  - Process each part separately  
+
+- Parallel processing is enabled → large files can still be processed quickly (often within minutes)
+
+- Output: a single processed text file per batch  
+
+---
+
+### Notes
+- Batch processing may be rate-limited (~300 images/hour)  
+- ZIP and PDF outputs are saved as files for later use  
+- Image mode is best for quick interaction with AI models  
+
+---
+
+### Images
+![PDF First Page](09.png)  
+![PDF Last Page](10.png)  
+![OCR Processing](12.png)  
+![OCR Processed](12.png)
+![OCR Processed 2](13.png) 
+
+---
+
 # Chinese Learning Dataset
 
 > A very small personal dataset built purely for learning programming and natural language processing (NLP). Nothing serious here.
@@ -672,5 +735,4 @@ The routing order for most queries:
 	7.	ChatGPT / Claude → complex or semi‑professional tasks
 
 ---
-
 
