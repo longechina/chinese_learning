@@ -323,60 +323,56 @@ Generate the quiz:"""
         
 # ========== 评估 Quiz 答案 ==========
 def evaluate_quiz(questions, user_answers):
-    # 构建问题和答案的详细列表
-    qa_pairs = []
+    # 直接构建问题和答案列表
+    qa_list = []
     for i, q in enumerate(questions):
-        clean_q = re.sub(r'^\d+\.\s*', '', q)
-        clean_q = re.sub(r'^\*\*Q\d+:\*\*\s*', '', clean_q)
-        clean_q = clean_q.strip()
         user_ans = user_answers.get(i+1, "No answer")
-        qa_pairs.append(f"Question: {clean_q}\nUser Answer: {user_ans}")
+        qa_list.append(f"问题 {i+1}: {q}\n用户答案: {user_ans}")
     
-    prompt = f"""You are a teacher. Evaluate these quiz answers. For each question, tell me if the answer is correct or incorrect. Be generous.
+    prompt = f"""请判断以下每个问题的用户答案是否正确。如果错误，请给出简短的解释说明为什么错。保持简洁。
 
-{chr(10).join(qa_pairs)}
+{chr(10).join(qa_list)}
 
-Return format:
-Q1: Correct/Incorrect
-Q2: Correct/Incorrect
-Q3: Correct/Incorrect
-Q4: Correct/Incorrect
-Q5: Correct/Incorrect
-Score: X/5"""
+返回格式：
+1: 正确/错误 (如果错误，加简短解释)
+2: 正确/错误 (如果错误，加简短解释)
+3: 正确/错误 (如果错误，加简短解释)
+4: 正确/错误 (如果错误，加简短解释)
+5: 正确/错误 (如果错误，加简短解释)
+总分: X/5"""
     
     try:
         response = client.chat.completions.create(
             model="openai/gpt-oss-20b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.2,
-            max_tokens=200,
+            max_tokens=300,
         )
-        evaluation = response.choices[0].message.content.strip()
+        result = response.choices[0].message.content.strip()
         
         # 解析分数
-        score_match = re.search(r'Score:\s*(\d+)/(\d+)', evaluation)
+        score_match = re.search(r'总分:\s*(\d+)/(\d+)', result)
         if score_match:
             score = int(score_match.group(1))
             total = int(score_match.group(2))
         else:
-            correct_count = 0
-            for i in range(len(questions)):
-                if f"Q{i+1}: Correct" in evaluation:
-                    correct_count += 1
-            score = correct_count
             total = len(questions)
+            score = 0
+            for i in range(len(questions)):
+                if f"{i+1}: 正确" in result:
+                    score += 1
         
         # 生成反馈列表
         feedback_list = []
         for i in range(len(questions)):
-            is_correct = f"Q{i+1}: Correct" in evaluation
+            is_correct = f"{i+1}: 正确" in result
             feedback_list.append(is_correct)
         
-        return evaluation, score, total, feedback_list
+        return result, score, len(questions), feedback_list
         
     except Exception as e:
         logger.error(f"Quiz evaluation error: {e}")
-        return "Unable to evaluate", 0, len(questions), [False] * len(questions)
+        return "评估失败", 0, len(questions), [False] * len(questions)
 
 # ---------- 将背景图片转换为 Base64 嵌入 CSS ----------
 def get_base64_of_image(image_path):
