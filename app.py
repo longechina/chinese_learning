@@ -1944,7 +1944,8 @@ if st.session_state.chat_open:
         st.audio(audio_bytes, format=fmt, autoplay=True)
         st.session_state.pending_tts = None
 
-    col_clear, col_voice, col_text = st.columns([1, 1, 6])
+    # 输入区域：四列布局（Clear按钮 + 语音按钮 + Quiz按钮 + 文本输入）
+    col_clear, col_voice, col_quiz, col_text = st.columns([1, 1, 1, 5])
 
     with col_clear:
         if st.button("Clear", key="clear_chat", use_container_width=True):
@@ -1977,10 +1978,49 @@ if st.session_state.chat_open:
                             get_ai_reply(transcript)
                         st.rerun()
 
+    with col_quiz:
+        if st.button("Quiz", key="quiz_button", use_container_width=True):
+            # 生成 quiz
+            full_page = get_current_page_full_content()
+            topic = "general"
+            if full_page:
+                sec_match = re.search(r"Section: (.+)", full_page)
+                if sec_match:
+                    topic = sec_match.group(1)
+            
+            quiz_text = generate_quiz(topic, full_page)
+            if quiz_text:
+                st.session_state.quiz_active = True
+                # 提取问题列表用于评估
+                questions = []
+                for line in quiz_text.split('\n'):
+                    line = line.strip()
+                    if re.match(r'^\d+\.', line):
+                        questions.append(line)
+                
+                st.session_state.current_quiz = {
+                    "questions": questions,
+                    "quiz_text": quiz_text,
+                    "topic": topic
+                }
+                st.session_state.quiz_answers = {}
+                st.session_state.quiz_asked = True
+                
+                reply = f"Here's a quiz on {topic}:\n\n{quiz_text}\n\nPlease answer the questions (you can answer all at once)."
+                
+                st.session_state.messages.append({"role": "assistant", "content": reply})
+                st.session_state.conv_history.append({"role": "assistant", "content": reply})
+                
+                try:
+                    audio_bytes, fmt = text_to_speech(reply)
+                    if audio_bytes:
+                        st.session_state.pending_tts = (audio_bytes, fmt)
+                except Exception as e:
+                    logger.error(f"TTS error: {e}")
+                st.rerun()
+
     with col_text:
         if prompt := st.chat_input("Type a message...", key="text_input"):
             with st.spinner("Thinking..."):
                 get_ai_reply(prompt)
             st.rerun()
-
-    st.markdown('</div>', unsafe_allow_html=True)
