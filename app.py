@@ -188,38 +188,69 @@ def save_conversation_summary(summary):
         logger.error(f"Failed to save local summary: {e}")
 
 
-# ---------- 生成 Quiz ----------
+# ========== 生成 Quiz ==========
 def generate_quiz(topic, guidance, full_page_content):
-    prompt = f"""You are a language learning assistant following these principles:
-{TEACHING_PRINCIPLES}
-
-Based on the following topic and guidance, generate 2-3 quiz questions to test understanding.
+    prompt = f"""You are a language learning assistant. Generate 3 COMPLETE quiz questions to test understanding.
 
 Topic: {topic}
-Guidance provided: {guidance}
-Current page content: {full_page_content[:500] if full_page_content else "None"}
+Current content: {full_page_content[:500] if full_page_content else "None"}
 
-Rules:
-- Questions should be relevant to the topic
-- Include multiple choice or short answer
-- DO NOT include answers in the questions
-- Return ONLY the questions, one per line, numbered 1., 2., etc.
+CRITICAL RULES:
+1. Each question must be COMPLETE and answerable on its own
+2. DO NOT create questions that reference missing context
+3. Use DIFFERENT question types:
+   - Type 1: Fill in the blank with a complete sentence
+   - Type 2: Multiple choice with complete options
+   - Type 3: Definition or explanation question
+4. NEVER include the answer in the question
+5. Return ONLY the 3 questions, numbered 1., 2., 3.
 
-Generate quiz questions:"""
+EXAMPLES:
+1. Fill in the blank: A person who designs buildings is called an ___.
+2. Choose the correct word: The hotel provided (accommodation / recommendation) for 50 guests.
+3. What does the word "abandon" mean?
+
+Generate 3 COMPLETE quiz questions:"""
     
     try:
         response = client.chat.completions.create(
             model="openai/gpt-oss-120b",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.5,
-            max_tokens=300,
+            temperature=0.7,
+            max_tokens=500,
         )
         questions_text = response.choices[0].message.content.strip()
-        questions = [q.strip() for q in questions_text.split('\n') if q.strip() and q[0].isdigit()]
-        return questions if questions else ["What did you learn from this topic?", "Can you explain the main concept?"]
+        
+        # 解析问题
+        questions = []
+        for line in questions_text.split('\n'):
+            line = line.strip()
+            # 匹配编号行
+            if re.match(r'^\d+\.', line):
+                # 提取问题内容
+                question = re.sub(r'^\d+\.\s*', '', line)
+                if question and len(question) > 10:
+                    questions.append(question)
+        
+        # 确保有3个完整问题
+        if len(questions) < 3:
+            # 根据 topic 生成默认问题
+            default_questions = [
+                f"What is the definition of {topic}? Please explain in your own words.",
+                f"Can you give an example of {topic} in a sentence?",
+                f"How would you use {topic} correctly?"
+            ]
+            questions = (questions + default_questions)[:3]
+        
+        return questions[:3]
+        
     except Exception as e:
         logger.error(f"Quiz generation error: {e}")
-        return ["What did you learn from this topic?", "Can you explain the main concept?"]
+        return [
+            f"What is the meaning of {topic}?",
+            f"Give one example sentence using {topic}.",
+            f"How is {topic} used in context?"
+        ]
 
 
 # ---------- 评估 Quiz 答案 ----------
