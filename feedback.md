@@ -169,3 +169,31 @@
 **Score:** 0/5
 
 ---
+
+## Quiz Record - 2026-03-25 05:45:23
+
+**Topic:** Law / Politics / Governance / Religion
+**Questions:**
+1. 1. **Which of the following best describes a tribunal?**
+2. 2. **Fill in the blank:**
+3. 3. **Translate into Chinese:**
+4. 4. **Find and correct the mistake:**
+5. 5. **Use the given words to make a sentence:**
+
+**User Answers:**
+1. C
+2. injustice
+3. 法庭召开以裁决双方之间的争端。
+4. The tribunal was convened by the government to subject the protesters.
+5. The public challenged the tribunal under the law against subjection.
+
+**Feedback:**
+- Q1: ❌ Incorrect
+- Q2: ❌ Incorrect
+- Q3: ❌ Incorrect
+- Q4: ❌ Incorrect
+- Q5: ❌ Incorrect
+
+**Score:** 0/5
+
+---
