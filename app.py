@@ -621,79 +621,161 @@ def get_current_page_full_content():
         return "\n".join(parts)
 
 
-# ========== 全局搜索函数（搜索所有textbook数据）==========
-def search_in_node(node, path_list, level_num, keyword):
+# ========== 通用递归搜索函数 ==========
+def search_in_dict(node, path_list, source, level_num, keyword):
+    """
+    递归搜索字典中的所有内容
+    node: 当前节点
+    path_list: 路径列表
+    source: 数据来源 ("textbook" 或 "nemt_cet")
+    level_num: 等级 (textbook用)
+    keyword: 搜索关键词
+    """
     matches = []
     keyword_lower = keyword.lower()
     
-    if "name" in node and keyword_lower in node["name"].lower():
-        matches.append({"level": level_num, "path": path_list, "type": "Section", "content": node["name"]})
+    if not isinstance(node, dict):
+        return matches
     
-    if "notes" in node and keyword_lower in node["notes"].lower():
-        content = node["notes"][:200] + "..." if len(node["notes"]) > 200 else node["notes"]
-        matches.append({"level": level_num, "path": path_list, "type": "Note", "content": content})
+    # 1. 搜索 name 字段
+    if "name" in node and node["name"] and keyword_lower in str(node["name"]).lower():
+        matches.append({
+            "source": source,
+            "level": level_num,
+            "path": path_list.copy(),
+            "type": "Section",
+            "content": str(node["name"])[:150]
+        })
     
-    if "examples" in node:
-        for idx, ex in enumerate(node["examples"]):
-            if keyword_lower in ex.lower():
-                matches.append({"level": level_num, "path": path_list, "type": "Example", "content": ex, "index": idx})
+    # 2. 搜索 notes 字段
+    if "notes" in node and node["notes"] and keyword_lower in str(node["notes"]).lower():
+        content = str(node["notes"])[:200] + "..." if len(str(node["notes"])) > 200 else str(node["notes"])
+        matches.append({
+            "source": source,
+            "level": level_num,
+            "path": path_list.copy(),
+            "type": "Note",
+            "content": content
+        })
     
-    if "vocabulary" in node:
-        for idx, item in enumerate(node["vocabulary"]):
-            if keyword_lower in item.lower():
-                matches.append({"level": level_num, "path": path_list, "type": "Vocabulary", "content": item, "index": idx})
+    # 3. 搜索 examples 字段（列表或字符串）
+    if "examples" in node and node["examples"]:
+        if isinstance(node["examples"], list):
+            for idx, ex in enumerate(node["examples"]):
+                if ex and keyword_lower in str(ex).lower():
+                    matches.append({
+                        "source": source,
+                        "level": level_num,
+                        "path": path_list.copy(),
+                        "type": "Example",
+                        "content": str(ex)[:150],
+                        "index": idx
+                    })
+        elif isinstance(node["examples"], str) and keyword_lower in node["examples"].lower():
+            matches.append({
+                "source": source,
+                "level": level_num,
+                "path": path_list.copy(),
+                "type": "Example",
+                "content": node["examples"][:150]
+            })
     
+    # 4. 搜索 vocabulary 字段（列表或字符串）
+    if "vocabulary" in node and node["vocabulary"]:
+        if isinstance(node["vocabulary"], list):
+            for idx, item in enumerate(node["vocabulary"]):
+                if item and keyword_lower in str(item).lower():
+                    matches.append({
+                        "source": source,
+                        "level": level_num,
+                        "path": path_list.copy(),
+                        "type": "Vocabulary",
+                        "content": str(item)[:150],
+                        "index": idx
+                    })
+        elif isinstance(node["vocabulary"], str) and keyword_lower in node["vocabulary"].lower():
+            matches.append({
+                "source": source,
+                "level": level_num,
+                "path": path_list.copy(),
+                "type": "Vocabulary",
+                "content": node["vocabulary"][:150]
+            })
+    
+    # 5. 搜索 words 字段（用于 NEMT/CET 数据）
+    if "words" in node and node["words"] and keyword_lower in str(node["words"]).lower():
+        content = str(node["words"])[:200] + "..." if len(str(node["words"])) > 200 else str(node["words"])
+        matches.append({
+            "source": source,
+            "level": level_num,
+            "path": path_list.copy(),
+            "type": "Words",
+            "content": content
+        })
+    
+    # 6. 递归搜索所有子字典
     for key, value in node.items():
-        if isinstance(value, dict) and key not in ("name", "notes", "examples", "vocabulary", "words"):
-            matches.extend(search_in_node(value, path_list + [key], level_num, keyword))
+        # 跳过已经搜索过的字段
+        if key in ("name", "notes", "examples", "vocabulary", "words"):
+            continue
+        if isinstance(value, dict):
+            matches.extend(search_in_dict(value, path_list + [key], source, level_num, keyword))
+        elif isinstance(value, list):
+            for idx, item in enumerate(value):
+                if isinstance(item, dict):
+                    matches.extend(search_in_dict(item, path_list + [f"{key}[{idx}]"], source, level_num, keyword))
     
     return matches
 
 
+# ========== 全局搜索（搜索所有数据）==========
 def global_search(keyword):
-    """全局搜索：搜索所有textbook内容"""
+    """全局搜索：搜索所有 textbook 和 NEMT/CET 内容"""
     if not keyword.strip():
         return []
+    
     results = []
+    
+    # ========== 1. 搜索 textbook 数据 (level1.json, level2.json, level3.json 等) ==========
     for level_num in range(1, 4):
         level_key = f"Level {level_num}"
         if level_key in levels_data:
             root_node = levels_data[level_key]
+            # level_data 结构是 {"LEVEL_I": {...}} 或直接是内容
             for root_key, root_value in root_node.items():
                 if isinstance(root_value, dict):
-                    results.extend(search_in_node(root_value, [root_key], level_num, keyword))
+                    results.extend(search_in_dict(root_value, [root_key], "textbook", level_num, keyword))
+    
+    # ========== 2. 搜索 NEMT & CET 数据 (TEM-8.json, NEMT.json, CET-46.json) ==========
+    for exam_name, exam_data in nemt_cet_data.items():
+        if not exam_data:
+            continue
+        
+        # 处理可能的嵌套结构 {"TEM-8": {"0": {...}}}
+        data_to_search = exam_data
+        if len(exam_data) == 1 and exam_name in exam_data:
+            data_to_search = exam_data[exam_name]
+        
+        # 搜索每个主题分类
+        for key, value in data_to_search.items():
+            if isinstance(value, dict):
+                # 主题名称匹配
+                if keyword.lower() in str(key).lower():
+                    results.append({
+                        "source": "nemt_cet",
+                        "exam": exam_name,
+                        "level": None,
+                        "path": [exam_name, key],
+                        "type": "Category",
+                        "content": str(key)[:150]
+                    })
+                # 递归搜索主题内容
+                results.extend(search_in_dict(value, [exam_name, key], "nemt_cet", None, keyword))
+    
     return results
 
 
-# ========== 本地搜索函数（只在当前模式下搜索）==========
-def local_search_in_node(node, path_list, level_num, keyword):
-    matches = []
-    keyword_lower = keyword.lower()
-    
-    if "name" in node and keyword_lower in node["name"].lower():
-        matches.append({"level": level_num, "path": path_list, "type": "Section", "content": node["name"]})
-    
-    if "notes" in node and keyword_lower in node["notes"].lower():
-        content = node["notes"][:200] + "..." if len(node["notes"]) > 200 else node["notes"]
-        matches.append({"level": level_num, "path": path_list, "type": "Note", "content": content})
-    
-    if "examples" in node:
-        for idx, ex in enumerate(node["examples"]):
-            if keyword_lower in ex.lower():
-                matches.append({"level": level_num, "path": path_list, "type": "Example", "content": ex, "index": idx})
-    
-    if "vocabulary" in node:
-        for idx, item in enumerate(node["vocabulary"]):
-            if keyword_lower in item.lower():
-                matches.append({"level": level_num, "path": path_list, "type": "Vocabulary", "content": item, "index": idx})
-    
-    for key, value in node.items():
-        if isinstance(value, dict) and key not in ("name", "notes", "examples", "vocabulary", "words"):
-            matches.extend(local_search_in_node(value, path_list + [key], level_num, keyword))
-    
-    return matches
-
-
+# ========== 本地搜索（只在当前模式搜索）==========
 def local_search_textbook(keyword):
     """在textbook模式下搜索当前所在level的内容"""
     if not keyword.strip():
@@ -707,7 +789,7 @@ def local_search_textbook(keyword):
         root_node = levels_data[level_key]
         for root_key, root_value in root_node.items():
             if isinstance(root_value, dict):
-                results.extend(local_search_in_node(root_value, [root_key], st.session_state.level, keyword))
+                results.extend(search_in_dict(root_value, [root_key], "textbook", st.session_state.level, keyword))
     return results
 
 
@@ -719,46 +801,32 @@ def local_search_nemt_cet(keyword):
         return []
     
     results = []
-    data = nemt_cet_data.get(st.session_state.selected_nemt_cet, {})
+    exam_name = st.session_state.selected_nemt_cet
+    exam_data = nemt_cet_data.get(exam_name, {})
     
-    if len(data) == 1 and st.session_state.selected_nemt_cet in data:
-        data = data[st.session_state.selected_nemt_cet]
+    if not exam_data:
+        return results
     
-    def search_nemt_node(node, path_list, keyword):
-        matches = []
-        keyword_lower = keyword.lower()
-        
-        if isinstance(node, dict):
-            if "name" in node and keyword_lower in node["name"].lower():
-                matches.append({"type": "Section", "content": node["name"], "path": path_list})
-            
-            if "notes" in node and node["notes"] and keyword_lower in node["notes"].lower():
-                content = node["notes"][:200] + "..." if len(node["notes"]) > 200 else node["notes"]
-                matches.append({"type": "Note", "content": content, "path": path_list})
-            
-            if "words" in node and node["words"]:
-                if isinstance(node["words"], str):
-                    words_list = node["words"].split(" / ")
-                else:
-                    words_list = node["words"]
-                for idx, w in enumerate(words_list):
-                    if keyword_lower in w.lower():
-                        matches.append({"type": "Word", "content": w, "path": path_list, "index": idx})
-            
-            if "examples" in node and node["examples"]:
-                for idx, ex in enumerate(node["examples"]):
-                    if keyword_lower in ex.lower():
-                        matches.append({"type": "Example", "content": ex, "path": path_list, "index": idx})
-            
-            for key, value in node.items():
-                if isinstance(value, dict) and key not in ("name", "notes", "words", "examples"):
-                    matches.extend(search_nemt_node(value, path_list + [key], keyword))
-        
-        return matches
+    # 处理可能的嵌套结构
+    data_to_search = exam_data
+    if len(exam_data) == 1 and exam_name in exam_data:
+        data_to_search = exam_data[exam_name]
     
-    for root_key, root_value in data.items():
-        if isinstance(root_value, dict):
-            results.extend(search_nemt_node(root_value, [root_key], keyword))
+    # 搜索当前 exam 的所有内容
+    for key, value in data_to_search.items():
+        if isinstance(value, dict):
+            # 主题名称匹配
+            if keyword.lower() in str(key).lower():
+                results.append({
+                    "source": "nemt_cet",
+                    "exam": exam_name,
+                    "level": None,
+                    "path": [exam_name, key],
+                    "type": "Category",
+                    "content": str(key)[:150]
+                })
+            # 递归搜索内容
+            results.extend(search_in_dict(value, [exam_name, key], "nemt_cet", None, keyword))
     
     return results
 
@@ -888,7 +956,6 @@ Now generate for: {topic}
                     continue
             return None
     return None
-
 
 # ========== 获取或生成当前页面的推荐资源 ==========
 def get_page_recommendations():
@@ -1973,34 +2040,37 @@ with st.container():
         st.markdown(f"Found {len(st.session_state.search_results)} result(s)")
         
         for idx, res in enumerate(st.session_state.search_results):
-            path_str = " > ".join(res["path"]) if "path" in res else " > ".join(res.get("path", []))
+            # 构建路径显示
+            if "path" in res:
+                path_str = " > ".join(str(p) for p in res["path"])
+            else:
+                path_str = ""
             
-            # 根据结果类型显示不同的预览
+            # 根据结果类型显示预览
             content_preview = res["content"].replace("\n", " ")[:150]
             if len(res["content"]) > 150:
                 content_preview += "..."
             
             with st.container(border=True):
-                cols = st.columns([1, 5, 1])
+                cols = st.columns([1, 4, 1])
                 with cols[0]:
                     st.markdown(f"**{res['type']}**")
                 with cols[1]:
                     st.markdown(f"{content_preview}")
                 with cols[2]:
-                    if st.button("Go", key=f"search_go_{idx}_{res.get('level', '')}_{res.get('type', '')}_{res.get('index', idx)}", use_container_width=True):
+                    if st.button("Go", key=f"search_go_{idx}_{res.get('source', '')}_{res.get('type', '')}_{res.get('index', idx)}", use_container_width=True):
                         # 导航到搜索结果
-                        if "level" in res:
-                            # textbook模式的结果
+                        if res.get("source") == "textbook" and "level" in res and res["level"]:
                             st.session_state.current_mode = "textbook"
                             st.session_state.level = res["level"]
                             st.session_state.path = res["path"]
-                        elif "exam" in res:
-                            # NEMT模式的结果（如果需要支持NEMT本地搜索）
+                        elif res.get("source") == "nemt_cet" and "exam" in res:
                             st.session_state.current_mode = "nemt_cet"
-                            st.session_state.selected_nemt_cet = res.get("exam", st.session_state.selected_nemt_cet)
-                            st.session_state.nemt_cet_path = res.get("path", [])
+                            st.session_state.selected_nemt_cet = res["exam"]
+                            # 路径第一个是 exam 名，去掉
+                            st.session_state.nemt_cet_path = res["path"][1:] if len(res["path"]) > 1 else []
                         
-                        # 清除搜索状态
+                        # 清除搜索状态并刷新
                         st.session_state.search_keyword = ""
                         st.session_state.search_results = []
                         st.rerun()
