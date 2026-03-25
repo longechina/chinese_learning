@@ -295,7 +295,7 @@ Generate the quiz:"""
     
     try:
         response = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
+            model="openai/gpt-oss-20b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
             max_tokens=1500,
@@ -363,7 +363,7 @@ Only return the evaluation, no extra text."""
     
     try:
         response = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
+            model="openai/gpt-oss-20b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
             max_tokens=200,
@@ -811,7 +811,7 @@ Now generate for: {topic}
     for attempt in range(max_retries):
         try:
             response = client.chat.completions.create(
-                model="openai/gpt-oss-120b",
+                model="openai/gpt-oss-20b",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.7,
                 max_tokens=500,
@@ -893,7 +893,7 @@ Word: {clean_word}
 Translation:"""
         
         response = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
+            model="openai/gpt-oss-20b",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
             max_tokens=50,
@@ -1061,7 +1061,7 @@ def get_ai_reply(user_input):
 
     try:
         response = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
+            model="openai/gpt-oss-20b",
             messages=context_msgs,
             temperature=0.7,
             max_tokens=512,
@@ -1102,7 +1102,7 @@ Conversation:
 Summary:"""
     try:
         response = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
+            model="openai/gpt-oss-20b",
             messages=[{"role": "user", "content": summary_prompt}],
             temperature=0.5,
             max_tokens=200,
