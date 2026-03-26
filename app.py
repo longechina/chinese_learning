@@ -1578,44 +1578,9 @@ st.markdown(f"""
         min-width: 400px !important;
     }}
 
-    /* 折叠状态 - 只显示一个按钮区域 */
-    section[data-testid="stSidebar"][aria-expanded="false"] {{
-        width: 60px !important;
-        min-width: 60px !important;
-        overflow: visible !important;
-    }}
-
-    /* 折叠时隐藏内容，但保留按钮区域 */
-    section[data-testid="stSidebar"][aria-expanded="false"] > div:not([data-testid="stSidebarHeader"]) {{
-        display: none !important;
-    }}
-
-    /* 自定义折叠按钮样式 */
+    /* 隐藏折叠按钮，禁止折叠 */
     section[data-testid="stSidebar"] button[data-testid="stSidebarCollapseButton"] {{
-        background-color: rgba(102, 126, 234, 0.8) !important;
-        border-radius: 8px !important;
-        margin: 10px !important;
-        padding: 8px !important;
-        width: 40px !important;
-        height: 40px !important;
-        cursor: pointer !important;
-        transition: all 0.3s ease !important;
-        border: 1px solid rgba(255, 255, 255, 0.3) !important;
-        color: white !important;
-        font-size: 20px !important;
-        z-index: 101 !important;
-    }}
-
-    section[data-testid="stSidebar"] button[data-testid="stSidebarCollapseButton"]:hover {{
-        background-color: rgba(102, 126, 234, 1) !important;
-        transform: scale(1.05) !important;
-    }}
-
-    /* 折叠状态下按钮旋转 */
-    section[data-testid="stSidebar"][aria-expanded="false"] button[data-testid="stSidebarCollapseButton"] {{
-        transform: rotate(180deg) !important;
-        position: relative !important;
-        left: 10px !important;
+        display: none !important;
     }}
 
     /* 确保侧边栏中的文本可见 */
