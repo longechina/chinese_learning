@@ -1573,18 +1573,6 @@ st.markdown(f"""
         backdrop-filter: blur(10px) !important;
     }}
 
-    /* 侧边栏标题加 emoji */
-    section[data-testid="stSidebar"]::before {{
-        content: "⚙️ Settings Panel ";
-        display: block;
-        font-size: 18px;
-        font-weight: bold;
-        padding: 15px 20px;
-        color: white;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-bottom: 1px solid rgba(255,255,255,0.2);
-        font-family: 'Manrope', sans-serif;
-    }}
 
     div[role="dialog"] {{
         display: none !important;
