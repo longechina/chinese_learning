@@ -1564,9 +1564,8 @@ st.markdown(f"""
         display: none !important;
     }}
 
-    /* ========== 修复侧边栏样式 ========== */
+    /* ========== 侧边栏样式 - 支持折叠/展开 ========== */
     section[data-testid="stSidebar"] {{
-        display: block !important;
         visibility: visible !important;
         opacity: 1 !important;
         width: 320px !important;
@@ -1577,9 +1576,25 @@ st.markdown(f"""
         z-index: 1000 !important;
         backdrop-filter: blur(10px) !important;
         position: relative !important;
-        transform: translateX(0) !important;
         overflow-y: auto !important;
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3) !important;
+        transition: width 0.2s ease !important;
+    }}
+
+    /* 折叠状态 */
+    section[data-testid="stSidebar"][aria-expanded="false"] {{
+        width: 0px !important;
+        min-width: 0px !important;
+        max-width: 0px !important;
+        overflow: hidden !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-right: none !important;
+        box-shadow: none !important;
+    }}
+
+    section[data-testid="stSidebar"][aria-expanded="false"] > div {{
+        display: none !important;
     }}
 
     /* 确保侧边栏内容可见 */
@@ -1589,7 +1604,7 @@ st.markdown(f"""
         display: block !important;
     }}
 
-    /* 移除可能导致问题的伪元素 */
+    /* 移除伪元素 */
     section[data-testid="stSidebar"]::before,
     section[data-testid="stSidebar"]::after {{
         display: none !important;
@@ -1610,36 +1625,57 @@ st.markdown(f"""
         margin-top: 0 !important;
     }}
 
-    /* 侧边栏中的输入框样式 */
+    /* ========== 侧边栏中的按钮样式 - 与首页卡片一致 ========== */
+    section[data-testid="stSidebar"] button {{
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 12px !important;
+        padding: 12px 16px !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        cursor: pointer !important;
+        width: 100% !important;
+    }}
+
+    section[data-testid="stSidebar"] button:hover {{
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+        border-color: rgba(255, 255, 255, 0.3) !important;
+    }}
+
+    section[data-testid="stSidebar"] button:active {{
+        transform: translateY(0px) !important;
+    }}
+
+    /* 侧边栏中的输入框样式 - 与首页卡片风格一致 */
     section[data-testid="stSidebar"] input,
     section[data-testid="stSidebar"] textarea,
     section[data-testid="stSidebar"] select {{
         background-color: rgba(255, 255, 255, 0.1) !important;
         color: white !important;
-        border: 1px solid rgba(255, 255, 255, 0.3) !important;
-        border-radius: 6px !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 12px !important;
+        padding: 10px 12px !important;
+        transition: all 0.3s ease !important;
     }}
 
     section[data-testid="stSidebar"] input:focus,
     section[data-testid="stSidebar"] textarea:focus,
     section[data-testid="stSidebar"] select:focus {{
-        border-color: #667eea !important;
+        border-color: rgba(102, 126, 234, 0.5) !important;
         box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2) !important;
+        background-color: rgba(255, 255, 255, 0.15) !important;
     }}
 
-    /* 侧边栏中的按钮样式 */
-    section[data-testid="stSidebar"] button {{
-        background-color: rgba(102, 126, 234, 0.3) !important;
-        color: white !important;
-        border: 1px solid rgba(255, 255, 255, 0.3) !important;
-        border-radius: 6px !important;
-        transition: all 0.3s ease !important;
-    }}
-
-    section[data-testid="stSidebar"] button:hover {{
-        background-color: rgba(102, 126, 234, 0.5) !important;
-        transform: translateY(-1px) !important;
-        border-color: rgba(255, 255, 255, 0.5) !important;
+    /* 侧边栏中的 selectbox 特殊样式 */
+    section[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] {{
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        border-radius: 12px !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
     }}
 
     /* 侧边栏分隔线样式 */
@@ -1648,12 +1684,32 @@ st.markdown(f"""
         border-color: rgba(255, 255, 255, 0.2) !important;
     }}
 
-    /* 侧边栏的selectbox样式 */
-    section[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] {{
-        background-color: rgba(255, 255, 255, 0.1) !important;
+    /* 侧边栏的 markdown 容器样式 */
+    section[data-testid="stSidebar"] .stMarkdown {{
+        margin-bottom: 8px !important;
     }}
 
-    /* 隐藏其他不必要的模态框 */
+    /* ========== 隐藏快捷键和提示 ========== */
+    [data-testid="stKeyboardHelp"],
+    [class*="keyboard"],
+    [class*="shortcut"],
+    [class*="hotkey"],
+    [class*="toolbar"],
+    .st-keyboard-help,
+    .stShortcut,
+    .stHotkey {{
+        display: none !important;
+    }}
+
+    section[data-testid="stSidebar"] [data-testid="stToolbar"],
+    section[data-testid="stSidebar"] [class*="keyboard"],
+    section[data-testid="stSidebar"] [class*="shortcut"],
+    section[data-testid="stSidebar"] [class*="hotkey"],
+    section[data-testid="stSidebar"] [class*="toolbar"] {{
+        display: none !important;
+    }}
+
+    /* 隐藏所有模态框和对话框 */
     div[role="dialog"] {{
         display: none !important;
     }}
@@ -1739,7 +1795,7 @@ st.markdown(f"""
         }}
     }}
 
-    /* 主按钮样式 */
+    /* 主按钮样式 - 首页的 Level 按钮 */
     button[kind="primary"],
     .stButton button {{
         background-color: rgba(255, 255, 255, 0.2) !important;
@@ -1752,6 +1808,7 @@ st.markdown(f"""
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
         letter-spacing: normal !important;
         border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 12px !important;
     }}
 
     .stButton button > div {{
@@ -1790,11 +1847,11 @@ st.markdown(f"""
         font-size: 18px !important;
         font-weight: 700 !important;
         border: 1px solid rgba(255, 255, 255, 0.3) !important;
-        border-radius: 8px !important;
+        border-radius: 12px !important;
         padding: 10px 24px !important;
     }}
 
-    /* 内容容器样式 */
+    /* 内容容器样式 - 首页单词卡片风格 */
     div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] {{
         background-color: rgba(255, 255, 255, 0.1);
         border-radius: 12px;
@@ -1802,6 +1859,13 @@ st.markdown(f"""
         margin-bottom: 15px;
         border: 1px solid rgba(255, 255, 255, 0.2);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }}
+
+    div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"]:hover {{
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        background-color: rgba(255, 255, 255, 0.15);
     }}
 
     /* 标题样式 */
@@ -1865,7 +1929,7 @@ st.markdown(f"""
         margin-bottom: 15px;
         padding: 12px;
         background-color: rgba(240, 240, 240, 0.2);
-        border-radius: 8px;
+        border-radius: 12px;
         font-family: 'Manrope', sans-serif;
         font-size: 15px;
         font-weight: 400;
@@ -1912,7 +1976,7 @@ st.markdown(f"""
     button[key="clear_chat"] {{
         background-color: rgba(255, 255, 255, 0.2) !important;
         border: 1px solid rgba(255, 255, 255, 0.3) !important;
-        border-radius: 8px !important;
+        border-radius: 12px !important;
         padding: 6px 8px !important;
         font-family: 'Manrope', sans-serif !important;
         font-size: 14px !important;
@@ -1943,10 +2007,10 @@ st.markdown(f"""
     div[data-testid="stAudioInput"] button {{
         background-color: rgba(255, 255, 255, 0.2) !important;
         border: 1px solid rgba(255, 255, 255, 0.3) !important;
-        border-radius: 8px !important;
+        border-radius: 12px !important;
     }}
 
-    /* 工具提示和模态框 */
+    /* 隐藏其他不必要的元素 */
     div[data-baseweb="tooltip"]:not(.language-selector *) {{
         display: none !important;
     }}
@@ -1964,7 +2028,7 @@ st.markdown(f"""
         margin-top: 0px;
     }}
     
-    /* 单词卡片样式 */
+    /* 单词卡片样式 - 首页样式 */
     .word-card {{
         background-color: rgba(255, 255, 255, 0.1);
         border-radius: 12px;
@@ -1985,10 +2049,10 @@ st.markdown(f"""
 
 # ========== 侧边栏：所有设置项 ==========
 with st.sidebar:
-    st.markdown("## ⚙️ Settings Panel")
+    st.markdown("## Settings Panel")
     
     # 语言选择
-    st.markdown("### 🌐 Mode")
+    st.markdown("### Mode")
     mode_options = ["Chinese", "English", "NEMT & CET"]
     current_index = 0
     if st.session_state.language == "English":
@@ -2029,7 +2093,7 @@ with st.sidebar:
     st.markdown("---")
     
     # 搜索框
-    st.markdown("### 🔍 Search")
+    st.markdown("### Search")
     
     search_scope = st.selectbox(
         "Search in",
@@ -2073,7 +2137,7 @@ with st.sidebar:
     st.markdown("---")
     
     # 模型选择
-    st.markdown("### 🤖 Model")
+    st.markdown("### Model")
     selected_model_display = st.selectbox(
         "Select Model",
         options=list(AVAILABLE_MODELS.keys()),
@@ -2089,7 +2153,7 @@ with st.sidebar:
     st.markdown("---")
     
     # Quiz 按钮
-    if st.button("📝 Generate Quiz", key="sidebar_quiz_button", use_container_width=True):
+    if st.button("Generate Quiz", key="sidebar_quiz_button", use_container_width=True):
         full_page = get_current_page_full_content()
         topic = "general"
         if full_page:
