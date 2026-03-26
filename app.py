@@ -1799,7 +1799,7 @@ with st.sidebar:
             }, 50);
         </script>
         """, unsafe_allow_html=True)
-        
+
     # 第一行：语音 + 文本输入框
     col_voice, col_text = st.columns([1, 4])
     with col_voice:
@@ -2381,46 +2381,4 @@ elif st.session_state.current_mode == "nemt_cet" and st.session_state.selected_n
                 st.markdown(recommendations, unsafe_allow_html=True)
 
 
-    # 输入区域：三列布局（Clear + 语音 + 文本输入）
-    col_clear, col_voice, col_text = st.columns([1, 1, 4])
-
-    with col_clear:
-        if st.button("Clear Chat", key="clear_chat", use_container_width=True):
-            st.session_state.messages = [m for m in st.session_state.messages if m["role"] == "system"]
-            st.session_state.pending_tts = None
-            st.session_state.last_audio_id = None
-            st.session_state.conversation_summary = ""
-            st.session_state.conv_history = []
-            st.session_state.user_msg_count = 0
-            st.session_state.quiz_active = False
-            st.session_state.current_quiz = None
-            st.session_state.quiz_answers = {}
-            st.session_state.quiz_asked = False
-            if os.path.exists("conversation_summary.txt"):
-                os.remove("conversation_summary.txt")
-            st.rerun()
-
-    with col_voice:
-        audio_input = st.audio_input("Voice Input", key="voice_input", label_visibility="collapsed")
-        if audio_input is not None:
-            audio_id = f"{audio_input.name}_{audio_input.size}"
-            if audio_id != st.session_state.last_audio_id:
-                st.session_state.last_audio_id = audio_id
-                audio_bytes = audio_input.read()
-                if audio_bytes:
-                    with st.spinner("Transcribing..."):
-                        transcript = transcribe_audio(audio_bytes)
-                    if transcript and not transcript.startswith("[转录失败"):
-                        with st.spinner("Thinking..."):
-                            get_ai_reply(transcript)
-                        st.rerun()
-
-    with col_text:
-        if prompt := st.chat_input("Type a message...", key="text_input"):
-            with st.spinner("Thinking..."):
-                if hasattr(st.session_state, 'uploaded_image'):
-                    get_ai_reply_with_image(prompt, st.session_state.uploaded_image)
-                    del st.session_state.uploaded_image
-                else:
-                    get_ai_reply(prompt)
-            st.rerun()
+   
