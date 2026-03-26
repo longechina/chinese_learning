@@ -1622,43 +1622,34 @@ st.markdown(f"""
     section[data-testid="stSidebar"] * {{
         color: #b0b0b0 !important;
     }}
-    
-    /* 侧边栏所有输入框 - 强制透明黑色背景 */
+
+    /* 侧边栏输入框、选择框、按钮 - 黑色半透明 */
     section[data-testid="stSidebar"] input,
     section[data-testid="stSidebar"] textarea,
     section[data-testid="stSidebar"] select,
-    section[data-testid="stSidebar"] [data-testid="stFileUploader"] div,
-    section[data-testid="stSidebar"] [data-testid="stFileUploader"] div[data-testid="stFileUploadDropzone"],
-    section[data-testid="stSidebar"] [data-baseweb="input"] input,
-    section[data-testid="stSidebar"] [data-baseweb="textarea"] textarea,
-    section[data-testid="stSidebar"] [data-baseweb="select"] div,
-    section[data-testid="stSidebar"] .stChatInput textarea,
-    section[data-testid="stSidebar"] .stAudioInput div,
-    section[data-testid="stSidebar"] .stAudioInput input {{
-        background-color: rgba(0, 0, 0, 0.3) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    section[data-testid="stSidebar"] div[data-baseweb="select"] > div,
+    section[data-testid="stSidebar"] [data-baseweb="select"] {{
+        background-color: rgba(0, 0, 0, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
         border-radius: 8px !important;
-        color: rgba(255, 255, 255, 0.8) !important;
+        color: #b0b0b0 !important;
     }}
 
-    /* 文件上传区域 */
-    section[data-testid="stSidebar"] [data-testid="stFileUploadDropzone"] {{
-        background-color: rgba(0, 0, 0, 0.3) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    /* 侧边栏按钮 - 黑色半透明 */
+    section[data-testid="stSidebar"] button {{
+        background-color: rgba(0, 0, 0, 0.15) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
         border-radius: 8px !important;
+        color: #b0b0b0 !important;
     }}
 
-    /* 语音输入按钮 */
-    section[data-testid="stSidebar"] .stAudioInput {{
-        background-color: rgba(0, 0, 0, 0.3) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 8px !important;
+    /* 下拉框选项文字颜色 */
+    section[data-testid="stSidebar"] select option {{
+        background-color: #1a1a2e !important;
+        color: #b0b0b0 !important;
     }}
 
-    /* 聊天输入框 */
-    section[data-testid="stSidebar"] .stChatInput textarea {{
-        background-color: rgba(0, 0, 0, 0.3) !important;
-    }}
+
 
     /* 其他原有样式保持不变 */
     .breadcrumb {{
