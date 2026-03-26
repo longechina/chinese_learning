@@ -1581,7 +1581,7 @@ st.markdown(f"""
 
     /* 折叠状态 - 只留一个小竖条 */
     section[data-testid="stSidebar"][aria-expanded="false"] {{
-        width: 48px !important;
+        width: 100px !important;
         min-width: 48px !important;
         overflow: visible !important;
     }}
@@ -1619,7 +1619,7 @@ st.markdown(f"""
         margin-top: 20px !important;
         margin-left: 8px !important;
     }}
-    
+
 
     /* 确保侧边栏中的文本可见 */
     section[data-testid="stSidebar"] * {{
