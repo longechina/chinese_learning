@@ -1565,9 +1565,9 @@ st.markdown(f"""
 
     /* ========== 侧边栏样式 ========== */
     section[data-testid="stSidebar"] {{
-        background-color: rgba(20, 20, 30, 0.95) !important;
-        border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
-        backdrop-filter: blur(10px) !important;
+        background-color: transparent !important;
+        border-right: none !important;
+        backdrop-filter: none !important;
         transition: width 0.3s ease !important;
         z-index: 100 !important;
     }}
@@ -1797,7 +1797,7 @@ with st.sidebar:
             else:
                 st.write(f"**AI:** {msg['content']}")
     
-    # 聊天输入行（清空、语音、文本输入）
+    # 第一行：清空、语音、文本输入
     col1, col2, col3 = st.columns([1, 1, 4])
     with col1:
         if st.button("Clear", key="clear_btn"):
@@ -1825,7 +1825,99 @@ with st.sidebar:
             get_ai_reply(user_msg)
             st.rerun()
     
-    # ========== 设置工具区域（占20%） ==========
+    # 第二行：四个小按钮（Clear Search, Generate Quiz, Run OCR）
+    col_a, col_b, col_c, col_d = st.columns(4)
+    with col_a:
+        if st.button("Clear Search", key="clear_search_btn", use_container_width=True):
+            st.session_state.search_keyword = ""
+            st.session_state.search_results = []
+            st.rerun()
+    with col_b:
+        if st.button("Generate Quiz", key="quiz_btn_small", use_container_width=True):
+            full_page = get_current_page_full_content()
+            topic = "general"
+            if full_page:
+                sec_match = re.search(r"Section: (.+)", full_page)
+                if sec_match:
+                    topic = sec_match.group(1)
+            quiz_text = generate_quiz(topic, full_page)
+            if quiz_text:
+                st.session_state.quiz_active = True
+                questions = []
+                for line in quiz_text.split('\n'):
+                    line = line.strip()
+                    if re.match(r'^\d+\.', line):
+                        questions.append(line)
+                st.session_state.current_quiz = {
+                    "questions": questions,
+                    "quiz_text": quiz_text,
+                    "topic": topic
+                }
+                st.session_state.quiz_answers = {}
+                st.session_state.quiz_asked = True
+                reply = f"Here's a quiz on {topic}:\n\n{quiz_text}\n\nPlease answer the questions. Use format: '1. A, 2. B, 3. C'"
+                st.session_state.messages.append({"role": "assistant", "content": reply})
+                st.session_state.conv_history.append({"role": "assistant", "content": reply})
+                try:
+                    audio_bytes, fmt = text_to_speech(reply)
+                    if audio_bytes:
+                        st.session_state.pending_tts = (audio_bytes, fmt)
+                except Exception as e:
+                    logger.error(f"TTS error: {e}")
+                st.rerun()
+    with col_c:
+        if st.button("Run OCR", key="ocr_run_small", use_container_width=True):
+            # 获取上传的文件
+            img_files = st.session_state.get("ocr_imgs", [])
+            pdf_file = st.session_state.get("ocr_pdf", None)
+            zip_file = st.session_state.get("ocr_zip", None)
+            ocr_results = []
+            if img_files:
+                with st.spinner(""):
+                    results = process_ocr_images(img_files)
+                    if results:
+                        ocr_results.extend(results)
+            if pdf_file:
+                with st.spinner(""):
+                    text = process_ocr_pdf(pdf_file)
+                    if text:
+                        ocr_results.append(("PDF", "success", text))
+            if zip_file:
+                with st.spinner(""):
+                    zip_bytes = zip_file.read()
+                    with tempfile.TemporaryDirectory() as tmp:
+                        with zipfile.ZipFile(io.BytesIO(zip_bytes), 'r') as zf:
+                            zip_imgs = []
+                            for info in zf.infolist():
+                                if not info.is_dir():
+                                    ext = os.path.splitext(info.filename)[1].lower()
+                                    if ext in ['.jpg','.jpeg','.png','.bmp','.webp','.tiff']:
+                                        img_bytes = zf.read(info.filename)
+                                        zip_imgs.append((img_bytes, os.path.basename(info.filename)))
+                            if zip_imgs:
+                                results = ocr_images_batch(zip_imgs, IMAGE_OCR_CONFIG)
+                                ocr_results.extend(results)
+            if ocr_results:
+                result_text = format_results_as_text(ocr_results)
+                st.session_state.ocr_result_text = result_text
+                st.rerun()
+    with col_d:
+        # 占位，保持四个按钮对齐
+        pass
+    
+    # 如果有OCR结果，显示
+    if st.session_state.get("ocr_result_text"):
+        st.text_area("OCR Results", st.session_state.ocr_result_text, height=150)
+        col_dl, col_send = st.columns(2)
+        with col_dl:
+            st.download_button("Download", st.session_state.ocr_result_text, file_name=f"ocr_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt", key="ocr_dl_small")
+        with col_send:
+            if st.button("Send to AI", key="ocr_send_small"):
+                get_ai_reply(f"Please analyze these OCR results:\n\n{st.session_state.ocr_result_text}")
+                st.session_state.ocr_result_text = None
+                st.rerun()
+    
+    # ========== 设置工具区域 ==========
     # Mode
     mode_opts = ["Chinese", "English", "NEMT & CET"]
     cur_idx = 0
@@ -1893,79 +1985,11 @@ with st.sidebar:
         st.session_state.model_max_tokens = AVAILABLE_MODELS[new_model]["max_tokens"]
         st.rerun()
     
-    # Quiz
-    if st.button("Generate Quiz", key="quiz_btn"):
-        full_page = get_current_page_full_content()
-        topic = "general"
-        if full_page:
-            sec_match = re.search(r"Section: (.+)", full_page)
-            if sec_match:
-                topic = sec_match.group(1)
-        quiz_text = generate_quiz(topic, full_page)
-        if quiz_text:
-            st.session_state.quiz_active = True
-            questions = []
-            for line in quiz_text.split('\n'):
-                line = line.strip()
-                if re.match(r'^\d+\.', line):
-                    questions.append(line)
-            st.session_state.current_quiz = {
-                "questions": questions,
-                "quiz_text": quiz_text,
-                "topic": topic
-            }
-            st.session_state.quiz_answers = {}
-            st.session_state.quiz_asked = True
-            reply = f"Here's a quiz on {topic}:\n\n{quiz_text}\n\nPlease answer the questions. Use format: '1. A, 2. B, 3. C'"
-            st.session_state.messages.append({"role": "assistant", "content": reply})
-            st.session_state.conv_history.append({"role": "assistant", "content": reply})
-            try:
-                audio_bytes, fmt = text_to_speech(reply)
-                if audio_bytes:
-                    st.session_state.pending_tts = (audio_bytes, fmt)
-            except Exception as e:
-                logger.error(f"TTS error: {e}")
-            st.rerun()
-    
-    # OCR
+    # OCR 文件上传（移到下面）
+    st.write("**OCR Files**")
     img_files = st.file_uploader("Images", type=["jpg","jpeg","png","bmp","webp","tiff"], accept_multiple_files=True, key="ocr_imgs")
     pdf_file = st.file_uploader("PDF", type=["pdf"], key="ocr_pdf")
     zip_file = st.file_uploader("ZIP", type=["zip"], key="ocr_zip")
-    
-    if st.button("Run OCR", key="ocr_run"):
-        ocr_results = []
-        if img_files:
-            with st.spinner(""):
-                results = process_ocr_images(img_files)
-                if results:
-                    ocr_results.extend(results)
-        if pdf_file:
-            with st.spinner(""):
-                text = process_ocr_pdf(pdf_file)
-                if text:
-                    ocr_results.append(("PDF", "success", text))
-        if zip_file:
-            with st.spinner(""):
-                zip_bytes = zip_file.read()
-                with tempfile.TemporaryDirectory() as tmp:
-                    with zipfile.ZipFile(io.BytesIO(zip_bytes), 'r') as zf:
-                        zip_imgs = []
-                        for info in zf.infolist():
-                            if not info.is_dir():
-                                ext = os.path.splitext(info.filename)[1].lower()
-                                if ext in ['.jpg','.jpeg','.png','.bmp','.webp','.tiff']:
-                                    img_bytes = zf.read(info.filename)
-                                    zip_imgs.append((img_bytes, os.path.basename(info.filename)))
-                        if zip_imgs:
-                            results = ocr_images_batch(zip_imgs, IMAGE_OCR_CONFIG)
-                            ocr_results.extend(results)
-        if ocr_results:
-            result_text = format_results_as_text(ocr_results)
-            st.text_area("OCR Results", result_text, height=150)
-            st.download_button("Download", result_text, file_name=f"ocr_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt", key="ocr_dl")
-            if st.button("Send to AI", key="ocr_send"):
-                get_ai_reply(f"Please analyze these OCR results:\n\n{result_text}")
-                st.rerun()
 
 # TTS 音频播放
 if st.session_state.pending_tts:
