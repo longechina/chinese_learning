@@ -1564,209 +1564,45 @@ st.markdown(f"""
         display: none !important;
     }}
 
-    /* ========== 侧边栏样式 - 完整修复版 ========== */
+    /* ========== 侧边栏样式 - 极简版，保证可见 ========== */
     section[data-testid="stSidebar"] {{
         background-color: rgba(20, 20, 30, 0.95) !important;
         border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
         backdrop-filter: blur(10px) !important;
-        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3) !important;
-        transition: width 0.2s ease !important;
-        overflow: visible !important;
-        z-index: 1000 !important;
     }}
 
-    /* 展开状态 */
-    section[data-testid="stSidebar"][aria-expanded="true"] {{
-        width: 320px !important;
-        min-width: 320px !important;
-    }}
-
-    /* 折叠状态 - 保留一点宽度显示按钮 */
-    section[data-testid="stSidebar"][aria-expanded="false"] {{
-        width: 48px !important;
-        min-width: 48px !important;
-        overflow: visible !important;
-    }}
-
-    /* 折叠时隐藏内容，但保留按钮区域 */
-    section[data-testid="stSidebar"][aria-expanded="false"] > div:not([data-testid="stSidebarHeader"]) {{
-        display: none !important;
-    }}
-
-    /* 折叠按钮样式 - 始终可见 */
-    section[data-testid="stSidebar"] button[data-testid="stSidebarCollapseButton"] {{
-        display: block !important;
-        visibility: visible !important;
-        background-color: rgba(102, 126, 234, 0.8) !important;
-        border-radius: 8px !important;
-        margin: 10px !important;
-        padding: 8px !important;
-        width: 32px !important;
-        height: 32px !important;
-        cursor: pointer !important;
-        transition: all 0.3s ease !important;
-        border: 1px solid rgba(255, 255, 255, 0.3) !important;
-        color: white !important;
-        font-size: 16px !important;
-        z-index: 1001 !important;
-    }}
-
-    section[data-testid="stSidebar"] button[data-testid="stSidebarCollapseButton"]:hover {{
-        background-color: rgba(102, 126, 234, 1) !important;
-        transform: scale(1.1) !important;
-    }}
-
-    /* 折叠状态下按钮位置和样式 */
-    section[data-testid="stSidebar"][aria-expanded="false"] button[data-testid="stSidebarCollapseButton"] {{
-        position: absolute !important;
-        left: 8px !important;
-        top: 20px !important;
-        transform: rotate(180deg) !important;
-        background-color: rgba(102, 126, 234, 0.9) !important;
-        margin: 0 !important;
-    }}
-
-    /* 确保按钮在折叠状态下可点击 */
-    section[data-testid="stSidebar"][aria-expanded="false"] {{
-        pointer-events: auto !important;
-    }}
-
-    /* 侧边栏头部区域 */
-    section[data-testid="stSidebar"] [data-testid="stSidebarHeader"] {{
-        position: relative !important;
-        min-height: 50px !important;
-    }}
-
-    /* 移除伪元素 */
-    section[data-testid="stSidebar"]::before,
-    section[data-testid="stSidebar"]::after {{
-        display: none !important;
-        content: none !important;
-    }}
-
-    /* 确保侧边栏中的文本可见 */
+    /* 确保侧边栏内容可见 */
     section[data-testid="stSidebar"] * {{
         color: #ffffff !important;
-        visibility: visible !important;
     }}
 
     /* 侧边栏标题样式 */
+    section[data-testid="stSidebar"] h1,
     section[data-testid="stSidebar"] h2,
     section[data-testid="stSidebar"] h3 {{
         color: #ffffff !important;
-        font-weight: 600 !important;
-        margin-top: 0 !important;
     }}
 
-    /* ========== 侧边栏中的按钮样式 - 与首页卡片一致 ========== */
-    section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]) {{
-        background-color: rgba(255, 255, 255, 0.1) !important;
-        color: #ffffff !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 12px !important;
-        padding: 12px 16px !important;
-        font-size: 14px !important;
-        font-weight: 500 !important;
-        transition: all 0.3s ease !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-        cursor: pointer !important;
-        width: 100% !important;
-    }}
-
-    section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]):hover {{
+    /* 侧边栏按钮样式 */
+    section[data-testid="stSidebar"] button {{
         background-color: rgba(255, 255, 255, 0.2) !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-        border-color: rgba(255, 255, 255, 0.3) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 8px !important;
+        transition: all 0.3s ease !important;
     }}
 
-    section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]):active {{
-        transform: translateY(0px) !important;
+    section[data-testid="stSidebar"] button:hover {{
+        background-color: rgba(255, 255, 255, 0.3) !important;
     }}
 
-    /* 侧边栏中的输入框样式 - 与首页卡片风格一致 */
+    /* 侧边栏输入框样式 */
     section[data-testid="stSidebar"] input,
-    section[data-testid="stSidebar"] textarea,
     section[data-testid="stSidebar"] select {{
         background-color: rgba(255, 255, 255, 0.1) !important;
         color: white !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 12px !important;
-        padding: 10px 12px !important;
-        transition: all 0.3s ease !important;
-    }}
-
-    section[data-testid="stSidebar"] input:focus,
-    section[data-testid="stSidebar"] textarea:focus,
-    section[data-testid="stSidebar"] select:focus {{
-        border-color: rgba(102, 126, 234, 0.5) !important;
-        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2) !important;
-        background-color: rgba(255, 255, 255, 0.15) !important;
-    }}
-
-    /* 侧边栏中的 selectbox 特殊样式 */
-    section[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] {{
-        background-color: rgba(255, 255, 255, 0.1) !important;
-        border-radius: 12px !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    }}
-
-    /* 侧边栏分隔线样式 */
-    section[data-testid="stSidebar"] hr {{
-        margin: 20px 0 !important;
-        border-color: rgba(255, 255, 255, 0.2) !important;
-    }}
-
-    /* 侧边栏的 markdown 容器样式 */
-    section[data-testid="stSidebar"] .stMarkdown {{
-        margin-bottom: 8px !important;
-    }}
-
-    /* ========== 隐藏快捷键和提示 ========== */
-    [data-testid="stKeyboardHelp"],
-    [class*="keyboard"],
-    [class*="shortcut"],
-    [class*="hotkey"],
-    [class*="toolbar"],
-    .st-keyboard-help,
-    .stShortcut,
-    .stHotkey {{
-        display: none !important;
-    }}
-
-    section[data-testid="stSidebar"] [data-testid="stToolbar"],
-    section[data-testid="stSidebar"] [class*="keyboard"],
-    section[data-testid="stSidebar"] [class*="shortcut"],
-    section[data-testid="stSidebar"] [class*="hotkey"],
-    section[data-testid="stSidebar"] [class*="toolbar"] {{
-        display: none !important;
-    }}
-
-    /* 隐藏所有模态框和对话框 */
-    div[role="dialog"] {{
-        display: none !important;
-    }}
-    div[data-testid="stModal"] {{
-        display: none !important;
-    }}
-    .stAlert {{
-        display: none !important;
-    }}
-    div[data-baseweb="modal"] {{
-        display: none !important;
-    }}
-    div[class*="overlay"] {{
-        display: none !important;
-    }}
-    div[class*="backdrop"] {{
-        display: none !important;
-    }}
-    div[class*="Overlay"] {{
-        display: none !important;
-    }}
-    div[style*="position: fixed"][style*="inset: 0"] {{
-        pointer-events: none !important;
-        background: transparent !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 8px !important;
     }}
 
     /* 聊天输入框样式 */
@@ -1788,23 +1624,6 @@ st.markdown(f"""
 
     div[data-testid="stAppViewBlockContainer"] {{
         background: transparent !important;
-    }}
-
-    /* 搜索容器样式 */
-    .search-container {{
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 20px;
-    }}
-    .search-scope-selector {{
-        width: 120px;
-        background: white;
-        border-radius: 8px;
-        border: 1px solid #e0e0e0;
-    }}
-    .search-input {{
-        flex: 1;
     }}
 
     /* 标题样式 */
@@ -2041,19 +1860,6 @@ st.markdown(f"""
         background-color: rgba(255, 255, 255, 0.2) !important;
         border: 1px solid rgba(255, 255, 255, 0.3) !important;
         border-radius: 12px !important;
-    }}
-
-    /* 隐藏其他不必要的元素 */
-    div[data-baseweb="tooltip"]:not(.language-selector *) {{
-        display: none !important;
-    }}
-    
-    div[data-baseweb="modal"]:not(.language-selector *) {{
-        display: none !important;
-    }}
-    
-    .element-container:has(iframe) {{
-        display: none !important;
     }}
 
     /* 垂直块样式 */
