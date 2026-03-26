@@ -1783,244 +1783,213 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# ========== 侧边栏：所有设置项 ==========
+# ========== 侧边栏：聊天 + 设置工具 ==========
 with st.sidebar:
-    st.markdown("## Settings Panel")
-    
-    # 语言选择
-    st.markdown("### Mode")
-    mode_options = ["Chinese", "English", "NEMT & CET"]
-    current_index = 0
-    if st.session_state.language == "English":
-        current_index = 1
-    elif st.session_state.language == "NEMT & CET":
-        current_index = 2
-    
-    new_language = st.selectbox(
-        "Select Mode",
-        mode_options,
-        index=current_index,
-        key="sidebar_language_selector"
-    )
-    if new_language != st.session_state.language:
-        st.session_state.language = new_language
-        
-        if new_language == "NEMT & CET":
-            st.session_state.current_mode = "nemt_cet"
-            st.session_state.level = None
-            st.session_state.path = []
-            st.session_state.selected_nemt_cet = None
-            st.session_state.nemt_cet_path = []
-        else:
-            st.session_state.current_mode = "textbook"
-            levels_data = load_level_data(st.session_state.language)
-            st.session_state.level = None
-            st.session_state.path = []
-            st.session_state.selected_nemt_cet = None
-            st.session_state.nemt_cet_path = []
-        
-        st.session_state.messages = [{"role": "system", "content": system_prompt}]
-        st.session_state.quiz_active = False
-        st.session_state.current_quiz = None
-        st.session_state.quiz_answers = {}
-        st.session_state.quiz_asked = False
-        st.rerun()
-    
+    # ========== 聊天区域（上方） ==========
+    st.markdown("### 💬 Chat")
     st.markdown("---")
     
-    # 搜索框
-    st.markdown("### Search")
-    
-    search_scope = st.selectbox(
-        "Search in",
-        options=["Global", "Local"],
-        index=0 if st.session_state.search_scope == "global" else 1,
-        key="sidebar_search_scope"
-    )
-    if search_scope == "Global":
-        new_scope = "global"
-    else:
-        new_scope = "local"
-    if new_scope != st.session_state.search_scope:
-        st.session_state.search_scope = new_scope
-        st.session_state.search_results = []
-        st.session_state.search_keyword = ""
-        st.rerun()
-    
-    search_input = st.text_input(
-        "Search", 
-        value=st.session_state.search_keyword, 
-        placeholder="Type to search...", 
-        key="sidebar_search_box"
-    )
-    
-    if st.button("Clear Search", key="sidebar_clear_search", use_container_width=True):
-        st.session_state.search_keyword = ""
-        st.session_state.search_results = []
-        st.rerun()
-    
-    # 处理搜索输入变化
-    if search_input != st.session_state.search_keyword:
-        st.session_state.search_keyword = search_input
-        if search_input.strip():
-            if st.session_state.search_scope == "global":
-                st.session_state.search_results = global_search(search_input)
+    # 聊天消息区域
+    chat_container = st.container(height=400)
+    with chat_container:
+        for msg in st.session_state.messages:
+            if msg["role"] == "system":
+                continue
+            if msg["role"] == "user":
+                st.markdown(f'<div style="background: rgba(102,126,234,0.3); padding: 10px; border-radius: 10px; margin: 8px 0; text-align: right;"><strong>You:</strong><br>{msg["content"]}</div>', unsafe_allow_html=True)
             else:
-                st.session_state.search_results = local_search(search_input)
-        else:
-            st.session_state.search_results = []
+                st.markdown(f'<div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; margin: 8px 0;"><strong>AI:</strong><br>{msg["content"]}</div>', unsafe_allow_html=True)
     
-    st.markdown("---")
-    
-    # 模型选择
-    st.markdown("### Model")
-    selected_model_display = st.selectbox(
-        "Select Model",
-        options=list(AVAILABLE_MODELS.keys()),
-        index=list(AVAILABLE_MODELS.keys()).index(st.session_state.selected_model),
-        key="sidebar_model_selector"
-    )
-    if selected_model_display != st.session_state.selected_model:
-        st.session_state.selected_model = selected_model_display
-        st.session_state.model_name = AVAILABLE_MODELS[selected_model_display]["id"]
-        st.session_state.model_max_tokens = AVAILABLE_MODELS[selected_model_display]["max_tokens"]
-        st.rerun()
-    
-    st.markdown("---")
-    
-    # Quiz 按钮
-    if st.button("Generate Quiz", key="sidebar_quiz_button", use_container_width=True):
-        full_page = get_current_page_full_content()
-        topic = "general"
-        if full_page:
-            sec_match = re.search(r"Section: (.+)", full_page)
-            if sec_match:
-                topic = sec_match.group(1)
-        
-        quiz_text = generate_quiz(topic, full_page)
-        if quiz_text:
-            st.session_state.quiz_active = True
-            questions = []
-            for line in quiz_text.split('\n'):
-                line = line.strip()
-                if re.match(r'^\d+\.', line):
-                    questions.append(line)
-            
-            st.session_state.current_quiz = {
-                "questions": questions,
-                "quiz_text": quiz_text,
-                "topic": topic
-            }
-            st.session_state.quiz_answers = {}
-            st.session_state.quiz_asked = True
-            
-            reply = f"Here's a quiz on {topic}:\n\n{quiz_text}\n\nPlease answer the questions. Use one of these formats:\n- 1. A, 2. B, 3. C\n- 1: A, 2: B, 3: C\n- 1- A, 2- B, 3- C\n- 1 A, 2 B, 3 C\n(You can answer all at once or one by one.)"
-            
-            st.session_state.messages.append({"role": "assistant", "content": reply})
-            st.session_state.conv_history.append({"role": "assistant", "content": reply})
-            
-            try:
-                audio_bytes, fmt = text_to_speech(reply)
+    # 聊天输入行（清空+语音+文本）
+    col_clr, col_voc, col_txt = st.columns([1, 1, 4])
+    with col_clr:
+        if st.button("🗑️", key="clear_chat_btn", help="Clear chat", use_container_width=True):
+            st.session_state.messages = [{"role": "system", "content": system_prompt}]
+            st.session_state.conversation_summary = ""
+            st.session_state.conv_history = []
+            st.session_state.user_msg_count = 0
+            st.rerun()
+    with col_voc:
+        audio_input = st.audio_input("", key="voice_input_small", label_visibility="collapsed")
+        if audio_input is not None:
+            audio_id = f"{audio_input.name}_{audio_input.size}"
+            if audio_id != st.session_state.get("last_audio_id_small", ""):
+                st.session_state.last_audio_id_small = audio_id
+                audio_bytes = audio_input.read()
                 if audio_bytes:
-                    st.session_state.pending_tts = (audio_bytes, fmt)
-            except Exception as e:
-                logger.error(f"TTS error: {e}")
+                    with st.spinner("..."):
+                        transcript = transcribe_audio(audio_bytes)
+                    if transcript:
+                        get_ai_reply(transcript)
+                        st.rerun()
+    with col_txt:
+        prompt = st.chat_input("Type message...", key="chat_input_small")
+        if prompt:
+            get_ai_reply(prompt)
             st.rerun()
     
     st.markdown("---")
     
-    # OCR 区域
-    st.markdown("### OCR")
-    
-    # 图片上传
-    uploaded_images = st.file_uploader(
-        "Images",
-        type=["jpg", "jpeg", "png", "bmp", "webp", "tiff"],
-        accept_multiple_files=True,
-        key="sidebar_ocr_images"
-    )
-    
-    # PDF上传
-    uploaded_pdf = st.file_uploader(
-        "PDF",
-        type=["pdf"],
-        key="sidebar_ocr_pdf"
-    )
-    
-    # ZIP上传
-    uploaded_zip = st.file_uploader(
-        "ZIP",
-        type=["zip"],
-        key="sidebar_ocr_zip"
-    )
-    
-    # 显示预览
-    if uploaded_images:
-        st.caption(f"{len(uploaded_images)} image(s) ready")
-    if uploaded_pdf:
-        st.caption(f"PDF: {uploaded_pdf.name}")
-    if uploaded_zip:
-        st.caption(f"ZIP: {uploaded_zip.name}")
-    
-    # OCR 按钮
-    if st.button("Run OCR", key="sidebar_ocr_run", use_container_width=True):
-        ocr_results = []
+    # ========== 设置工具区域（下方，小一点） ==========
+    with st.expander("⚙️ Settings", expanded=False):
+        # Mode
+        st.markdown("**Mode**")
+        mode_opts = ["Chinese", "English", "NEMT & CET"]
+        cur_idx = 0
+        if st.session_state.language == "English":
+            cur_idx = 1
+        elif st.session_state.language == "NEMT & CET":
+            cur_idx = 2
         
-        # 处理图片
-        if uploaded_images:
-            with st.spinner("OCR processing images..."):
-                results = process_ocr_images(uploaded_images)
-                if results:
-                    ocr_results.extend(results)
-                    st.success(f"Processed {len(results)} images")
+        new_lang = st.selectbox("", mode_opts, index=cur_idx, key="mode_sel", label_visibility="collapsed")
+        if new_lang != st.session_state.language:
+            st.session_state.language = new_lang
+            if new_lang == "NEMT & CET":
+                st.session_state.current_mode = "nemt_cet"
+                st.session_state.level = None
+                st.session_state.path = []
+                st.session_state.selected_nemt_cet = None
+                st.session_state.nemt_cet_path = []
+            else:
+                st.session_state.current_mode = "textbook"
+                levels_data = load_level_data(st.session_state.language)
+                st.session_state.level = None
+                st.session_state.path = []
+                st.session_state.selected_nemt_cet = None
+                st.session_state.nemt_cet_path = []
+            st.session_state.messages = [{"role": "system", "content": system_prompt}]
+            st.session_state.quiz_active = False
+            st.session_state.current_quiz = None
+            st.session_state.quiz_answers = {}
+            st.session_state.quiz_asked = False
+            st.rerun()
         
-        # 处理PDF
-        if uploaded_pdf:
-            with st.spinner("OCR processing PDF..."):
-                text = process_ocr_pdf(uploaded_pdf)
-                if text:
-                    ocr_results.append(("PDF", "success", text))
-                    st.success("PDF processed successfully")
+        st.markdown("---")
         
-        # 处理ZIP
-        if uploaded_zip:
-            with st.spinner("OCR processing ZIP..."):
-                zip_bytes = uploaded_zip.read()
-                with tempfile.TemporaryDirectory() as temp_dir:
-                    with zipfile.ZipFile(io.BytesIO(zip_bytes), 'r') as zf:
-                        zip_images = []
-                        for file_info in zf.infolist():
-                            if not file_info.is_dir():
-                                ext = os.path.splitext(file_info.filename)[1].lower()
-                                if ext in ['.jpg', '.jpeg', '.png', '.bmp', '.webp', '.tiff']:
-                                    img_bytes = zf.read(file_info.filename)
-                                    zip_images.append((img_bytes, os.path.basename(file_info.filename)))
-                        
-                        if zip_images:
-                            results = ocr_images_batch(zip_images, IMAGE_OCR_CONFIG)
-                            ocr_results.extend(results)
-                            st.success(f"Processed {len(zip_images)} images from ZIP")
+        # Search
+        st.markdown("**Search**")
+        scope_opts = ["Global", "Local"]
+        scope_idx = 0 if st.session_state.search_scope == "global" else 1
+        new_scope = st.selectbox("", scope_opts, index=scope_idx, key="scope_sel", label_visibility="collapsed")
+        if new_scope == "Global":
+            new_scope_val = "global"
+        else:
+            new_scope_val = "local"
+        if new_scope_val != st.session_state.search_scope:
+            st.session_state.search_scope = new_scope_val
+            st.session_state.search_results = []
+            st.session_state.search_keyword = ""
+            st.rerun()
         
-        # 显示结果
-        if ocr_results:
-            result_text = format_results_as_text(ocr_results)
-            st.text_area("OCR Results", result_text, height=200)
-            
-            # 下载按钮
-            st.download_button(
-                "Download Results",
-                result_text,
-                file_name=f"ocr_results_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
-                mime="text/plain",
-                key="sidebar_ocr_download"
-            )
-            
-            # 发送到AI按钮
-            if st.button("Send to AI", key="sidebar_ocr_send"):
-                ai_prompt = f"Please analyze the following OCR results:\n\n{result_text}"
-                get_ai_reply(ai_prompt)
+        search_inp = st.text_input("", value=st.session_state.search_keyword, placeholder="Keyword...", key="search_inp", label_visibility="collapsed")
+        if st.button("🔍", key="search_btn", use_container_width=True):
+            st.session_state.search_keyword = search_inp
+            if search_inp.strip():
+                if st.session_state.search_scope == "global":
+                    st.session_state.search_results = global_search(search_inp)
+                else:
+                    st.session_state.search_results = local_search(search_inp)
+            else:
+                st.session_state.search_results = []
+            st.rerun()
+        
+        st.markdown("---")
+        
+        # Model
+        st.markdown("**Model**")
+        model_names = list(AVAILABLE_MODELS.keys())
+        cur_model_idx = model_names.index(st.session_state.selected_model)
+        new_model = st.selectbox("", model_names, index=cur_model_idx, key="model_sel", label_visibility="collapsed")
+        if new_model != st.session_state.selected_model:
+            st.session_state.selected_model = new_model
+            st.session_state.model_name = AVAILABLE_MODELS[new_model]["id"]
+            st.session_state.model_max_tokens = AVAILABLE_MODELS[new_model]["max_tokens"]
+            st.rerun()
+        
+        st.markdown("---")
+        
+        # Quiz
+        if st.button("📝 Quiz", key="quiz_btn", use_container_width=True):
+            full_page = get_current_page_full_content()
+            topic = "general"
+            if full_page:
+                sec_match = re.search(r"Section: (.+)", full_page)
+                if sec_match:
+                    topic = sec_match.group(1)
+            quiz_text = generate_quiz(topic, full_page)
+            if quiz_text:
+                st.session_state.quiz_active = True
+                questions = []
+                for line in quiz_text.split('\n'):
+                    line = line.strip()
+                    if re.match(r'^\d+\.', line):
+                        questions.append(line)
+                st.session_state.current_quiz = {
+                    "questions": questions,
+                    "quiz_text": quiz_text,
+                    "topic": topic
+                }
+                st.session_state.quiz_answers = {}
+                st.session_state.quiz_asked = True
+                reply = f"Here's a quiz on {topic}:\n\n{quiz_text}\n\nPlease answer the questions. Use format: '1. A, 2. B, 3. C'"
+                st.session_state.messages.append({"role": "assistant", "content": reply})
+                st.session_state.conv_history.append({"role": "assistant", "content": reply})
+                try:
+                    audio_bytes, fmt = text_to_speech(reply)
+                    if audio_bytes:
+                        st.session_state.pending_tts = (audio_bytes, fmt)
+                except Exception as e:
+                    logger.error(f"TTS error: {e}")
                 st.rerun()
+        
+        st.markdown("---")
+        
+        # OCR
+        st.markdown("**OCR**")
+        img_files = st.file_uploader("", type=["jpg","jpeg","png","bmp","webp","tiff"], accept_multiple_files=True, key="ocr_imgs", label_visibility="collapsed")
+        pdf_file = st.file_uploader("", type=["pdf"], key="ocr_pdf", label_visibility="collapsed")
+        zip_file = st.file_uploader("", type=["zip"], key="ocr_zip", label_visibility="collapsed")
+        
+        if st.button("▶️ Run", key="ocr_run", use_container_width=True):
+            ocr_results = []
+            if img_files:
+                with st.spinner("OCR..."):
+                    results = process_ocr_images(img_files)
+                    if results:
+                        ocr_results.extend(results)
+            if pdf_file:
+                with st.spinner("OCR..."):
+                    text = process_ocr_pdf(pdf_file)
+                    if text:
+                        ocr_results.append(("PDF", "success", text))
+            if zip_file:
+                with st.spinner("OCR..."):
+                    zip_bytes = zip_file.read()
+                    with tempfile.TemporaryDirectory() as tmp:
+                        with zipfile.ZipFile(io.BytesIO(zip_bytes), 'r') as zf:
+                            zip_imgs = []
+                            for info in zf.infolist():
+                                if not info.is_dir():
+                                    ext = os.path.splitext(info.filename)[1].lower()
+                                    if ext in ['.jpg','.jpeg','.png','.bmp','.webp','.tiff']:
+                                        img_bytes = zf.read(info.filename)
+                                        zip_imgs.append((img_bytes, os.path.basename(info.filename)))
+                            if zip_imgs:
+                                results = ocr_images_batch(zip_imgs, IMAGE_OCR_CONFIG)
+                                ocr_results.extend(results)
+            if ocr_results:
+                result_text = format_results_as_text(ocr_results)
+                st.text_area("Results", result_text, height=150)
+                st.download_button("📥", result_text, file_name=f"ocr_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt", key="ocr_dl")
+                if st.button("📤 Send to AI", key="ocr_send"):
+                    get_ai_reply(f"Please analyze these OCR results:\n\n{result_text}")
+                    st.rerun()
 
+# TTS 音频播放
+if st.session_state.pending_tts:
+    audio_bytes, fmt = st.session_state.pending_tts
+    st.audio(audio_bytes, format=fmt, autoplay=True)
+    st.session_state.pending_tts = None
 
 
 # ========== 主界面：内容显示和聊天 ==========
@@ -2405,152 +2374,7 @@ elif st.session_state.current_mode == "nemt_cet" and st.session_state.selected_n
             with st.container():
                 st.markdown(recommendations, unsafe_allow_html=True)
 
-# ========== 侧边栏聊天区域（完全重构）==========
-# 注意：聊天功能现在完全放在侧边栏内
 
-# 初始化聊天状态（如果还没有）
-if "sidebar_messages" not in st.session_state:
-    st.session_state.sidebar_messages = st.session_state.messages.copy()
-
-# 侧边栏 - 现在包含所有聊天功能
-with st.sidebar:
-    st.markdown("### 💬 AI Tutor")
-    st.markdown("---")
-    
-    # 聊天消息区域 - 占80%高度
-    st.markdown('<div class="sidebar-chat-messages">', unsafe_allow_html=True)
-    
-    # 显示聊天记录
-    for msg in st.session_state.sidebar_messages:
-        if msg["role"] == "system":
-            continue
-        if msg["role"] == "user":
-            st.markdown(f'<div class="sidebar-chat-message sidebar-chat-message-user"><strong>You:</strong><br>{msg["content"]}</div>', unsafe_allow_html=True)
-        else:
-            st.markdown(f'<div class="sidebar-chat-message sidebar-chat-message-assistant"><strong>AI:</strong><br>{msg["content"]}</div>', unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    # 输入区域 - 占20%高度
-    st.markdown('<div class="sidebar-chat-input">', unsafe_allow_html=True)
-    
-    # 文本输入框
-    user_input = st.text_area("", placeholder="Type your message here...", key="sidebar_chat_input", height=80, label_visibility="collapsed")
-    
-    # 按钮行
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        send_btn = st.button("📤 Send", key="sidebar_send_btn", use_container_width=True)
-    with col2:
-        voice_btn = st.button("🎤 Voice", key="sidebar_voice_btn", use_container_width=True)
-    with col3:
-        clear_btn = st.button("🗑️ Clear", key="sidebar_clear_btn", use_container_width=True)
-    
-    # 语音输入（隐藏的audio input，通过按钮触发）
-    audio_input = st.audio_input("", key="sidebar_audio_input", label_visibility="collapsed")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    # 处理发送按钮
-    if send_btn and user_input:
-        with st.spinner("Thinking..."):
-            # 更新消息列表
-            st.session_state.sidebar_messages.append({"role": "user", "content": user_input})
-            
-            # 调用AI回复
-            full_page = get_current_page_full_content()
-            context_msgs = st.session_state.sidebar_messages.copy()
-            
-            if st.session_state.language:
-                context_msgs.insert(1, {"role": "system", "content": f"The user is currently learning {st.session_state.language}."})
-            if full_page:
-                context_msgs.insert(1, {"role": "system", "content": full_page})
-            
-            try:
-                response = client.chat.completions.create(
-                    model=st.session_state.model_name,
-                    messages=context_msgs,
-                    temperature=0.7,
-                    max_tokens=st.session_state.model_max_tokens,
-                )
-                reply = response.choices[0].message.content.strip()
-                st.session_state.sidebar_messages.append({"role": "assistant", "content": reply})
-                
-                # TTS
-                try:
-                    audio_bytes, fmt = text_to_speech(reply)
-                    if audio_bytes:
-                        st.session_state.pending_tts = (audio_bytes, fmt)
-                except Exception as e:
-                    logger.error(f"TTS error: {e}")
-                    
-            except Exception as e:
-                st.error(f"Error: {e}")
-            
-            st.rerun()
-    
-    # 处理语音输入
-    if audio_input is not None:
-        audio_id = f"{audio_input.name}_{audio_input.size}"
-        if audio_id != st.session_state.get("last_sidebar_audio_id", ""):
-            st.session_state.last_sidebar_audio_id = audio_id
-            audio_bytes = audio_input.read()
-            if audio_bytes:
-                with st.spinner("Transcribing..."):
-                    transcript = transcribe_audio(audio_bytes)
-                if transcript:
-                    # 自动填充到输入框并发送
-                    st.session_state.sidebar_chat_input = transcript
-                    # 模拟发送
-                    with st.spinner("Thinking..."):
-                        st.session_state.sidebar_messages.append({"role": "user", "content": transcript})
-                        
-                        full_page = get_current_page_full_content()
-                        context_msgs = st.session_state.sidebar_messages.copy()
-                        
-                        if st.session_state.language:
-                            context_msgs.insert(1, {"role": "system", "content": f"The user is currently learning {st.session_state.language}."})
-                        if full_page:
-                            context_msgs.insert(1, {"role": "system", "content": full_page})
-                        
-                        try:
-                            response = client.chat.completions.create(
-                                model=st.session_state.model_name,
-                                messages=context_msgs,
-                                temperature=0.7,
-                                max_tokens=st.session_state.model_max_tokens,
-                            )
-                            reply = response.choices[0].message.content.strip()
-                            st.session_state.sidebar_messages.append({"role": "assistant", "content": reply})
-                            
-                            try:
-                                audio_bytes, fmt = text_to_speech(reply)
-                                if audio_bytes:
-                                    st.session_state.pending_tts = (audio_bytes, fmt)
-                            except Exception as e:
-                                logger.error(f"TTS error: {e}")
-                                
-                        except Exception as e:
-                            st.error(f"Error: {e}")
-                        
-                        st.rerun()
-    
-    # 处理清除按钮
-    if clear_btn:
-        st.session_state.sidebar_messages = [{"role": "system", "content": system_prompt}]
-        st.session_state.conversation_summary = ""
-        st.session_state.conv_history = []
-        st.session_state.user_msg_count = 0
-        st.rerun()
-    
-    # 同步消息到全局状态
-    st.session_state.messages = st.session_state.sidebar_messages
-
-# TTS音频播放
-if st.session_state.pending_tts:
-    audio_bytes, fmt = st.session_state.pending_tts
-    st.audio(audio_bytes, format=fmt, autoplay=True)
-    st.session_state.pending_tts = None
     # 输入区域：三列布局（Clear + 语音 + 文本输入）
     col_clear, col_voice, col_text = st.columns([1, 1, 4])
 
