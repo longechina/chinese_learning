@@ -1564,44 +1564,33 @@ st.markdown(f"""
         display: none !important;
     }}
 
-    # /* ========== 侧边栏样式 - 支持折叠/展开 ========== */
-    # section[data-testid="stSidebar"] {{
-    #     visibility: visible !important;
-    #     opacity: 1 !important;
-    #     width: 320px !important;
-    #     min-width: 320px !important;
-    #     max-width: 320px !important;
-    #     background-color: rgba(20, 20, 30, 0.95) !important;
-    #     border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
-    #     z-index: 1000 !important;
-    #     backdrop-filter: blur(10px) !important;
-    #     position: relative !important;
-    #     overflow-y: auto !important;
-    #     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3) !important;
-    #     transition: width 0.2s ease !important;
-    # }}
-
-    # /* 折叠状态 */
-    # section[data-testid="stSidebar"][aria-expanded="false"] {{
-    #     width: 0px !important;
-    #     min-width: 0px !important;
-    #     max-width: 0px !important;
-    #     overflow: hidden !important;
-    #     padding: 0 !important;
-    #     margin: 0 !important;
-    #     border-right: none !important;
-    #     box-shadow: none !important;
-    # }}
-
-    # section[data-testid="stSidebar"][aria-expanded="false"] > div {{
-    #     display: none !important;
-    # }}
+    /* ========== 侧边栏样式 - 支持原生折叠 ========== */
+    section[data-testid="stSidebar"] {{
+        background-color: rgba(20, 20, 30, 0.95) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+        backdrop-filter: blur(10px) !important;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3) !important;
+        transition: width 0.2s ease !important;
+    }}
 
     /* 确保侧边栏内容可见 */
     section[data-testid="stSidebar"] > div {{
         visibility: visible !important;
         opacity: 1 !important;
         display: block !important;
+    }}
+
+    /* 确保折叠按钮可见 */
+    section[data-testid="stSidebar"] button[data-testid="stSidebarCollapseButton"] {{
+        display: block !important;
+        visibility: visible !important;
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        border-radius: 8px !important;
+        margin: 8px !important;
+    }}
+
+    section[data-testid="stSidebar"] button[data-testid="stSidebarCollapseButton"]:hover {{
+        background-color: rgba(255, 255, 255, 0.2) !important;
     }}
 
     /* 移除伪元素 */
@@ -1626,7 +1615,7 @@ st.markdown(f"""
     }}
 
     /* ========== 侧边栏中的按钮样式 - 与首页卡片一致 ========== */
-    section[data-testid="stSidebar"] button {{
+    section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]) {{
         background-color: rgba(255, 255, 255, 0.1) !important;
         color: #ffffff !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
@@ -1640,14 +1629,14 @@ st.markdown(f"""
         width: 100% !important;
     }}
 
-    section[data-testid="stSidebar"] button:hover {{
+    section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]):hover {{
         background-color: rgba(255, 255, 255, 0.2) !important;
         transform: translateY(-2px) !important;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
         border-color: rgba(255, 255, 255, 0.3) !important;
     }}
 
-    section[data-testid="stSidebar"] button:active {{
+    section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]):active {{
         transform: translateY(0px) !important;
     }}
 
