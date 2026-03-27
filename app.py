@@ -1543,12 +1543,6 @@ st.markdown(f"""
         background-blend-mode: overlay !important;
     }}
 
-    /* 隐藏不必要的Streamlit元素 */
-
-    footer {{
-        display: none !important;
-    }}
-
 
     /* 确保侧边栏中的文本可见 */
     section[data-testid="stSidebar"] * {{
@@ -1704,7 +1698,29 @@ st.markdown(f"""
         background-color: rgba(255, 255, 255, 0.15);
     }}
 
+    /* 隐藏所有文字和图标，只显示紫色按钮 */
+    button[data-testid="stBaseButton-headerNoPadding"] span,
+    button[data-testid="stBaseButton-headerNoPadding"] .material-icons,
+    button[data-testid="stBaseButton-headerNoPadding"] svg,
+    button[data-testid="stBaseButton-headerNoPadding"]::before {{
+        display: none !important;
+        content: none !important;
+    }}
     
+    button[data-testid="stBaseButton-headerNoPadding"] {{
+        background-color: #667eea !important;
+        border-radius: 8px !important;
+        width: 36px !important;
+        height: 36px !important;
+        border: none !important;
+        background: #667eea !important;
+    }}
+    
+    button[data-testid="stBaseButton-headerNoPadding"]:hover {{
+        background-color: #5a67d8 !important;
+        transform: scale(1.05) !important;
+    }}
+        
 </style>
 """, unsafe_allow_html=True)
 
