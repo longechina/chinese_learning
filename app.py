@@ -1556,81 +1556,6 @@ st.markdown(f"""
         display: none !important;
     }}
 
-    /* ========== 侧边栏样式 - 可折叠保留小竖条 ========== */
-    section[data-testid="stSidebar"] {{
-        background-color: transparent !important;
-        border-right: none !important;
-        backdrop-filter: none !important;
-        transition: width 0.3s ease !important;
-        z-index: 100 !important;
-        overflow: visible !important;
-    }}
-
-    /* 展开状态 */
-    section[data-testid="stSidebar"][aria-expanded="true"] {{
-        width: 400px !important;
-        min-width: 400px !important;
-    }}
-
-    /* 折叠状态 - 只留一个小竖条 */
-    section[data-testid="stSidebar"][aria-expanded="false"] {{
-        width: 48px !important;
-        min-width: 48px !important;
-        overflow: visible !important;
-    }}
-
-
-    /* ================================================================
-       FIX 3: 折叠按钮 position:fixed，无论折叠还是展开都始终可见可点击
-       修复：添加图标，让按钮可见
-       ================================================================ */
-    /* 确保按钮容器可见 */
-    div[data-testid="stSidebarCollapseButton"] {{
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        position: fixed !important;
-        top: 12px !important;
-        left: 12px !important;
-        z-index: 999999 !important;
-    }}
-
-    /* 按钮样式 */
-    button[data-testid="stBaseButton-headerNoPadding"] {{
-        position: relative !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        width: 40px !important;
-        height: 40px !important;
-        background-color: #667eea !important;
-        border-radius: 8px !important;
-        border: 2px solid white !important;
-        cursor: pointer !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
-    }}
-
-    /* 添加菜单图标 */
-    button[data-testid="stBaseButton-headerNoPadding"]::before {{
-        content: "☰" !important;
-        font-size: 20px !important;
-        color: white !important;
-        display: block !important;
-        line-height: 1 !important;
-    }}
-
-    /* 展开时显示关闭图标 */
-    section[data-testid="stSidebar"][aria-expanded="true"] button[data-testid="stBaseButton-headerNoPadding"]::before {{
-        content: "✕" !important;
-    }}
-
-    /* 按钮悬停效果 */
-    button[data-testid="stBaseButton-headerNoPadding"]:hover {{
-        background-color: #5a67d8 !important;
-        transform: scale(1.05) !important;
-    }}
 
     /* 确保侧边栏中的文本可见 */
     section[data-testid="stSidebar"] * {{
@@ -1786,23 +1711,7 @@ st.markdown(f"""
         background-color: rgba(255, 255, 255, 0.15);
     }}
 
-
-    /* 强制显示折叠按钮 - 放在最后 */
-    div[data-testid="stSidebarCollapseButton"],
-    button[data-testid="stBaseButton-headerNoPadding"],
-    section[data-testid="stSidebar"] button {{
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }}
     
-    section[data-testid="stSidebar"][aria-expanded="false"] div[data-testid="stSidebarCollapseButton"],
-    section[data-testid="stSidebar"][aria-expanded="false"] button[data-testid="stBaseButton-headerNoPadding"] {{
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }}
-
 </style>
 """, unsafe_allow_html=True)
 
