@@ -633,6 +633,20 @@ def search_in_dict(node, path_list, source, level_num, keyword):
     if not isinstance(node, dict):
         return matches
     
+    # ✅ 新增：检查当前路径的最后一个 key（分类名称）是否匹配
+    if path_list:
+        last_key = str(path_list[-1])
+        if keyword_lower in last_key.lower():
+            # 获取内容预览
+            content_preview = last_key[:150]
+            matches.append({
+                "source": source,
+                "level": level_num,
+                "path": path_list.copy(),
+                "type": "Category",
+                "content": content_preview
+            })
+
     if "name" in node and node["name"] and keyword_lower in str(node["name"]).lower():
         matches.append({
             "source": source,
