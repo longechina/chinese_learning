@@ -2066,6 +2066,7 @@ if st.session_state.search_keyword and st.session_state.search_results:
                 st.session_state.search_keyword = ""
                 st.session_state.search_results = []
                 st.rerun()
+                
             elif res.get("source") == "nemt_cet" and res.get("exam"):
                 st.session_state.current_mode = "nemt_cet"
                 exam = res.get("exam", "")
@@ -2074,13 +2075,13 @@ if st.session_state.search_keyword and st.session_state.search_results:
                 raw_path = res.get("path", [])
                 clean_nemt_path = []
                 
-                # 标记：是否已经跳过了 exam 名称
-                skip_exam = False
+                # 标志：是否已经进入数据内部（跳过 exam 名称）
+                found_exam = False
                 
                 for p in raw_path:
                     p_str = str(p)
                     
-                    # 去掉列表索引标记
+                    # 去掉列表索引标记（如 "key[0]"）
                     if '[' in p_str:
                         p_str = p_str.split('[')[0]
                     
@@ -2088,22 +2089,23 @@ if st.session_state.search_keyword and st.session_state.search_results:
                         continue
                     
                     # 跳过 exam 名称（因为已经在 selected_nemt_cet 里了）
-                    if not skip_exam and p_str == exam:
-                        skip_exam = True
+                    if not found_exam and p_str == exam:
+                        found_exam = True
                         continue
                     
-                    # 跳过内容字段名（words, examples, notes, name 等）
+                    # 跳过内容字段名（这些不是导航路径的一部分）
                     if p_str in ["words", "examples", "notes", "name", "vocabulary"]:
                         continue
                     
                     clean_nemt_path.append(p_str)
                 
+                # 设置导航路径
                 st.session_state.nemt_cet_path = clean_nemt_path
                 
-                # 重要：重置 flip_states，避免显示混乱
+                # 重置 flip_states 避免显示混乱
                 st.session_state.flip_states = {}
                 
-                # 刷新页面
+                # 强制刷新页面
                 st.rerun()
                 
     st.markdown("---")
