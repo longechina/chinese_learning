@@ -1698,36 +1698,28 @@ st.markdown(f"""
         background-color: rgba(255, 255, 255, 0.15);
     }}
 
-    /* 隐藏所有文字和图标，只显示紫色按钮 */
+    /* 隐藏所有文字和图标 */
     button[data-testid="stBaseButton-headerNoPadding"] span,
     button[data-testid="stBaseButton-headerNoPadding"] .material-icons,
     button[data-testid="stBaseButton-headerNoPadding"] svg,
-    button[data-testid="stBaseButton-headerNoPadding"]::before {{
+    button[data-testid="stBaseButton-headerNoPadding"]::before,
+    button[data-testid="stSidebarCollapseButton"] span,
+    button[data-testid="stSidebarCollapseButton"] .material-icons,
+    button[data-testid="stSidebarCollapseButton"] svg,
+    button[data-testid="stSidebarCollapseButton"]::before {{
         display: none !important;
         content: none !important;
     }}
     
-    /* 按钮基础样式 - 始终紫色 */
-    button[data-testid="stBaseButton-headerNoPadding"] {{
+    /* 按钮样式 - 始终紫色 */
+    button[data-testid="stBaseButton-headerNoPadding"],
+    button[data-testid="stSidebarCollapseButton"] {{
         background-color: #667eea !important;
         border-radius: 8px !important;
         width: 36px !important;
         height: 36px !important;
         border: none !important;
         cursor: pointer !important;
-        transition: all 0.3s ease !important;
-    }}
-    
-    /* 悬停效果 */
-    button[data-testid="stBaseButton-headerNoPadding"]:hover {{
-        background-color: #5a67d8 !important;
-        transform: scale(1.05) !important;
-    }}
-    
-    /* 确保折叠和展开状态下按钮都是紫色 */
-    section[data-testid="stSidebar"][aria-expanded="true"] button[data-testid="stBaseButton-headerNoPadding"],
-    section[data-testid="stSidebar"][aria-expanded="false"] button[data-testid="stBaseButton-headerNoPadding"] {{
-        background-color: #667eea !important;
     }}
      
 </style>
