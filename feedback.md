@@ -87,3 +87,45 @@ D) Starvation
 Total: 0/5
 
 ---
+
+## Quiz Record - 2026-03-27 15:16:31
+
+**Topic:** 抽象概念与心理状态 - 思维与观点
+**Mode:** NEMT & CET
+
+### Quiz:
+## Quiz: 抽象概念与心理状态 - 思维与观点
+
+1. 以下哪个词最能表示“对某件事缺乏确信”的心理状态？  
+   A. abstract  
+   B. doubt  
+   C. consensus  
+   D. decision  
+
+2. 在进行深入的_____时，我们需要先辨认自己的假设。  
+
+3. Translate into Chinese: “Her curiosity led her to question the underlying concept of consciousness.”  
+
+4. Find and correct the mistake in the following sentence:  
+   她的信念是基于一个不切实际的fantasy。  
+
+5. Use the following words to make a correct Chinese sentence (arrange them in a logical order):  
+   概念 / 形成 / 需要 / 讨论 / 深入
+
+### User Answers:
+1. pass
+2. pass
+3. pass
+4. pass
+5. pass
+
+### Evaluation:
+1: ❌ - “pass” doesn’t provide a word or option for the meaning of “lack of certainty.” What word might capture that feeling of doubt?  
+2: ❌ - The blank needs a specific term describing a deep investigation. Can you think of a word that fits “进行深入的_____时”?  
+3: ❌ - A translation is required, not “pass.” How would you convey “Her curiosity led her to question the underlying concept of consciousness” in Chinese?  
+4: ❌ - The task asks you to locate and fix an error, but “pass” doesn’t address it. What mistake might you look for in a sentence and how could you correct it?  
+5: ❌ - You need to arrange the given Chinese words into a coherent sentence; “pass” doesn’t do that. How could you use all the words to form a meaningful sentence?  
+
+Total: 0/5
+
+---
