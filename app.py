@@ -2015,7 +2015,8 @@ if st.session_state.search_keyword and st.session_state.search_results:
         if res.get("source") == "textbook":
             source_info = f"Level {res.get('level', '?')}"
         elif res.get("source") == "nemt_cet":
-            source_info = res.get('exam', 'Exam')
+            exam_name = res.get('level', 'Exam')
+            source_info = f"{exam_name}"  # 显示 "TEM-8" 或 "NEMT" 或 "CET-46"
         else:
             source_info = "Content"
         
@@ -2043,9 +2044,9 @@ if st.session_state.search_keyword and st.session_state.search_results:
         ):
             # ================================================================
             # FIX 8: 搜索结果点击精确导航
-            # 原代码忽略 res["path"]，只跳到 Level 顶层或 exam 顶层
-            # 修复：使用 res["path"] 精确跳转到匹配内容所在位置
             # ================================================================
+            
+            # ---------- Textbook 模式 ----------
             if res.get("source") == "textbook" and res.get("level"):
                 st.session_state.current_mode = "textbook"
                 st.session_state.level = res["level"]
@@ -2066,22 +2067,27 @@ if st.session_state.search_keyword and st.session_state.search_results:
                 st.session_state.search_keyword = ""
                 st.session_state.search_results = []
                 st.rerun()
+            
+            # ---------- Exam 模式（修改后）----------
+            elif res.get("source") == "nemt_cet":
+                # 获取 exam 名称（优先从 level 获取，如果没有再从 exam 获取）
+                exam = res.get("level") or res.get("exam")
                 
-            elif res.get("source") == "nemt_cet" and res.get("exam"):
+                # 如果没有 exam 名称，无法跳转
+                if not exam:
+                    st.warning("无法识别考试类型")
+                    return
+                
                 st.session_state.current_mode = "nemt_cet"
-                exam = res.get("exam", "")
                 st.session_state.selected_nemt_cet = exam
                 
                 raw_path = res.get("path", [])
                 clean_nemt_path = []
                 
-                # 标志：是否已经进入数据内部（跳过 exam 名称）
-                found_exam = False
-                
                 for p in raw_path:
                     p_str = str(p)
                     
-                    # 去掉列表索引标记（如 "key[0]"）
+                    # 去掉列表索引标记
                     if '[' in p_str:
                         p_str = p_str.split('[')[0]
                     
@@ -2089,8 +2095,7 @@ if st.session_state.search_keyword and st.session_state.search_results:
                         continue
                     
                     # 跳过 exam 名称（因为已经在 selected_nemt_cet 里了）
-                    if not found_exam and p_str == exam:
-                        found_exam = True
+                    if p_str == exam:
                         continue
                     
                     # 跳过内容字段名（这些不是导航路径的一部分）
@@ -2102,12 +2107,16 @@ if st.session_state.search_keyword and st.session_state.search_results:
                 # 设置导航路径
                 st.session_state.nemt_cet_path = clean_nemt_path
                 
-                # 重置 flip_states 避免显示混乱
+                # 重置翻转状态
                 st.session_state.flip_states = {}
                 
-                # 强制刷新页面
-                st.rerun()
+                # 清空搜索
+                st.session_state.search_keyword = ""
+                st.session_state.search_results = []
                 
+                # 刷新页面
+                st.rerun()
+                                
     st.markdown("---")
 
 elif st.session_state.search_keyword:
