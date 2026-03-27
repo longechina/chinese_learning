@@ -1707,18 +1707,27 @@ st.markdown(f"""
         content: none !important;
     }}
     
+    /* 按钮基础样式 - 始终紫色 */
     button[data-testid="stBaseButton-headerNoPadding"] {{
         background-color: #667eea !important;
         border-radius: 8px !important;
         width: 36px !important;
         height: 36px !important;
         border: none !important;
-        background: #667eea !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
     }}
     
+    /* 悬停效果 */
     button[data-testid="stBaseButton-headerNoPadding"]:hover {{
         background-color: #5a67d8 !important;
         transform: scale(1.05) !important;
+    }}
+    
+    /* 确保折叠和展开状态下按钮都是紫色 */
+    section[data-testid="stSidebar"][aria-expanded="true"] button[data-testid="stBaseButton-headerNoPadding"],
+    section[data-testid="stSidebar"][aria-expanded="false"] button[data-testid="stBaseButton-headerNoPadding"] {{
+        background-color: #667eea !important;
     }}
         
 </style>
