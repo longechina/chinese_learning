@@ -294,12 +294,14 @@ def render_main_content(levels_data, nemt_cet_data, client, get_current_page_ful
                                     display_content += f"\n{pinyin}"
 
                             if st.button(display_content, key=f"btn_{key}", use_container_width=True):
+                                was_flipped = flipped  # 保存点击前的状态
+                                
                                 if "flip_states" not in st.session_state:
                                     st.session_state.flip_states = {}
                                 st.session_state.flip_states[key] = not flipped
                                 
-                                # ========== 添加图片和视频显示 ==========
-                                if not flipped:
+                                # 如果点击前是未翻转（显示单词），则搜索图片和视频
+                                if not was_flipped:
                                     with st.spinner(f"正在搜索 '{word}' 的图片和视频..."):
                                         img_url = search_pexels_image(word)
                                         video_url = search_pexels_video(word)
@@ -316,7 +318,6 @@ def render_main_content(levels_data, nemt_cet_data, client, get_current_page_ful
                                             st.video(video_url)
                                         else:
                                             st.info(f"没有找到 '{word}' 的视频")
-                                # ========== 添加结束 ==========
                                 
                                 st.rerun()
 
@@ -460,12 +461,14 @@ def render_main_content(levels_data, nemt_cet_data, client, get_current_page_ful
                             display_content = word if not flipped else f"({word})"
                         
                         if st.button(display_content, key=f"btn_{card_key}", use_container_width=True):
+                            was_flipped = flipped  # 保存点击前的状态
+                            
                             if "flip_states" not in st.session_state:
                                 st.session_state.flip_states = {}
                             st.session_state.flip_states[card_key] = not flipped
                             
-                            # ========== 添加图片和视频显示 ==========
-                            if not flipped:
+                            # 如果点击前是未翻转（显示单词），则搜索图片和视频
+                            if not was_flipped:
                                 with st.spinner(f"Searching images and videos for '{word}'..."):
                                     img_url = search_pexels_image(word)
                                     video_url = search_pexels_video(word)
@@ -483,7 +486,6 @@ def render_main_content(levels_data, nemt_cet_data, client, get_current_page_ful
                                         st.video(video_url)
                                     else:
                                         st.info(f"No videos found for '{word}'")
-                            # ========== 添加结束 ==========
                             
                             st.rerun()
             
