@@ -12,7 +12,7 @@ This guide explains how to use the Chinese learning materials website provided i
 
 If you are using the web version, it’s recommended to shrink the interface for better viewing. For example, on a Mac desktop:
 
-![01](data/01.png)
+![01](images/01.png)
 
 ---
 
@@ -25,7 +25,7 @@ After opening the website:
 
 Example screenshot:
 
-![02](data/02.png)
+![02](images/02.png)
 
 ---
 
@@ -34,18 +34,18 @@ Example screenshot:
 Please wait a moment. The model will generate learning material recommendations based on the specified links & key words that I wrote on script and the current page theme.  
 
 For example, if the current theme is **Make small talk**, the recommended links may include:
-![03](data/03.png)
+![03](images/03.png)
 
 
 - **Youtube**  
-  ![04](data/04.png)  
-  ![05](data/05.png)
+  ![04](images/04.png)  
+  ![05](images/05.png)
 
 - **Quizlet**  
-  ![06](data/06.png)
+  ![06](images/06.png)
 
 - **Chinese StackExchange**  
-  ![07](data/07.png)
+  ![07](images/07.png)
 
 ---
 
@@ -54,7 +54,7 @@ For example, if the current theme is **Make small talk**, the recommended links 
 The model already knows the theme and content of the current page (set via the script).  
 You can directly ask questions about this content without providing additional background information.
 
-![Context](data/17.png) 
+![Context](images/17.png) 
 
 ---
 ## 5. Teaching Principles & Feedback
@@ -64,7 +64,7 @@ The AI follows predefined teaching principles to guide its responses. Instead of
 See [teaching_principle.txt](teaching_principle.txt) for details.
 
 All interactions (your answers and AI responses) are saved in [feedback.md](feedback.md) for review.
-![Teaching Principles](data/18.png) 
+![Teaching Principles](images/18.png) 
 
 ---
 
@@ -123,11 +123,11 @@ This module extracts text from images and non-searchable documents for further i
 ---
 
 ### Images
-![PDF First Page](data/09.png)  
-![PDF Last Page](data/10.png)  
-![OCR Processing](data/11.png)  
-![OCR Processed](data/12.png)
-![OCR Processed 2](data/13.png) 
+![PDF First Page](images/09.png)  
+![PDF Last Page](images/10.png)  
+![OCR Processing](images/11.png)  
+![OCR Processed](images/12.png)
+![OCR Processed 2](images/13.png) 
 
 ---
 ## 7. Quiz
@@ -137,8 +137,8 @@ This module generates quizzes tailored to your current learning content.
 ### Purpose
 - Mainstream AI models are smart but require extensive tuning to produce effective quizzes.
 - To simplify, a **predefined quiz template** is used to generate consistent quizzes quickly.
-![Quiz](data/15.png) 
-![Quiz Content](data/16.png) 
+![Quiz](images/15.png) 
+![Quiz Content](images/16.png) 
 
 ---
 
@@ -268,7 +268,7 @@ LLM的问题
 
 This analysis focuses on **speed, multimodality, accuracy, hallucination risk, reasoning quality, and retrieval performance.**
 
-![Models Supported by Groq](data/14.png)  
+![Models Supported by Groq](images/14.png)  
 
 ---
 
