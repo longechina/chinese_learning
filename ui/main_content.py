@@ -56,6 +56,33 @@ def get_state_icon(state):
 def next_state(current):
     return STATE_NEXT.get(current, 1)
 
+def get_directory_state(node, level, current_path):
+    """递归计算目录下所有单词的聚合状态"""
+    states = []
+    
+    def collect_states(n, path_list):
+        if "vocabulary" in n and n["vocabulary"]:
+            path_str = "_".join(path_list)
+            for idx, item in enumerate(n["vocabulary"]):
+                word_key = get_word_state_key("textbook", level, [path_str], idx)
+                state = st.session_state.learning_states.get(word_key, 0)
+                states.append(state)
+        
+        # 递归处理子目录
+        for key, value in n.items():
+            if key not in ("name", "notes", "examples", "vocabulary") and isinstance(value, dict):
+                collect_states(value, path_list + [key])
+    
+    collect_states(node, current_path)
+    
+    if not states:
+        return None
+    if any(s == 2 for s in states):
+        return 2  # 红色 - 有需复习的单词
+    if all(s == 1 for s in states):
+        return 1  # 绿色 - 全部已掌握
+    return 0  # 灰色 - 部分学习或未学习
+
 def render_vocab_card(word, pinyin, word_key, other_word=None, other_pron=None, img_key=None, video_key=None):
     """渲染带状态标记的单词卡片，支持图片和视频"""
     # 获取当前状态
@@ -736,7 +763,13 @@ Write your notes here using Markdown:
                                     label = node[key]["name"]
                                 else:
                                     label = key
-                                if st.button(label, key=f"dir_{key}", use_container_width=True):
+                                
+                                # 计算目录状态
+                                dir_state = get_directory_state(node[key], st.session_state.level, st.session_state.path + [key])
+                                state_icon = get_state_icon(dir_state) if dir_state is not None else ""
+                                
+                                if st.button(f"{state_icon} {label}" if state_icon else label, 
+                                           key=f"dir_{key}", use_container_width=True):
                                     st.session_state.path.append(key)
                                     st.session_state.flip_states = {}
                                     st.rerun()
@@ -771,7 +804,38 @@ Write your notes here using Markdown:
                             dir_name = list(inner_dict.keys())[0] if inner_dict else f"Section {key}"
                         else:
                             dir_name = f"Section {key}"
-                        if st.button(dir_name, key=f"nemt_dir_{key}", use_container_width=True):
+                        
+                        # 计算目录状态（NEMT & CET 模式）
+                        def get_nemt_directory_state(node_data, path_list):
+                            states = []
+                            def collect_nemt_states(n, p_list):
+                                if "words" in n and n["words"]:
+                                    if isinstance(n["words"], str):
+                                        words_list = n["words"].split(" / ")
+                                    else:
+                                        words_list = n["words"]
+                                    path_str = "_".join([str(p) for p in p_list])
+                                    for idx, _ in enumerate(words_list):
+                                        word_key = get_word_state_key("nemt_cet", st.session_state.selected_nemt_cet, [path_str], idx)
+                                        state = st.session_state.learning_states.get(word_key, 0)
+                                        states.append(state)
+                                for k, v in n.items():
+                                    if k not in ("name", "notes", "examples", "words") and isinstance(v, dict):
+                                        collect_nemt_states(v, p_list + [k])
+                            collect_nemt_states(node_data, path_list)
+                            if not states:
+                                return None
+                            if any(s == 2 for s in states):
+                                return 2
+                            if all(s == 1 for s in states):
+                                return 1
+                            return 0
+                        
+                        dir_state = get_nemt_directory_state(inner_dict, [key])
+                        state_icon = get_state_icon(dir_state) if dir_state is not None else ""
+                        
+                        if st.button(f"{state_icon} {dir_name}" if state_icon else dir_name, 
+                                   key=f"nemt_dir_{key}", use_container_width=True):
                             st.session_state.nemt_cet_path.append(key)
                             st.rerun()
             else:
@@ -897,7 +961,36 @@ Write your notes here using Markdown:
                                 dir_name = inner_v["name"]
                             else:
                                 dir_name = list(v.keys())[0] if v and isinstance(v, dict) else f"Section {k}"
-                            sub_items.append((k, dir_name))
+                            
+                            # 计算子目录状态
+                            def get_nemt_subdir_state(sub_data, sub_path):
+                                states = []
+                                def collect_sub_states(n, p_list):
+                                    if "words" in n and n["words"]:
+                                        if isinstance(n["words"], str):
+                                            w_list = n["words"].split(" / ")
+                                        else:
+                                            w_list = n["words"]
+                                        path_str = "_".join([str(p) for p in p_list])
+                                        for idx2, _ in enumerate(w_list):
+                                            wk = get_word_state_key("nemt_cet", st.session_state.selected_nemt_cet, [path_str], idx2)
+                                            states.append(st.session_state.learning_states.get(wk, 0))
+                                    for k2, v2 in n.items():
+                                        if k2 not in ("name", "notes", "examples", "words") and isinstance(v2, dict):
+                                            collect_sub_states(v2, p_list + [k2])
+                                collect_sub_states(sub_data, sub_path)
+                                if not states:
+                                    return None
+                                if any(s == 2 for s in states):
+                                    return 2
+                                if all(s == 1 for s in states):
+                                    return 1
+                                return 0
+                            
+                            sub_dir_state = get_nemt_subdir_state(v, st.session_state.nemt_cet_path + [k])
+                            sub_state_icon = get_state_icon(sub_dir_state) if sub_dir_state is not None else ""
+                            
+                            sub_items.append((k, f"{sub_state_icon} {dir_name}" if sub_state_icon else dir_name))
             
             if sub_items:
                 st.markdown("<h3 style='font-size: 36px; font-weight: 600; margin-top: 30px; margin-bottom: 15px;'>Sections</h3>", unsafe_allow_html=True)
