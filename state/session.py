@@ -76,11 +76,3 @@ def init_session_state():
         st.session_state.page_recommendations = {}
     if "current_page_key" not in st.session_state:
         st.session_state.current_page_key = None
-    
-    # 学习状态相关
-    if "learning_states" not in st.session_state:
-        st.session_state.learning_states = {}
-    if "vocab_filter" not in st.session_state:
-        st.session_state.vocab_filter = "all"  # all, unlearned, learned, review
-    if "word_flip_states" not in st.session_state:
-        st.session_state.word_flip_states = {}

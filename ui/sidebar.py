@@ -13,7 +13,7 @@ from utils.ocr import process_ocr_images, process_ocr_pdf
 from utils.quiz import generate_quiz
 from config import AVAILABLE_MODELS
 from ocr_image_module import format_results_as_text, ocr_images_batch, BAIMIAO_CONFIG as IMAGE_OCR_CONFIG
-from utils.data_loader import load_nlp_textbook_data, load_learning_states, get_word_state_key
+from utils.data_loader import load_nlp_textbook_data
 
 logger = logging.getLogger(__name__)
 
@@ -164,96 +164,6 @@ def render_sidebar(levels_data, nemt_cet_data, client, system_prompt, get_curren
                 if st.button("Send to AI", key="ocr_send_small"):
                     get_ai_reply(f"Please analyze these OCR results:\n\n{st.session_state.ocr_result_text}")
                     st.session_state.ocr_result_text = None
-                    st.rerun()
-        
-        # ========== 学习进度统计 ==========
-        if st.session_state.learning_states:
-            # 统计当前显示区域的单词状态
-            total = 0
-            learned = 0
-            review = 0
-            unlearned = 0
-            
-            # 根据当前模式统计
-            if st.session_state.current_mode == "textbook" and st.session_state.level and st.session_state.path:
-                # 获取当前显示的词汇
-                data = levels_data[f"Level {st.session_state.level}"]
-                current_node = data
-                for key in st.session_state.path:
-                    current_node = current_node.get(key, {})
-                    if not current_node:
-                        break
-                if "vocabulary" in current_node and current_node["vocabulary"]:
-                    path_str = "_".join(st.session_state.path)
-                    for idx, item in enumerate(current_node["vocabulary"]):
-                        total += 1
-                        word_key = get_word_state_key("textbook", st.session_state.level, [path_str], idx)
-                        state = st.session_state.learning_states.get(word_key, 0)
-                        if state == 0:
-                            unlearned += 1
-                        elif state == 1:
-                            learned += 1
-                        elif state == 2:
-                            review += 1
-            
-            elif st.session_state.current_mode == "nemt_cet" and st.session_state.selected_nemt_cet and st.session_state.nemt_cet_path:
-                data = nemt_cet_data.get(st.session_state.selected_nemt_cet, {})
-                current_node = data
-                for key in st.session_state.nemt_cet_path:
-                    current_node = current_node.get(key, {})
-                    if not current_node:
-                        break
-                if "words" in current_node and current_node["words"]:
-                    if isinstance(current_node["words"], str):
-                        words_list = current_node["words"].split(" / ")
-                    else:
-                        words_list = current_node["words"]
-                    path_str = "_".join([str(p) for p in st.session_state.nemt_cet_path])
-                    for idx, word_item in enumerate(words_list):
-                        if word_item and word_item.strip():
-                            total += 1
-                            word_key = get_word_state_key("nemt_cet", st.session_state.selected_nemt_cet, [path_str], idx)
-                            state = st.session_state.learning_states.get(word_key, 0)
-                            if state == 0:
-                                unlearned += 1
-                            elif state == 1:
-                                learned += 1
-                            elif state == 2:
-                                review += 1
-            
-            elif st.session_state.current_mode == "nlp_textbook" and st.session_state.nlp_selected_section:
-                # NLP 教材的词汇统计（如果后续添加词汇功能）
-                pass
-            
-            if total > 0:
-                st.markdown("---")
-                st.markdown("### Learning Progress")
-                st.markdown(f"**Not Started:** {unlearned}")
-                st.markdown(f"**Learned:** {learned}")
-                st.markdown(f"**Need Review:** {review}")
-                st.markdown(f"**Total:** {total}")
-                st.progress((learned + review) / total if total > 0 else 0)
-                
-                # 筛选控件
-                filter_opts = {
-                    "all": "All Words",
-                    "unlearned": "Not Started",
-                    "learned": "Learned",
-                    "review": "Need Review"
-                }
-                current_filter = st.session_state.vocab_filter
-                filter_labels = [filter_opts["all"], filter_opts["unlearned"], filter_opts["learned"], filter_opts["review"]]
-                filter_values = ["all", "unlearned", "learned", "review"]
-                
-                new_filter = st.selectbox(
-                    "Show",
-                    options=filter_values,
-                    format_func=lambda x: filter_opts[x],
-                    index=filter_values.index(current_filter),
-                    key="vocab_filter_select"
-                )
-                if new_filter != current_filter:
-                    st.session_state.vocab_filter = new_filter
                     st.rerun()
         
         # ========== 设置工具区域 ==========
