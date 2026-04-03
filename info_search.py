@@ -480,6 +480,20 @@ def show_info_search():
                 results = fetch_all_news(matcher)
             st.markdown("---")
             st.markdown(f"## News Results ({len(results)} items)")
+            # ===== 新增：将搜索结果存入 session_state，供 AI 对话使用 =====
+            st.session_state.search_keyword = keyword
+            st.session_state.search_results = [
+                {
+                    "content": item["title"],
+                    "link": item["link"],
+                    "source": item["source"],
+                    "type": "News",
+                    "path": [item["source"]],
+                    "level": ""
+                }
+                for item in results
+            ]
+            # ===== 结束 =====
             if results:
                 grouped = defaultdict(list)
                 for item in results:
@@ -502,7 +516,21 @@ def show_info_search():
             with st.spinner(f"Searching academic papers for '{keyword}'..."):
                 results = fetch_all_academic(matcher)
             st.markdown("---")
-            st.markdown(f"##Academic Results ({len(results)} items)")
+            st.markdown(f"## Academic Results ({len(results)} items)")
+            # ===== 新增：将搜索结果存入 session_state，供 AI 对话使用 =====
+            st.session_state.search_keyword = keyword
+            st.session_state.search_results = [
+                {
+                    "content": item["title"],
+                    "link": item["link"],
+                    "source": item["source"],
+                    "type": "Academic Paper",
+                    "path": [item["source"]],
+                    "level": ""
+                }
+                for item in results
+            ]
+            # ===== 结束 =====
             if results:
                 grouped = defaultdict(list)
                 for item in results:

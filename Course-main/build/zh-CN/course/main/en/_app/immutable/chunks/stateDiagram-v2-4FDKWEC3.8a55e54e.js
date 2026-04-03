@@ -1,0 +1,1 @@
+import{s as a,S as t,b as r,a as s}from"./chunk-DI55MBZ5.23c70d7b.js";import{_ as i}from"./MermaidChart.svelte_svelte_type_style_lang.00e2d8e8.js";var _={parser:a,get db(){return new t(2)},renderer:r,styles:s,init:i(e=>{e.state||(e.state={}),e.state.arrowMarkerAbsolute=e.arrowMarkerAbsolute},"init")};export{_ as diagram};

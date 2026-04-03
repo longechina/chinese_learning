@@ -13,7 +13,7 @@ from utils.ocr import process_ocr_images, process_ocr_pdf
 from utils.quiz import generate_quiz
 from config import AVAILABLE_MODELS
 from ocr_image_module import format_results_as_text, ocr_images_batch, BAIMIAO_CONFIG as IMAGE_OCR_CONFIG
-from utils.data_loader import load_nlp_textbook_data, load_learning_states, get_word_state_key
+from utils.data_loader import load_nlp_textbook_data, load_learning_states, get_word_state_key, load_hf_course_data
 
 logger = logging.getLogger(__name__)
 
@@ -294,8 +294,8 @@ def render_sidebar(levels_data, nemt_cet_data, client, system_prompt, get_curren
                     st.rerun()
         
         # ========== 设置工具区域 ==========
-        # Mode - 添加 Info. Search 选项
-        mode_opts = ["Chinese", "English", "NEMT & CET", "NLP Textbook", "Info. Search"]
+        # Mode - 添加 Notes Browser 选项
+        mode_opts = ["Chinese", "English", "NEMT & CET", "NLP Textbook", "Info. Search", "Hugging Face Course", "Notes Browser"]
         cur_idx = 0
         if st.session_state.language == "English":
             cur_idx = 1
@@ -305,6 +305,10 @@ def render_sidebar(levels_data, nemt_cet_data, client, system_prompt, get_curren
             cur_idx = 3
         elif st.session_state.language == "Info. Search":
             cur_idx = 4
+        elif st.session_state.language == "Hugging Face Course":
+            cur_idx = 5
+        elif st.session_state.language == "Notes Browser":
+            cur_idx = 6
         
         new_lang = st.selectbox("Mode", mode_opts, index=cur_idx, key="mode_select")
         if new_lang != st.session_state.language:
@@ -333,6 +337,43 @@ def render_sidebar(levels_data, nemt_cet_data, client, system_prompt, get_curren
                 st.session_state.nemt_cet_path = []
                 st.session_state.nlp_selected_chapter = None
                 st.session_state.nlp_selected_section = None
+            elif new_lang == "Hugging Face Course":
+                st.session_state.current_mode = "hf_course"
+                st.session_state.level = None
+                st.session_state.path = []
+                st.session_state.selected_nemt_cet = None
+                st.session_state.nemt_cet_path = []
+                st.session_state.nlp_selected_chapter = None
+                st.session_state.nlp_selected_section = None
+                # 加载课程数据（如果尚未加载）
+                if not st.session_state.hf_course_data_en:
+                    try:
+                        course_en_path = "Course-main/chapters/en"
+                        course_zh_path = "Course-main/chapters/zh-CN"
+                        st.session_state.hf_course_data_en = load_hf_course_data(course_en_path)
+                        st.session_state.hf_course_data_zh = load_hf_course_data(course_zh_path)
+                        # 默认选择第一个章节的第一节
+                        if st.session_state.hf_course_data_en:
+                            first_chapter = list(st.session_state.hf_course_data_en.keys())[0]
+                            first_section = list(st.session_state.hf_course_data_en[first_chapter]["sections"].keys())[0]
+                            st.session_state.hf_course_current_chapter = first_chapter
+                            st.session_state.hf_course_current_section = first_section
+                    except Exception as e:
+                        st.error(f"加载 Hugging Face 课程失败: {e}")
+            elif new_lang == "Notes Browser":
+                st.session_state.current_mode = "notes_browser"
+                # 重置其他模式的状态变量
+                st.session_state.level = None
+                st.session_state.path = []
+                st.session_state.selected_nemt_cet = None
+                st.session_state.nemt_cet_path = []
+                st.session_state.nlp_selected_chapter = None
+                st.session_state.nlp_selected_section = None
+                st.session_state.hf_course_current_chapter = None
+                st.session_state.hf_course_current_section = None
+                # 初始化笔记浏览器当前路径为空
+                if "notes_browser_current_path" not in st.session_state:
+                    st.session_state.notes_browser_current_path = None
             else:
                 st.session_state.current_mode = "textbook"
                 from utils.data_loader import load_level_data
@@ -349,6 +390,28 @@ def render_sidebar(levels_data, nemt_cet_data, client, system_prompt, get_curren
             st.session_state.quiz_answers = {}
             st.session_state.quiz_asked = False
             st.rerun()
+        
+        # 如果是 Hugging Face Course 模式，添加语言切换控件
+        if st.session_state.current_mode == "hf_course":
+            lang_opts = {"en": "English", "zh-CN": "简体中文"}
+            current_lang_display = lang_opts.get(st.session_state.hf_course_lang, "English")
+            new_lang_display = st.selectbox(
+                "Course Language",
+                options=list(lang_opts.values()),
+                index=0 if current_lang_display == "English" else 1,
+                key="hf_lang_select"
+            )
+            new_lang_code = "en" if new_lang_display == "English" else "zh-CN"
+            if new_lang_code != st.session_state.hf_course_lang:
+                st.session_state.hf_course_lang = new_lang_code
+                # 重置当前章节为第一个
+                data = st.session_state.hf_course_data_en if new_lang_code == "en" else st.session_state.hf_course_data_zh
+                if data:
+                    first_chapter = list(data.keys())[0]
+                    first_section = list(data[first_chapter]["sections"].keys())[0]
+                    st.session_state.hf_course_current_chapter = first_chapter
+                    st.session_state.hf_course_current_section = first_section
+                st.rerun()
         
         # Search
         scope_opts = ["Global", "Local"]

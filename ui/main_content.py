@@ -6,7 +6,12 @@ import time
 import datetime
 from utils.search import global_search, local_search
 from utils.helpers import translate_word
-from utils.data_loader import load_nlp_textbook_data, save_nlp_chapter_notes, load_learning_states, save_learning_states, get_word_state_key
+from utils.data_loader import (
+    load_nlp_textbook_data, save_nlp_chapter_notes,
+    load_learning_states, save_learning_states, get_word_state_key,
+    get_page_state_key, get_page_state_icon, next_page_state,
+    save_note, load_note  # 新增：文件系统笔记函数
+)
 
 # ========== Pexels API 函数 ==========
 PEXELS_API_KEY = "d2CD01GRjacnW1194nyOXkkZsAMEO3xWY6I6YYLvMA3ycjSKmaBuFp4Z"
@@ -287,17 +292,30 @@ def render_main_content(levels_data, nemt_cet_data, client, get_current_page_ful
             # 按章节号排序
             chapters = sorted(nlp_data.keys(), key=lambda x: int(x.replace("CHAPTER_", "")))
             
-            # 每行显示 3 个章节按钮
+            # 每行显示 3 个章节按钮（带状态图标）
             cols = st.columns(3)
             for idx, chapter_key in enumerate(chapters):
                 chapter = nlp_data[chapter_key]
                 chapter_num = chapter_key.replace("CHAPTER_", "")
                 chapter_name = chapter.get("name", f"Chapter {chapter_num}")
                 
+                # 生成章节状态键
+                chapter_state_key = get_page_state_key("nlp", f"chapter_{chapter_key}")
+                current_state = st.session_state.learning_states.get(chapter_state_key, 0)
+                state_icon = get_page_state_icon(current_state)
+                
                 with cols[idx % 3]:
+                    # 状态按钮（小圆点）
+                    if st.button(state_icon, key=f"nlp_chapter_state_{chapter_key}", help=f"Mark chapter: {STATE_LABELS[current_state]}"):
+                        st.session_state.learning_states[chapter_state_key] = next_page_state(current_state)
+                        save_learning_states(st.session_state.learning_states)
+                        st.rerun()
+                    # 章节按钮
                     if st.button(f"{chapter_name}\n\nChapter {chapter_num}", key=f"nlp_chapter_{chapter_key}", use_container_width=True):
                         st.session_state.nlp_selected_chapter = chapter_key
                         st.session_state.nlp_selected_section = None
+                        # 设置当前模式为 nlp_textbook，让 AI 能获取页面内容
+                        st.session_state.current_mode = "nlp_textbook"
                         st.rerun()
         
         # 如果选中了章节，显示章节内容和小节
@@ -331,13 +349,27 @@ def render_main_content(levels_data, nemt_cet_data, client, get_current_page_ful
                 sections.sort(key=lambda x: [int(p) for p in x[0].split('.')])
                 
                 if sections:
-                    # 每行显示 2 个小节
+                    # 每行显示 2 个小节（带状态图标）
                     cols = st.columns(2)
                     for idx, (section_key, section) in enumerate(sections):
                         section_name = section.get("name", section_key)
+                        
+                        # 生成小节状态键
+                        section_state_key = get_page_state_key("nlp", f"section_{st.session_state.nlp_selected_chapter}_{section_key}")
+                        current_state = st.session_state.learning_states.get(section_state_key, 0)
+                        state_icon = get_page_state_icon(current_state)
+                        
                         with cols[idx % 2]:
+                            # 状态按钮（小圆点）
+                            if st.button(state_icon, key=f"nlp_section_state_{section_key}", help=f"Mark section: {STATE_LABELS[current_state]}"):
+                                st.session_state.learning_states[section_state_key] = next_page_state(current_state)
+                                save_learning_states(st.session_state.learning_states)
+                                st.rerun()
+                            # 小节按钮
                             if st.button(f"{section_name}\n\n{section_key}", key=f"nlp_section_{section_key}", use_container_width=True):
                                 st.session_state.nlp_selected_section = section_key
+                                # 设置当前模式为 nlp_textbook，让 AI 能获取页面内容
+                                st.session_state.current_mode = "nlp_textbook"
                                 st.rerun()
                 else:
                     st.info("No sections found in this chapter.")
@@ -347,8 +379,20 @@ def render_main_content(levels_data, nemt_cet_data, client, get_current_page_ful
                 section = chapter.get(st.session_state.nlp_selected_section, {})
                 section_name = section.get("name", st.session_state.nlp_selected_section)
                 
-                # 小节面包屑
-                st.markdown(f"<div class='breadcrumb' style='font-size: 16px;'>{chapter_name} › {section_name}</div>", unsafe_allow_html=True)
+                # 生成当前小节的状态键
+                current_section_state_key = get_page_state_key("nlp", f"section_{st.session_state.nlp_selected_chapter}_{st.session_state.nlp_selected_section}")
+                current_state = st.session_state.learning_states.get(current_section_state_key, 0)
+                
+                # 小节面包屑 + 状态按钮
+                col_title, col_state_btn = st.columns([5, 1])
+                with col_title:
+                    st.markdown(f"<div class='breadcrumb' style='font-size: 16px;'>{chapter_name} › {section_name}</div>", unsafe_allow_html=True)
+                with col_state_btn:
+                    state_icon = get_page_state_icon(current_state)
+                    if st.button(f"{state_icon} Mark", key="nlp_current_section_state", help=f"Current status: {STATE_LABELS[current_state]}"):
+                        st.session_state.learning_states[current_section_state_key] = next_page_state(current_state)
+                        save_learning_states(st.session_state.learning_states)
+                        st.rerun()
                 
                 # 返回小节列表按钮
                 col_back_section, _ = st.columns([1, 5])
@@ -359,8 +403,6 @@ def render_main_content(levels_data, nemt_cet_data, client, get_current_page_ful
                 
                 # 显示内容
                 content = section.get("content", "")
-                current_notes = section.get("notes", "")
-                
                 if content:
                     st.markdown("---")
                     st.markdown("### Content")
@@ -368,22 +410,23 @@ def render_main_content(levels_data, nemt_cet_data, client, get_current_page_ful
                     
                 st.markdown("---")
                 
-                # Notes 区域（支持 Markdown）
+                # ========== 笔记区域（基于文件系统 + 实时预览） ==========
                 st.markdown("### Your Notes & Annotations")
-                st.markdown("Write your thoughts, summaries, or questions using **Markdown**:")
+                st.markdown("Write your thoughts, summaries, or questions using **Markdown**.")
                 
-                # 显示当前 notes（如果有）- Markdown 渲染预览
-                if current_notes:
-                    with st.expander("View Previous Notes", expanded=False):
-                        st.markdown(current_notes)
+                # 生成笔记标识符：模式为 "nlp"，标识符为 "CHAPTER_X/section_key"
+                note_identifier = f"{st.session_state.nlp_selected_chapter}/{st.session_state.nlp_selected_section}"
+                current_note_content = load_note("nlp", note_identifier)
                 
-                # 编辑区域
-                new_notes = st.text_area(
-                    "Edit Notes (Markdown supported)",
-                    value=current_notes,
-                    height=300,
-                    key=f"nlp_notes_{st.session_state.nlp_selected_chapter}_{st.session_state.nlp_selected_section}",
-                    placeholder="""# Your Notes
+                # 左右两栏：编辑区 + 预览区
+                col_edit, col_preview = st.columns(2)
+                with col_edit:
+                    edited_content = st.text_area(
+                        "Markdown Editor",
+                        value=current_note_content,
+                        height=400,
+                        key=f"nlp_note_editor_{note_identifier}",
+                        placeholder="""# Your Notes
 
 Write your notes here using Markdown:
 
@@ -400,41 +443,31 @@ Write your notes here using Markdown:
 
 ## Personal Thoughts
 *My reflections on this topic...*
-
----
 """
-                )
-                
-                # Markdown 预览
-                with st.expander("Preview (Markdown rendered)", expanded=False):
-                    st.markdown("**Preview of your notes:**")
+                    )
+                with col_preview:
+                    st.markdown("### Live Preview")
                     st.markdown("---")
-                    if new_notes:
-                        st.markdown(new_notes)
+                    if edited_content:
+                        st.markdown(edited_content)
                     else:
                         st.markdown("*No content to preview*")
                 
                 # 保存按钮
-                col_save, col_cancel = st.columns([1, 4])
-                with col_save:
-                    if st.button("Save Notes", key="nlp_save_notes", use_container_width=True):
-                        if new_notes != current_notes:
-                            success = save_nlp_chapter_notes(
-                                st.session_state.nlp_selected_chapter,
-                                st.session_state.nlp_selected_section,
-                                new_notes
-                            )
-                            if success:
-                                st.success("Notes saved successfully!")
-                                section["notes"] = new_notes
-                                time.sleep(1)
-                                st.rerun()
-                            else:
-                                st.error("❌ Failed to save notes.")
+                if st.button("Save Notes", key="nlp_save_file_notes", use_container_width=True):
+                    if edited_content != current_note_content:
+                        success = save_note("nlp", note_identifier, edited_content)
+                        if success:
+                            st.success("Notes saved successfully!")
+                            # 可选：更新当前显示的内容
+                            time.sleep(0.5)
+                            st.rerun()
                         else:
-                            st.info("No changes to save.")
+                            st.error("Failed to save notes.")
+                    else:
+                        st.info("No changes to save.")
+                # ========== 结束笔记区域 ==========
                 
-
                 # 推荐学习资源
                 st.markdown("---")
                 st.markdown("### Recommended Resources")

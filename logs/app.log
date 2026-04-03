@@ -4179,3 +4179,168 @@ Here are a few ideas you ...
 2026-04-02 19:59:26,474 - utils.data_loader - INFO - Loaded CHAPTER_19 from nlp19.json
 2026-04-02 19:59:26,474 - utils.data_loader - INFO - Loaded CHAPTER_20 from nlp20.json
 2026-04-02 19:59:26,475 - utils.data_loader - INFO - Loaded CHAPTER_21 from nlp21.json
+2026-04-02 23:27:10,556 - utils.data_loader - INFO - Successfully loaded data/TEM-8.json
+2026-04-02 23:27:10,578 - utils.data_loader - INFO - Successfully loaded data/NEMT.json
+2026-04-02 23:27:10,580 - utils.data_loader - INFO - Successfully loaded data/CET-46.json
+2026-04-02 23:27:10,905 - utils.data_loader - INFO - Loaded CHAPTER_1 from nlp1.json
+2026-04-02 23:27:10,907 - utils.data_loader - INFO - Loaded CHAPTER_2 from nlp2.json
+2026-04-02 23:27:10,908 - utils.data_loader - INFO - Loaded CHAPTER_3 from nlp3.json
+2026-04-02 23:27:10,909 - utils.data_loader - INFO - Loaded CHAPTER_4 from nlp4.json
+2026-04-02 23:27:10,910 - utils.data_loader - INFO - Loaded CHAPTER_5 from nlp5.json
+2026-04-02 23:27:10,910 - utils.data_loader - INFO - Loaded CHAPTER_6 from nlp6.json
+2026-04-02 23:27:10,911 - utils.data_loader - INFO - Loaded CHAPTER_7 from nlp7.json
+2026-04-02 23:27:10,912 - utils.data_loader - INFO - Loaded CHAPTER_8 from nlp8.json
+2026-04-02 23:27:10,912 - utils.data_loader - INFO - Loaded CHAPTER_9 from nlp9.json
+2026-04-02 23:27:10,913 - utils.data_loader - ERROR - Failed to load data/nlp/nlp10.json: Expecting ',' delimiter: line 4 column 2111 (char 2151)
+2026-04-02 23:27:10,913 - utils.data_loader - INFO - Loaded CHAPTER_11 from nlp11.json
+2026-04-02 23:27:10,914 - utils.data_loader - INFO - Loaded CHAPTER_12 from nlp12.json
+2026-04-02 23:27:10,915 - utils.data_loader - INFO - Loaded CHAPTER_13 from nlp13.json
+2026-04-02 23:27:10,920 - utils.data_loader - INFO - Loaded CHAPTER_14 from nlp14.json
+2026-04-02 23:27:10,922 - utils.data_loader - INFO - Loaded CHAPTER_15 from nlp15.json
+2026-04-02 23:27:10,923 - utils.data_loader - ERROR - Failed to load data/nlp/nlp16.json: Expecting ',' delimiter: line 33 column 3119 (char 24778)
+2026-04-02 23:27:10,924 - utils.data_loader - INFO - Loaded CHAPTER_17 from nlp17.json
+2026-04-02 23:27:10,925 - utils.data_loader - INFO - Loaded CHAPTER_18 from nlp18.json
+2026-04-02 23:27:10,928 - utils.data_loader - INFO - Loaded CHAPTER_19 from nlp19.json
+2026-04-02 23:27:10,928 - utils.data_loader - INFO - Loaded CHAPTER_20 from nlp20.json
+2026-04-02 23:27:10,929 - utils.data_loader - INFO - Loaded CHAPTER_21 from nlp21.json
+2026-04-02 23:57:38,807 - utils.data_loader - INFO - Successfully loaded data/TEM-8.json
+2026-04-02 23:57:38,809 - utils.data_loader - INFO - Successfully loaded data/NEMT.json
+2026-04-02 23:57:38,810 - utils.data_loader - INFO - Successfully loaded data/CET-46.json
+2026-04-02 23:57:39,055 - utils.data_loader - INFO - Loaded CHAPTER_1 from nlp1.json
+2026-04-02 23:57:39,056 - utils.data_loader - INFO - Loaded CHAPTER_2 from nlp2.json
+2026-04-02 23:57:39,056 - utils.data_loader - INFO - Loaded CHAPTER_3 from nlp3.json
+2026-04-02 23:57:39,057 - utils.data_loader - INFO - Loaded CHAPTER_4 from nlp4.json
+2026-04-02 23:57:39,058 - utils.data_loader - INFO - Loaded CHAPTER_5 from nlp5.json
+2026-04-02 23:57:39,059 - utils.data_loader - INFO - Loaded CHAPTER_6 from nlp6.json
+2026-04-02 23:57:39,059 - utils.data_loader - INFO - Loaded CHAPTER_7 from nlp7.json
+2026-04-02 23:57:39,060 - utils.data_loader - INFO - Loaded CHAPTER_8 from nlp8.json
+2026-04-02 23:57:39,061 - utils.data_loader - INFO - Loaded CHAPTER_9 from nlp9.json
+2026-04-02 23:57:39,061 - utils.data_loader - ERROR - Failed to load data/nlp/nlp10.json: Expecting ',' delimiter: line 4 column 2111 (char 2151)
+2026-04-02 23:57:39,062 - utils.data_loader - INFO - Loaded CHAPTER_11 from nlp11.json
+2026-04-02 23:57:39,062 - utils.data_loader - INFO - Loaded CHAPTER_12 from nlp12.json
+2026-04-02 23:57:39,063 - utils.data_loader - INFO - Loaded CHAPTER_13 from nlp13.json
+2026-04-02 23:57:39,064 - utils.data_loader - INFO - Loaded CHAPTER_14 from nlp14.json
+2026-04-02 23:57:39,065 - utils.data_loader - INFO - Loaded CHAPTER_15 from nlp15.json
+2026-04-02 23:57:39,065 - utils.data_loader - ERROR - Failed to load data/nlp/nlp16.json: Expecting ',' delimiter: line 33 column 3119 (char 24778)
+2026-04-02 23:57:39,066 - utils.data_loader - INFO - Loaded CHAPTER_17 from nlp17.json
+2026-04-02 23:57:39,066 - utils.data_loader - INFO - Loaded CHAPTER_18 from nlp18.json
+2026-04-02 23:57:39,066 - utils.data_loader - INFO - Loaded CHAPTER_19 from nlp19.json
+2026-04-02 23:57:39,067 - utils.data_loader - INFO - Loaded CHAPTER_20 from nlp20.json
+2026-04-02 23:57:39,067 - utils.data_loader - INFO - Loaded CHAPTER_21 from nlp21.json
+2026-04-03 00:23:56,067 - __main__ - INFO - User input: content...
+2026-04-03 00:25:48,854 - __main__ - INFO - User input: what's topic for the current content...
+2026-04-03 00:30:53,037 - __main__ - INFO - User input: hi...
+2026-04-03 00:30:54,983 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 00:31:12,789 - __main__ - INFO - User input: hi...
+2026-04-03 00:33:53,799 - __main__ - ERROR - AI reply error: Timeout of 600.0s exceeded, last exception: 503 failed to connect to all addresses; last error: UNAVAILABLE: ipv4:142.250.69.170:443: Failed to connect to remote host: Timeout occurred: FD shutdown
+2026-04-03 00:35:11,916 - __main__ - INFO - User input: hi...
+2026-04-03 00:35:44,148 - __main__ - ERROR - AI reply error: Timeout of 600.0s exceeded, last exception: 503 failed to connect to all addresses; last error: UNKNOWN: ipv4:142.250.69.170:443: tcp handshaker shutdown
+2026-04-03 00:36:42,821 - __main__ - INFO - User input: waht's topic...
+2026-04-03 00:36:45,573 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 00:39:31,046 - __main__ - INFO - User input: teach me about this step by step...
+2026-04-03 00:39:37,479 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 00:41:11,944 - __main__ - ERROR - AI reply error: Timeout of 600.0s exceeded, last exception: 503 failed to connect to all addresses; last error: UNAVAILABLE: ipv6:%5B2607:f8b0:400a:809::200a%5D:443: Failed to connect to remote host: Timeout occurred: FD shutdown
+2026-04-03 00:41:32,535 - __main__ - INFO - User input: what's current page?...
+2026-04-03 00:41:37,946 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 00:42:11,336 - __main__ - INFO - User input: what's current page?...
+2026-04-03 00:42:13,259 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 00:42:57,903 - __main__ - INFO - User input: teach me step by step, start from the first step...
+2026-04-03 00:43:00,366 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 00:45:11,230 - __main__ - ERROR - AI reply error: Timeout of 600.0s exceeded, last exception: 503 failed to connect to all addresses; last error: UNAVAILABLE: ipv4:142.250.69.170:443: Failed to connect to remote host: Timeout occurred: FD shutdown
+2026-04-03 00:52:12,661 - __main__ - INFO - User input: next step...
+2026-04-03 00:52:14,930 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 00:53:49,875 - __main__ - INFO - User input:  the llm do tasks bans e probalorti ty and sattics aso they aanxk what woeld goign on right?...
+2026-04-03 00:53:54,897 - groq._base_client - INFO - Retrying request to /openai/v1/chat/completions in 0.413586 seconds
+2026-04-03 00:53:58,821 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 00:56:09,815 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 00:56:10,833 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/audio/speech "HTTP/1.1 200 OK"
+2026-04-03 14:28:55,972 - utils.data_loader - INFO - Successfully loaded data/TEM-8.json
+2026-04-03 14:28:55,972 - utils.data_loader - INFO - Successfully loaded data/NEMT.json
+2026-04-03 14:28:55,973 - utils.data_loader - INFO - Successfully loaded data/CET-46.json
+2026-04-03 14:28:56,088 - utils.data_loader - INFO - Loaded CHAPTER_1 from nlp1.json
+2026-04-03 14:28:56,088 - utils.data_loader - INFO - Loaded CHAPTER_2 from nlp2.json
+2026-04-03 14:28:56,088 - utils.data_loader - INFO - Loaded CHAPTER_3 from nlp3.json
+2026-04-03 14:28:56,089 - utils.data_loader - INFO - Loaded CHAPTER_4 from nlp4.json
+2026-04-03 14:28:56,089 - utils.data_loader - INFO - Loaded CHAPTER_5 from nlp5.json
+2026-04-03 14:28:56,089 - utils.data_loader - INFO - Loaded CHAPTER_6 from nlp6.json
+2026-04-03 14:28:56,090 - utils.data_loader - INFO - Loaded CHAPTER_7 from nlp7.json
+2026-04-03 14:28:56,090 - utils.data_loader - INFO - Loaded CHAPTER_8 from nlp8.json
+2026-04-03 14:28:56,090 - utils.data_loader - INFO - Loaded CHAPTER_9 from nlp9.json
+2026-04-03 14:28:56,090 - utils.data_loader - ERROR - Failed to load data/nlp/nlp10.json: Expecting ',' delimiter: line 4 column 2111 (char 2151)
+2026-04-03 14:28:56,091 - utils.data_loader - INFO - Loaded CHAPTER_11 from nlp11.json
+2026-04-03 14:28:56,092 - utils.data_loader - INFO - Loaded CHAPTER_12 from nlp12.json
+2026-04-03 14:28:56,092 - utils.data_loader - INFO - Loaded CHAPTER_13 from nlp13.json
+2026-04-03 14:28:56,092 - utils.data_loader - INFO - Loaded CHAPTER_14 from nlp14.json
+2026-04-03 14:28:56,092 - utils.data_loader - INFO - Loaded CHAPTER_15 from nlp15.json
+2026-04-03 14:28:56,093 - utils.data_loader - ERROR - Failed to load data/nlp/nlp16.json: Expecting ',' delimiter: line 33 column 3119 (char 24778)
+2026-04-03 14:28:56,093 - utils.data_loader - INFO - Loaded CHAPTER_17 from nlp17.json
+2026-04-03 14:28:56,093 - utils.data_loader - INFO - Loaded CHAPTER_18 from nlp18.json
+2026-04-03 14:28:56,093 - utils.data_loader - INFO - Loaded CHAPTER_19 from nlp19.json
+2026-04-03 14:28:56,094 - utils.data_loader - INFO - Loaded CHAPTER_20 from nlp20.json
+2026-04-03 14:28:56,094 - utils.data_loader - INFO - Loaded CHAPTER_21 from nlp21.json
+2026-04-03 14:34:11,566 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 14:34:11,617 - __main__ - ERROR - [AUTO] Quiz pre-gen error: st.session_state has no attribute "language". Did you forget to initialize it? More info: https://docs.streamlit.io/develop/concepts/architecture/session-state#initialization
+2026-04-03 14:34:12,401 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 14:34:13,975 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 14:34:20,753 - __main__ - INFO - User input: content？...
+2026-04-03 14:34:24,155 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 14:34:40,960 - __main__ - INFO - User input: content...
+2026-04-03 14:34:42,809 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 14:35:02,521 - __main__ - INFO - User input: content...
+2026-04-03 14:35:04,434 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 15:10:14,738 - __main__ - INFO - User input: whats...
+2026-04-03 15:10:16,469 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 15:10:34,257 - __main__ - INFO - User input:  CONTENT?...
+2026-04-03 15:10:39,362 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 15:25:21,283 - groq._base_client - INFO - Retrying request to /openai/v1/chat/completions in 0.477801 seconds
+2026-04-03 15:25:26,788 - groq._base_client - INFO - Retrying request to /openai/v1/chat/completions in 0.838926 seconds
+2026-04-03 15:25:32,640 - __main__ - ERROR - [AUTO] Greeting error: Request timed out.
+2026-04-03 15:25:32,647 - __main__ - ERROR - [AUTO] Quiz pre-gen error: st.session_state has no attribute "language". Did you forget to initialize it? More info: https://docs.streamlit.io/develop/concepts/architecture/session-state#initialization
+2026-04-03 15:25:37,671 - groq._base_client - INFO - Retrying request to /openai/v1/chat/completions in 0.450237 seconds
+2026-04-03 15:25:43,134 - groq._base_client - INFO - Retrying request to /openai/v1/chat/completions in 0.772671 seconds
+2026-04-03 15:25:48,921 - ui.main_content - ERROR - [AUTO] Batch translate error: Request timed out.
+2026-04-03 15:25:53,971 - groq._base_client - INFO - Retrying request to /openai/v1/chat/completions in 0.483401 seconds
+2026-04-03 15:25:59,465 - groq._base_client - INFO - Retrying request to /openai/v1/chat/completions in 0.939906 seconds
+2026-04-03 15:26:06,191 - groq._base_client - INFO - Retrying request to /openai/v1/chat/completions in 0.414841 seconds
+2026-04-03 15:26:11,615 - groq._base_client - INFO - Retrying request to /openai/v1/chat/completions in 0.768215 seconds
+2026-04-03 15:26:21,123 - groq._base_client - INFO - Retrying request to /openai/v1/chat/completions in 0.439661 seconds
+2026-04-03 15:26:26,570 - groq._base_client - INFO - Retrying request to /openai/v1/chat/completions in 0.807747 seconds
+2026-04-03 16:08:19,786 - __main__ - INFO - User input: all content...
+2026-04-03 16:08:22,150 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 16:08:59,445 - __main__ - INFO - User input: what did you know about this topic...
+2026-04-03 16:09:03,044 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 16:09:34,257 - __main__ - INFO - User input: what did you know about this topic...
+2026-04-03 16:09:36,627 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 16:10:19,801 - __main__ - INFO - User input: teach me step by step...
+2026-04-03 16:20:18,492 - __main__ - ERROR - AI reply error: Timeout of 600.0s exceeded, last exception: 503 failed to connect to all addresses; last error: UNAVAILABLE: ipv4:142.250.198.74:443: Failed to connect to remote host: Timeout occurred: FD shutdown
+2026-04-03 16:20:52,409 - __main__ - INFO - User input: hi...
+2026-04-03 16:22:58,963 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 16:22:58,976 - __main__ - ERROR - [AUTO] Quiz pre-gen error: st.session_state has no attribute "language". Did you forget to initialize it? More info: https://docs.streamlit.io/develop/concepts/architecture/session-state#initialization
+2026-04-03 16:23:00,901 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 16:23:02,000 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 16:23:24,659 - __main__ - INFO - User input: teach me all vocabs that unlearned....
+2026-04-03 16:23:32,798 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 16:30:46,794 - __main__ - ERROR - AI reply error: Timeout of 600.0s exceeded, last exception: 503 failed to connect to all addresses; last error: UNAVAILABLE: ipv4:142.250.204.42:443: Failed to connect to remote host: Timeout occurred: FD shutdown
+2026-04-03 16:36:14,864 - __main__ - INFO - User input: quiz:
+1. b
+2. stupendous
+3. staunch...
+2026-04-03 16:36:17,135 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 16:37:20,099 - __main__ - INFO - User input: give mutiple type quizes for each wrods to test my understanding....
+2026-04-03 16:37:28,785 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 16:55:40,165 - __main__ - INFO - User input: 1-A: b; 1-B: sordid
+2-A: Mute; 2-B: speechless
+3-A: False; 3-B: b
+4-A:  a; 4-B: staunch
+5-A: B; 5-B:...
+2026-04-03 16:55:45,908 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 17:07:00,694 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 17:07:00,708 - __main__ - ERROR - [AUTO] Quiz pre-gen error: st.session_state has no attribute "language". Did you forget to initialize it? More info: https://docs.streamlit.io/develop/concepts/architecture/session-state#initialization
+2026-04-03 17:07:01,781 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 17:07:02,823 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 17:07:23,056 - __main__ - INFO - User input: teach me all voabs...
+2026-04-03 17:07:30,186 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-04-03 17:07:31,396 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 413 Payload Too Large"
+2026-04-03 17:07:31,398 - __main__ - ERROR - Failed to generate summary: Error code: 413 - {'error': {'message': 'Request too large for model `llama-3.1-8b-instant` in organization `org_01khths5fcfstsn4zpp5gt931z` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Requested 7409, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing', 'type': 'tokens', 'code': 'rate_limit_exceeded'}}
+2026-04-03 17:15:52,148 - utils.data_loader - INFO - Note saved: notes/hf_course/en/chapter0/1.md
+2026-04-03 17:25:01,535 - utils.data_loader - INFO - Note saved: notes/hf_course/en/chapter0/1.md

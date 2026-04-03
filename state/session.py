@@ -109,3 +109,26 @@ def init_session_state():
     if "nemt_page_translated" not in st.session_state:
         st.session_state.nemt_page_translated = set()
     # ========== 结束 ==========
+
+    # ========== Hugging Face 课程状态 ==========
+    if "hf_course_data_en" not in st.session_state:
+        st.session_state.hf_course_data_en = {}      # 英文课程数据
+    if "hf_course_data_zh" not in st.session_state:
+        st.session_state.hf_course_data_zh = {}      # 中文课程数据
+    if "hf_course_lang" not in st.session_state:
+        st.session_state.hf_course_lang = "en"       # 当前选择的语言: "en" 或 "zh-CN"
+    if "hf_course_current_chapter" not in st.session_state:
+        st.session_state.hf_course_current_chapter = None   # 当前章节 key，如 "chapter1"
+    if "hf_course_current_section" not in st.session_state:
+        st.session_state.hf_course_current_section = None   # 当前小节 key，如 "1"
+    if "hf_course_path" not in st.session_state:
+        st.session_state.hf_course_path = []                 # 导航路径（可选）
+    if "hf_course_file_content" not in st.session_state:
+        st.session_state.hf_course_file_content = None       # 缓存当前显示的文件内容
+
+    # ========== 笔记浏览器模式状态 ==========
+    if "notes_browser_current_path" not in st.session_state:
+        st.session_state.notes_browser_current_path = None   # 当前选中的笔记文件相对路径
+    if "notes_browser_edit_content" not in st.session_state:
+        st.session_state.notes_browser_edit_content = ""     # 当前编辑的笔记内容
+    # ========== 结束 ==========
