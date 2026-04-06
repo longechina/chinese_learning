@@ -1,0 +1,16 @@
+{
+  "chinese_ch_01_01.json": {
+    "type": "single_choice",
+    "courses": ["chinese_ch_01"],
+    "tags": ["vocabulary", "beginner"],
+    "media": ["01.jpg"],
+    "date_created": "2026-04-05"
+  },
+  "hf_course_chapter1_05.md": {
+    "type": "fill_in_blank",
+    "courses": ["hf_course_chapter1"],
+    "tags": ["grammar"],
+    "media": [],
+    "date_created": "2026-04-05"
+  }
+}

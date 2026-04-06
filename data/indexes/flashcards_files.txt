@@ -1,0 +1,9 @@
+data/flashcard_db/chinese/ch_01/flashcards.json
+data/flashcard_db/chinese/ch_02/flashcards.json
+data/flashcard_db/chinese/ch_03/flashcards.json
+data/flashcard_db/english/ch_01/flashcards.json
+data/flashcard_db/english/ch_02/flashcards.json
+data/flashcard_db/english/ch_03/flashcards.json
+data/flashcard_db/nlp/ch_01/flashcards.json
+data/flashcard_db/nlp/ch_02/flashcards.json
+data/flashcard_db/nlp/ch_03/flashcards.json

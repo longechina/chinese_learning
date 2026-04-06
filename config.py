@@ -1,5 +1,5 @@
-# config.py
 import streamlit as st
+import os
 
 # max_tokens  = 模型上下文窗口大小（用于参考/显示）
 # resp_tokens = 每次 API 调用的输出预算（实际传给 max_tokens 参数）
@@ -30,3 +30,25 @@ GITHUB_TOKEN = st.secrets.get("GITHUB_TOKEN")
 REPO_OWNER = st.secrets.get("GITHUB_REPO_OWNER")
 REPO_NAME = st.secrets.get("GITHUB_REPO_NAME")
 GITHUB_ENABLED = GITHUB_TOKEN and REPO_OWNER and REPO_NAME
+
+# =====================================================
+# 新增课程上传规则配置
+# =====================================================
+COURSE_UPLOAD_RULES = {
+    "chinese": "ch_XX/lesson_YY.json    # XX:章节号 01/02/...  YY:课件编号 01/02/...",
+    "english": "ch_XX/lesson_YY.json",
+    "nlp": "module_XX/lesson_YY.json",
+    "hf_course": "章节或模块文件夹命名保持原始结构",
+}
+
+# 将规则输出到单独文档
+RULES_DOC_PATH = os.path.join(os.path.dirname(__file__), "COURSE_UPLOAD_RULES.md")
+with open(RULES_DOC_PATH, "w", encoding="utf-8") as f:
+    f.write("# 课程上传命名规则\n\n")
+    f.write("用户上传的新课件必须遵守以下命名规则，方便系统自动识别和管理：\n\n")
+    for db, rule in COURSE_UPLOAD_RULES.items():
+        f.write(f"- **{db}**: `{rule}`\n")
+    f.write("\n**说明:**\n")
+    f.write("1. 章节号或模块号必须使用两位数字，课件编号也使用两位数字。\n")
+    f.write("2. 用户可上传整个章节文件夹或单个课件文件。\n")
+    f.write("3. 系统会根据命名规则自动归类到对应数据库。\n")

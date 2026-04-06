@@ -1,0 +1,42 @@
+
+{
+  "associated": {
+    "chinese": {
+      "ch_01": [],
+      "ch_02": [],
+      "ch_03": []
+    },
+    "english": {
+      "ch_01": [],
+      "ch_02": [],
+      "ch_03": []
+    },
+    "hf_course": {
+      "chapter0": [],
+      "chapter1": [],
+      "chapter2": [],
+      "chapter3": [],
+      "chapter4": [],
+      "chapter5": [],
+      "chapter6": [],
+      "chapter7": [],
+      "chapter8": [],
+      "chapter9": [],
+      "en": [],
+      "zh-CN": []
+    },
+    "nlp": {
+      "ch_01": [],
+      "ch_02": [],
+      "ch_03": []
+    }
+  },
+  "independent": {
+    "json": [],
+    "yaml": [],
+    "markdown": [],
+    "python": [],
+    "pdf": [],
+    "misc": []
+  }
+}

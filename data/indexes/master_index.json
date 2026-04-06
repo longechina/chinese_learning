@@ -1,0 +1,95 @@
+{
+  "courses_db": {
+    "version": "1.0",
+    "last_updated": "2026-04-06T17:34:44.325699",
+    "files": [
+      "data/courses_db/chinese/ch_01/lesson_01.json",
+      "data/courses_db/chinese/ch_02/lesson_01.json",
+      "data/courses_db/chinese/ch_03/lesson_01.json",
+      "data/courses_db/english/ch_01/lesson_01.json",
+      "data/courses_db/english/ch_01/lesson_02.json",
+      "data/courses_db/english/ch_02/lesson_01.json",
+      "data/courses_db/english/ch_02/lesson_02.json",
+      "data/courses_db/english/ch_03/lesson_01.json",
+      "data/courses_db/english/ch_03/lesson_02.json",
+      "data/courses_db/nlp/module_01/lesson_01.json",
+      "data/courses_db/nlp/module_01/lesson_02.json",
+      "data/courses_db/nlp/module_01/lesson_03.json",
+      "data/courses_db/nlp/module_01/lesson_04.json",
+      "data/courses_db/nlp/module_01/lesson_05.json",
+      "data/courses_db/nlp/module_01/lesson_06.json",
+      "data/courses_db/nlp/module_01/lesson_07.json",
+      "data/courses_db/nlp/module_02/lesson_01.json",
+      "data/courses_db/nlp/module_02/lesson_02.json",
+      "data/courses_db/nlp/module_02/lesson_03.json",
+      "data/courses_db/nlp/module_02/lesson_04.json",
+      "data/courses_db/nlp/module_02/lesson_05.json",
+      "data/courses_db/nlp/module_02/lesson_06.json",
+      "data/courses_db/nlp/module_03/lesson_01.json",
+      "data/courses_db/nlp/module_03/lesson_02.json",
+      "data/courses_db/nlp/module_03/lesson_03.json",
+      "data/courses_db/nlp/module_03/lesson_04.json",
+      "data/courses_db/nlp/module_03/lesson_05.json",
+      "data/courses_db/nlp/module_03/lesson_06.json",
+      "data/courses_db/nlp/module_03/lesson_07.json",
+      "data/courses_db/nlp/module_03/lesson_08.json"
+    ],
+    "cloud_synced": false
+  },
+  "flashcard_db": {
+    "version": "1.0",
+    "last_updated": "2026-04-06T17:34:44.327220",
+    "files": [
+      "data/flashcard_db/chinese/ch_01/flashcards.json",
+      "data/flashcard_db/chinese/ch_02/flashcards.json",
+      "data/flashcard_db/chinese/ch_03/flashcards.json",
+      "data/flashcard_db/english/ch_01/flashcards.json",
+      "data/flashcard_db/english/ch_02/flashcards.json",
+      "data/flashcard_db/english/ch_03/flashcards.json",
+      "data/flashcard_db/nlp/ch_01/flashcards.json",
+      "data/flashcard_db/nlp/ch_02/flashcards.json",
+      "data/flashcard_db/nlp/ch_03/flashcards.json"
+    ],
+    "cloud_synced": false
+  },
+  "notes_db": {
+    "version": "1.0",
+    "last_updated": "2026-04-06T17:34:44.329069",
+    "files": [
+      "data/notes_db/notes_index.json"
+    ],
+    "cloud_synced": false
+  },
+  "media_db": {
+    "version": "1.0",
+    "last_updated": "2026-04-06T17:34:44.332222",
+    "files": [
+      "data/media_db/media_index.json"
+    ],
+    "cloud_synced": false
+  },
+  "quiz_db": {
+    "version": "1.0",
+    "last_updated": "2026-04-06T17:34:44.334180",
+    "files": [
+      "data/quiz_db/quiz_index.json"
+    ],
+    "cloud_synced": false
+  },
+  "workflow_db": {
+    "version": "1.0",
+    "last_updated": "2026-04-06T17:34:44.336260",
+    "files": [
+      "data/workflow_db/workflow_index.json"
+    ],
+    "cloud_synced": false
+  },
+  "raw_materials": {
+    "version": "1.0",
+    "last_updated": "2026-04-06T17:34:44.336886",
+    "files": [
+      "data/raw_materials/raw_materials_index.json"
+    ],
+    "cloud_synced": false
+  }
+}

@@ -1,0 +1,294 @@
+{
+  "NEMT": {
+    "0": {
+      "人物、身份与职业 - 家庭与人际关系": {
+        "words": "ancestor / aunt / baby / boy / bride / bridegroom / brother / child / children / cousin / dad / daddy / daughter / family / father / fellow / friend / girl / grandchild / granddaughter / grandfather / grandpa / grandmother / grandma / grandson / guest / host / hostess / husband / kid / lady / man / men / mate / member / mother / mom / mum / neighbor / nephew / niece / parent / partner / person / relative / sister / son / stranger / teenager / twin / uncle / wife / woman / women / youth / adolescence / adolescent / adult / birth / childhood / generation / marriage / orphan / relationship / sex / widow"
+      }
+    },
+    "1": {
+      "人物、身份与职业 - 职业与身份": {
+        "words": "accountant / actor / actress / administrator / agent / ambassador / applicant / architect / artist / assistant / astronaut / astronomer / athlete / author / bachelor / baker / barber / boss / burglar / butcher / candidate / captain / carpenter / chairman / chairwoman / chef / citizen / cleaner / clerk / client / colleague / collector / communist / companion / conductor / cook / customer / dentist / detective / director / doctor / driver / editor / educator / emperor / employee / employer / enemy / engineer / expert / farmer / fisherman / foreigner / guard / guide / headmaster / headmistress / hero / hunter / interpreter / journalist / judge / king / lawyer / leader / librarian / manager / master / mechanic / merchant / minister / monitor / musician / nurse / officer / operator / owner / painter / passenger / patient / peasant / pedestrian / photographer / physicist / pianist / pilot / pioneer / poet / police / politician / porter / postman / premier / president / principal / prisoner / professor / pupil / queen / receiver / referee / reporter / representative / robot / sailor / scholar / scientist / secretary / servant / settler / shopkeeper / singer / slave / soldier / speaker / specialist / spy / staff / statesman / steward / stewardess / student / surgeon / tailor / teacher / thief / tourist / translator / typist / user / victim / visitor / volunteer / waiter / waitress / winner / worker / writer"
+      }
+    },
+    "2": {
+      "身体、健康与医疗 - 身体部位": {
+        "words": "ankle / arm / back / beard / belly / blood / body / bone / brain / breast / breath / cell / cheek / chest / chin / ear / eye / face / fat / finger / fingernail / fist / flesh / foot / feet / forehead / hair / hand / head / heart / heel / jaw / knee / leg / lip / lung / mouth / muscle / nail / neck / nose / organ / shoulder / skeleton / skin / stomach / throat / thumb / toe / tongue / tooth / teeth / waist / wrist"
+      }
+    },
+    "3": {
+      "身体、健康与医疗 - 健康与疾病": {
+        "words": "abortion / ache / AIDS / ambulance / bacteria / blind / cancer / clinic / cold / cough / cure / deaf / death / dentist / die / diet / disability / disabled / disease / dizzy / drug / fever / flu / headache / health / healthy / hospital / hurt / ill / illness / injure / injury / life / medical / medicine / nurse / operation / pain / painful / patient / pharmacy / physical / physician / pill / poison / prescription / pulse / recover / remedy / rescue / sick / sickness / sore / surgery / symptom / therapy / toothache / treatment / virus / vitamin / weak / wound / X-ray"
+      }
+    },
+    "4": {
+      "食品、饮料与餐饮 - 水果与蔬菜": {
+        "words": "apple / banana / bean / cabbage / carrot / corn / cucumber / eggplant / fruit / garlic / grape / lemon / melon / mushroom / nut / onion / orange / pea / peach / peanut / pear / pepper / pineapple / potato / strawberry / tomato / vegetable / watermelon / wheat"
+      }
+    },
+    "5": {
+      "食品、饮料与餐饮 - 肉类与主食": {
+        "words": "bacon / beef / biscuit / bread / bun / cake / cereal / cheese / chicken / dumpling / egg / fish / flour / food / grain / ham / hamburger / lamb / meat / mutton / noodle / pancake / pie / pizza / pork / porridge / rice / salad / sandwich / sausage / steak / toast / tofu"
+      }
+    },
+    "6": {
+      "食品、饮料与餐饮 - 饮料与调料": {
+        "words": "alcohol / beer / coffee / coke / juice / lemonade / liquid / milk / oil / salt / salty / sauce / soup / sugar / sweet / tea / vinegar / water / wine / yoghurt / yogurt"
+      }
+    },
+    "7": {
+      "食品、饮料与餐饮 - 餐饮器具与动作": {
+        "words": "barbecue / bowl / breakfast / brunch / buffet / canteen / chopstick / cooker / cup / diet / dining / dinner / dish / drink / eat / feast / fork / glass / hungry / kettle / kitchen / knife / lunch / meal / menu / picnic / plate / pot / restaurant / snack / spoon / spoonful / starve / starvation / supper / taste / thirsty / tray"
+      }
+    },
+    "8": {
+      "服装与个人物品 - 衣物": {
+        "words": "apron / blouse / boot / button / cap / clothes / coat / collar / dress / glove / hat / jacket / jeans / necktie / overcoat / pajamas / pants / raincoat / scarf / shirt / shoe / shorts / skirt / sleeve / sock / sportswear / stocking / suit / sweater / swimsuit / trousers / T-shirt / underwear / uniform / vest / waistcoat"
+      }
+    },
+    "9": {
+      "服装与个人物品 - 材质与饰品": {
+        "words": "belt / cloth / cotton / diamond / fabric / fashion / fur / gold / handkerchief / handbag / jewel / jewellery / leather / necklace / pocket / purse / ring / silk / silver / thread / tie / umbrella / wallet / wool / woollen / zip / zipper"
+      }
+    },
+    "10": {
+      "家居、生活与环境 - 房屋与设施": {
+        "words": "accommodation / address / apartment / balcony / basement / bathroom / bedroom / bench / brick / building / ceiling / chimney / corridor / cottage / courtyard / door / downstairs / elevator / fence / flat / floor / garage / garden / gate / hall / home / house / kitchen / lift / living room / lock / roof / room / stairs / toilet / upstairs / wall / window / yard"
+      }
+    },
+    "11": {
+      "家居、生活与环境 - 家具与电器": {
+        "words": "air conditioner / armchair / basket / bath / bathtub / bed / beddings / blanket / box / broom / brush / bucket / bulb / cabinet / candle / carpet / chair / clock / closet / computer / cooker / couch / cupboard / curtain / cushion / desk / drawer / fan / fridge / refrigerator / furniture / heater / kettle / lamp / microwave / mirror / oven / pillow / quilt / radio / refrigerator / seat / sheet / shelf / shower / sink / soap / sofa / stove / table / tap / telephone / television / TV / towel / trash / tube / vase / wardrobe / washroom"
+      }
+    },
+    "12": {
+      "家居、生活与环境 - 日常用品与工具": {
+        "words": "bag / battery / bottle / camera / card / cassette / CD / chain / comb / disk / dustbin / envelope / file / flag / gift / glue / gun / hammer / key / ladder / machine / map / mat / match / needle / net / pan / parcel / pen / pencil / phone / photo / picture / pin / pipe / rope / ruler / scissors / screw / stick / string / tape / tool / toothbrush / toothpaste / toy / umbrella / watch / wheel / wire"
+      }
+    },
+    "13": {
+      "学校、教育与科技 - 学校生活": {
+        "words": "academy / bell / blackboard / book / break / campus / chalk / class / classmate / classroom / college / course / curriculum / degree / desk / diary / dictionary / diploma / education / eraser / essay / exam / examination / exercise / grade / graduate / graduation / grammar / handwriting / homework / ink / knowledge / learn / lesson / letter / library / mark / monitor / note / notebook / page / paper / pen / pencil / practice / problem / project / pupil / question / quiz / read / report / review / ruler / scholarship / school / schoolbag / score / student / study / subject / teacher / term / test / text / textbook / university / vocabulary / word / write"
+      }
+    },
+    "14": {
+      "学校、教育与科技 - 学科与领域": {
+        "words": "algebra / arithmetic / art / biology / botany / chemistry / engineering / geography / geometry / history / language / literature / mathematics / math / maths / music / P.E. / physical education / philosophy / physics / politics / psychology / science"
+      }
+    },
+    "15": {
+      "学校、教育与科技 - 科技与媒介": {
+        "words": "advertisement / broadcast / calculator / cell / clone / computer / data / database / digital / download / electricity / electronic / email / engine / experiment / fax / film / internet / invention / keyboard / lab / laboratory / laptop / machine / media / microphone / mobile / monitor / mouse / network / news / newspaper / program / radio / record / robot / rocket / satellite / screen / signal / software / technology / telephone / telescope / video / website"
+      }
+    },
+    "16": {
+      "自然、动物与地理 - 动物": {
+        "words": "animal / ant / bear / beast / bee / bird / bull / butterfly / camel / cat / cattle / chicken / cow / creature / deer / dinosaur / dog / donkey / duck / eagle / elephant / fish / fly / fox / frog / giraffe / goat / goose / hen / horse / insect / lamb / lion / monkey / mosquito / mouse / mice / ox / panda / parrot / pet / pig / rabbit / rat / rooster / seagull / shark / sheep / snake / sparrow / spider / squirrel / swan / tiger / tortoise / turtle / whale / wildlife / wolf / worm / zebra / zoo"
+      }
+    },
+    "17": {
+      "自然、动物与地理 - 植物与自然界": {
+        "words": "ash / bamboo / bark / bean / blossom / branch / bush / crop / dust / flower / forest / fruit / garden / grass / herb / jungle / leaf / leaves / mud / nature / plant / root / rose / seed / soil / stem / stone / strawberry / tree / trunk / vegetable / weed / wood"
+      }
+    },
+    "18": {
+      "自然、动物与地理 - 地理与天气": {
+        "words": "air / atmosphere / autumn / fall / bay / beach / climate / cloud / cloudy / coast / cold / continent / desert / dew / disaster / dry / earth / earthquake / flood / fog / foggy / freeze / frost / hill / hot / hurricane / ice / island / lake / land / lightning / mist / moon / mountain / ocean / planet / pollution / pond / rain / rainbow / river / rock / sand / sea / season / shade / shadow / shower / sky / smoke / snow / space / spring / star / steam / storm / stream / sun / sunny / sunrise / sunset / sunshine / thunder / typhoon / universe / valley / volcano / water / wave / weather / wet / wind / windy / winter / world"
+      }
+    },
+    "19": {
+      "自然、动物与地理 - 方位与区域": {
+        "words": "area / border / capital / city / country / countryside / district / east / field / ground / harbor / hometown / map / north / park / place / port / province / region / road / south / space / square / state / station / street / territory / town / village / west / zone"
+      }
+    },
+    "20": {
+      "交通与旅行 - 交通工具": {
+        "words": "aircraft / airplane / plane / ambulance / bicycle / bike / boat / bus / cab / car / carriage / coach / ferry / helicopter / jeep / jet / lorry / motorcycle / motorbike / ship / shuttle / spaceship / taxi / tractor / train / tram / truck / van / vehicle"
+      }
+    },
+    "21": {
+      "交通与旅行 - 旅行相关": {
+        "words": "abroad / accident / airline / airport / arrival / arrive / baggage / board / bridge / crossroads / departure / destination / drive / driver / fare / flight / highway / journey / luggage / map / passenger / passport / path / pavement / petrol / gas / pilot / platform / rail / railway / ride / road / route / sail / seat / station / street / subway / underground / ticket / tour / tourism / tourist / traffic / transport / transportation / travel / trip / tunnel / vacation / visa / voyage / wheel"
+      }
+    },
+    "22": {
+      "抽象概念、社会与经济 - 社会与法律": {
+        "words": "administration / agriculture / army / authority / battle / campaign / candidate / ceremony / civilization / committee / community / conference / conflict / congress / constitution / court / crime / culture / custom / democracy / election / empire / environment / event / flag / freedom / government / independence / industry / justice / law / liberty / nation / peace / policy / politics / population / poverty / power / prison / public / religion / republic / revolution / right / safety / security / society / state / tax / tradition / treaty / union / war / welfare"
+      }
+    },
+    "23": {
+      "抽象概念、社会与经济 - 经济与商业": {
+        "words": "account / advertise / afford / bank / bargain / bill / business / cash / change / check / coin / commercial / company / contract / cost / credit / currency / debt / deposit / dollar / earn / economy / exchange / expense / export / factory / fee / finance / fund / goods / import / income / insurance / invest / market / money / offer / pay / penny / pound / price / produce / product / profit / promotion / purchase / receipt / rent / salary / sale / sell / shop / store / tax / trade / value / wage / wealth"
+      }
+    },
+    "24": {
+      "抽象概念、社会与经济 - 抽象名词": {
+        "words": "ability / action / advice / age / aim / ambition / anger / answer / art / attention / attitude / beauty / beginning / behavior / belief / benefit / birth / care / cause / chance / change / character / choice / comfort / communication / condition / confidence / courage / danger / death / decision / degree / difference / difficulty / direction / doubt / dream / duty / education / effect / effort / emotion / energy / experience / fact / failure / faith / fear / feeling / force / fun / future / goal / habit / happiness / hate / help / history / hobby / honor / hope / horror / humor / idea / importance / influence / information / interest / joy / knowledge / language / laughter / life / love / luck / magic / manner / matter / meaning / memory / method / mind / mistake / music / name / nature / need / news / noise / opinion / opportunity / order / pain / part / patience / peace / pity / plan / pleasure / position / possibility / power / practice / pride / problem / progress / promise / purpose / quality / question / race / reason / record / relation / result / risk / role / rule / safety / science / secret / sense / service / shame / shape / silence / skill / sleep / soul / sound / speed / spirit / sport / strength / success / surprise / symbol / system / talent / taste / thought / time / trouble / trust / truth / use / value / view / voice / way / weather / weight / will / wisdom / wish / wonder / word / work / world / worry / youth"
+      }
+    },
+    "25": {
+      "动词 - 动作与状态": {
+        "words": "accept / achieve / act / add / admire / admit / advise / afford / agree / allow / answer / appear / argue / arrive / ask / attack / attend / avoid / awake / bake / beat / become / begin / believe / belong / blow / borrow / break / bring / build / burn / buy / call / can / care / carry / catch / celebrate / change / check / choose / clean / climb / close / collect / come / compare / complain / complete / connect / consider / continue / control / cook / copy / cost / count / cover / cry / cut / dance / dare / decide / declare / defeat / defend / demand / depend / describe / design / destroy / develop / die / dig / disappear / discover / discuss / divide / do / draw / dream / drink / drive / drop / dry / earn / eat / educate / encourage / end / enjoy / enter / escape / examine / excite / excuse / exercise / exist / expect / explain / express / fail / fall / feed / feel / fight / fill / find / finish / fit / fix / fly / follow / forbid / force / forget / forgive / freeze / fry / gain / gather / get / give / go / grow / guess / guide / hang / happen / hate / have / hear / help / hide / hit / hold / hope / hunt / hurry / hurt / imagine / improve / include / increase / inform / injure / insist / intend / introduce / invent / invite / join / jump / keep / kick / kill / kiss / knock / know / laugh / lay / lead / learn / leave / lend / let / lie / lift / light / like / listen / live / look / lose / love / make / manage / mark / marry / master / match / mean / measure / meet / mend / mention / mind / miss / mistake / move / need / nod / notice / obey / observe / offer / open / order / organize / owe / own / pack / paint / park / pass / pay / perform / pick / place / plan / plant / play / please / point / practice / praise / prepare / present / press / prevent / print / produce / promise / protect / prove / provide / pull / punish / push / put / quarrel / question / quit / race / rain / raise / reach / read / realize / receive / recite / recognize / record / recover / refuse / regret / relax / remain / remember / remind / remove / repair / repeat / reply / report / require / rest / return / ride / ring / rise / risk / roll / row / rub / ruin / run / rush / sail / save / say / scare / score / scream / search / see / seek / sell / send / separate / serve / set / shake / share / shine / shoot / shout / show / shut / sing / sink / sit / skate / sleep / smell / smile / smoke / snow / solve / speak / spell / spend / spill / spread / stand / stare / start / stay / steal / step / stick / stop / store / study / succeed / suffer / suggest / supply / support / suppose / surprise / survive / sweep / swim / take / talk / teach / tell / think / throw / touch / travel / try / turn / understand / use / visit / wait / wake / walk / want / wash / waste / watch / wear / win / wish / wonder / work / worry / write"
+      }
+    },
+    "26": {
+      "形容词与副词 - 颜色": {
+        "words": "black / blue / brown / golden / green / grey / gray / orange / pink / purple / red / silver / white / yellow"
+      }
+    },
+    "27": {
+      "形容词与副词 - 情感与性格": {
+        "words": "active / afraid / angry / anxious / boring / brave / calm / careful / careless / clever / confident / crazy / cruel / curious / disappointed / eager / excited / famous / foolish / friendly / funny / gentle / glad / good / great / greedy / happy / honest / kind / lazy / lonely / lucky / mad / merry / nervous / nice / patient / polite / poor / proud / quiet / rich / rude / sad / serious / shy / silly / smart / sorry / strange / strict / strong / stupid / sure / surprised / terrible / tired / wise / worried / wrong"
+      }
+    },
+    "28": {
+      "形容词与副词 - 描述与状态": {
+        "words": "able / alike / alive / all / alone / ancient / available / bad / beautiful / big / bitter / blind / bright / broken / busy / cheap / clean / clear / close / cold / comfortable / common / complete / correct / dangerous / dark / dead / deaf / deep / delicious / different / difficult / dirty / dry / early / easy / empty / expensive / fair / false / fast / fat / fine / fit / flat / foreign / free / fresh / full / hard / heavy / high / hot / hungry / important / impossible / interesting / large / late / light / little / long / loud / low / modern / narrow / natural / near / necessary / new / noisy / normal / old / open / pale / perfect / popular / possible / pretty / private / public / quick / rapid / ready / real / right / rough / round / safe / same / secret / sharp / short / silent / simple / single / slow / small / smooth / soft / solid / sour / special / square / steep / straight / sudden / sweet / tall / thick / thin / thirsty / tidy / tiny / true / ugly / useful / warm / weak / wet / wide / wild / wonderful / young"
+      }
+    },
+    "29": {
+      "形容词与副词 - 常用副词": {
+        "words": "actually / again / ago / almost / already / also / always / anyhow / anyway / anywhere / approximately / away / back / backward / badly / certainly / clearly / down / especially / even / ever / everywhere / exactly / finally / generally / hardly / here / however / immediately / instead / just / likely / maybe / merely / much / nearly / never / not / now / nowadays / often / once / only / out / outside / perhaps / possibly / probably / quite / rather / really / recently / seldom / so / sometimes / soon / still / suddenly / then / there / together / too / usually / very / well / yet"
+      }
+    },
+    "30": {
+      "虚词 - 介词与连词": {
+        "words": "about / above / across / after / against / along / although / among / and / around / as / at / because / before / behind / below / beneath / beside / besides / between / beyond / but / by / down / during / except / for / from / if / in / inside / into / like / near / nor / of / off / on / onto / opposite / or / out / outside / over / past / since / than / through / till / to / toward / towards / under / unless / until / up / upon / with / within / without"
+      }
+    },
+    "31": {
+      "虚词 - 代词": {
+        "words": "a / an / all / another / any / anybody / anyone / anything / both / each / either / every / everybody / everyone / everything / few / he / her / hers / herself / him / himself / his / I / it / its / itself / little / many / me / mine / more / most / much / my / myself / neither / no / nobody / none / no one / nothing / one / other / our / ours / ourselves / she / some / somebody / someone / something / that / the / their / theirs / them / themselves / these / they / this / those / us / we / what / whatever / which / who / whom / whose / you / your / yours / yourself / yourselves"
+      }
+    },
+    "32": {
+      "数词": {
+        "words": "one / two / three / four / five / six / seven / eight / nine / ten / eleven / twelve / thirteen / fourteen / fifteen / sixteen / seventeen / eighteen / nineteen / twenty / thirty / forty / fifty / sixty / seventy / eighty / ninety / one hundred / one thousand / million / billion / zero / first / second / third / fourth / fifth / sixth / seventh / eighth / ninth / tenth / eleventh / twelfth / twentieth / thirtieth / hundredth / thousandth / millionth"
+      }
+    },
+    "33": {
+      "时间": {
+        "words": "Monday / Tuesday / Wednesday / Thursday / Friday / Saturday / Sunday / January / February / March / April / May / June / July / August / September / October / November / December / second / minute / hour / day / week / month / year / decade / century / morning / afternoon / evening / night / midnight / dawn / dusk / today / tomorrow / yesterday"
+      }
+    },
+    "34": {
+      "国家与国籍": {
+        "words": "Afghan / Algerian / Argentinian / Australian / Austrian / Belgian / Brazilian / British / Burmese / Canadian / Chinese / Colombian / Cuban / Danish / Egyptian / Finnish / French / German / Greek / Dutch / Hungarian / Indian / Indonesian / Iranian / Iraqi / Irish / Israeli / Italian / Japanese / Jordanian / Kenyan / Korean / Kuwaiti / Lebanese / Malaysian / Mexican / Norwegian / Pakistani / Panamanian / Filipino / Polish / Portuguese / Russian / Singaporean / South African / Spanish / Swedish / Swiss / Thai / Turkish / American / Vietnamese / New Zealander"
+      }
+    },
+    "35": {
+      "抽象概念与心理状态 - 思维与观点": {
+        "words": "abstract / analysis / anecdote / angle / argument / assumption / attitude / belief / concept / conclusion / conscience / consensus / consideration / curiosity / decision / dilemma / doubt / dream / fantasy / guess / idea / imagination / impression / intelligence / intention / logic / memory / mind / mystery / opinion / plan / principle / purpose / puzzle / reason / reflection / secret / sense / soul / spirit / suggestion / theory / thought / truth / view / wisdom / wonder"
+      }
+    },
+    "36": {
+      "抽象概念与心理状态 - 情感与感受": {
+        "words": "affection / anger / anxiety / appetite / appreciation / comfort / courage / delight / desire / despair / emotion / envy / faith / fear / feeling / fun / glory / gratitude / grief / happiness / hate / hatred / honor / hope / horror / humor / hunger / joy / kindness / love / mercy / mood / pain / passion / patience / pity / pleasure / pride / rage / regret / relief / respect / satisfaction / shame / shock / sorrow / surprise / sympathy / terror / thirst / trust / worry"
+      }
+    },
+    "37": {
+      "抽象概念与心理状态 - 状态与性质": {
+        "words": "absence / access / accuracy / advantage / balance / basis / beauty / behavior / benefit / capacity / chaos / character / circumstance / coincidence / condition / confidence / consequence / content / crisis / danger / darkness / death / defeat / difference / difficulty / dignity / disaster / distance / effect / effort / emergency / energy / error / evidence / existence / experience / failure / fame / fault / force / freedom / friendship / future / habit / harmony / height / history / identity / importance / influence / justice / lack / length / level / liberty / life / limit / luck / manner / matter / meaning / method / mistake / nature / necessity / noise / opportunity / order / outcome / pace / peace / permission / possibility / power / practice / pressure / privilege / problem / process / progress / quality / quantity / range / reality / record / result / risk / role / routine / safety / scene / schedule / section / security / shadow / shape / significance / silence / situation / skill / speed / standard / status / strength / stress / style / success / symbol / system / talent / taste / tendency / tension / time / tradition / trouble / type / unity / value / variety / victory / virtue / voice / way / weakness / weight / youth"
+      }
+    },
+    "38": {
+      "社会、商业与法律 - 商业与经济": {
+        "words": "account / advertisement / agency / agent / allowance / amount / bargain / bill / bonus / brand / budget / business / cash / cheque / check / coin / commerce / commercial / company / contract / cost / credit / currency / customer / debt / demand / deposit / discount / dollar / economy / enterprise / exchange / expense / export / fee / finance / fortune / fund / goods / import / income / industry / insurance / investment / management / market / offer / ownership / payment / penny / percentage / pound / price / product / production / profit / promotion / property / purchase / receipt / rent / salary / sale / service / stock / supply / tax / trade / treasure / value / wage / wealth"
+      }
+    },
+    "39": {
+      "社会、商业与法律 - 法律与政治": {
+        "words": "abolish / abortion / abuse / accusation / act / administration / admission / advocate / agreement / ambassador / anthem / appeal / approval / arrest / authority / ban / border / campaign / candidate / case / ceremony / citizen / civilization / command / committee / communism / community / compromise / conflict / congress / constitution / court / crime / criminal / crisis / custom / debate / declaration / democracy / department / discrimination / duty / election / empire / equality / government / independence / institute / institution / issue / judge / jury / justice / law / lawyer / leader / leadership / liberty / license / majority / minister / ministry / minority / nation / nationality / negotiation / official / parliament / passport / peace / policy / politics / poll / population / president / prison / prisoner / privilege / procedure / prohibition / project / protest / punishment / rank / reform / refugee / regulation / republic / reputation / requirement / resolution / revolution / right / rule / safety / security / settlement / situation / society / speech / standard / state / statement / strike / struggle / system / target / territory / terrorism / threat / title / treaty / trial / union / victory / violence / vote / war / welfare / witness"
+      }
+    },
+    "40": {
+      "动作与过程 - 认知与沟通": {
+        "words": "acknowledge / admit / advise / announce / apologize / argue / ask / assert / assess / assume / assure / blame / boast / call / chat / claim / comment / communicate / complain / conclude / confess / confirm / congratulate / consider / consult / convince / criticize / declare / define / demand / deny / describe / discuss / explain / express / forbid / forgive / guess / hint / inform / inquire / insist / instruct / interrupt / introduce / invite / joke / mention / negotiate / nod / object / observe / order / persuade / predict / promise / pronounce / propose / prove / question / recommend / refuse / remind / repeat / reply / report / request / require / respond / say / scream / shout / speak / state / suggest / talk / tell / thank / threaten / translate / urge / warn / whisper / write / yell"
+      }
+    },
+    "41": {
+      "动作与过程 - 改变与发展": {
+        "words": "accelerate / adapt / add / adjust / advance / affect / alter / amend / appear / arise / become / begin / break / build / burn / burst / change / collapse / combine / complete / construct / convert / correct / create / damage / decrease / delay / destroy / develop / disappear / divide / double / drop / dry / eliminate / enlarge / establish / expand / explode / extend / fade / fail / finish / fix / form / freeze / grow / happen / heal / improve / increase / invent / lower / melt / mend / mix / modify / multiply / occur / overcome / pause / prepare / produce / progress / raise / recover / reduce / reform / remain / remove / renew / repair / replace / restore / result / reverse / revise / rise / ruin / separate / settle / shrink / sink / slow / solve / split / spoil / spread / start / stop / strengthen / stretch / succeed / survive / swell / switch / transform / turn / twist / unite / update / vanish / vary / wake / waste / weaken / widen / worsen"
+      }
+    },
+    "42": {
+      "动作与过程 - 身体与互动": {
+        "words": "absorb / accompany / achieve / acquire / act / afford / aim / allow / apply / approach / arrange / arrest / arrive / attack / attempt / attend / attract / avoid / bear / beat / behave / belong / bend / bite / blow / borrow / bother / bring / brush / buy / carry / cast / catch / cause / celebrate / challenge / charge / chase / cheat / check / cheer / choose / clap / clean / climb / close / collect / come / compete / conduct / connect / consume / contain / continue / contribute / control / cook / copy / count / cover / cross / cry / cut / dance / deal / defend / deliver / depend / deserve / design / detect / dig / direct / discover / disturb / dive / do / drag / draw / dress / drink / drive / earn / eat / educate / elect / employ / encourage / enjoy / enter / equip / escape / examine / exchange / exercise / exist / expect / explore / export / expose / face / fall / fasten / feed / fetch / fight / fill / find / fit / flee / float / flow / fly / fold / follow / force / found / gain / gather / get / give / go / grab / greet / guard / guide / handle / hang / harvest / have / hear / help / hide / hire / hit / hold / hug / hunt / hurry / hurt / ignore / imagine / import / impress / include / injure / insert / inspect / inspire / install / intend / invest / involve / join / jump / keep / kick / kill / kiss / knock / know / lack / land / last / laugh / lay / lead / lean / leap / learn / leave / lend / let / lick / lie / lift / light / like / limit / link / listen / live / load / lock / look / lose / love / maintain / make / manage / march / mark / marry / match / mean / measure / meet / miss / mistake / mix / move / need / nod / note / notice / obey / obtain / occupy / offer / open / operate / organize / owe / own / pack / paint / park / participate / pass / pay / perform / pick / place / plant / play / point / pollute / possess / post / pour / practice / praise / pray / prefer / preserve / press / prevent / print / proceed / process / prohibit / protect / provide / pull / punish / purchase / push / put / quit / race / rain / raise / reach / read / realize / receive / recite / recognize / record / recycle / refer / reflect / refuse / regard / register / reject / relax / release / rely / remain / remember / remind / remove / rent / repair / repeat / replace / represent / require / rescue / research / reserve / resist / respect / rest / retire / return / review / ride / ring / rise / rob / roll / row / rub / run / rush / sacrifice / sail / salute / save / saw / scan / scare / score / scratch / search / seat / see / seek / seize / select / sell / send / sense / serve / set / sew / shake / share / shave / shine / shoot / shop / show / shut / sigh / sign / sing / sink / sit / skate / ski / skip / sleep / slide / slip / smell / smile / smoke / sneeze / sniff / snow / solve / sow / spare / spend / spill / spin / spit / split / spoil / spread / stand / stare / start / starve / stay / steal / step / stick / stop / store / strike / struggle / study / submit / subscribe / succeed / suck / suffer / support / suppose / surround / survive / suspect / swallow / swap / swear / sweat / sweep / swim / swing / switch / take / tap / taste / teach / tear / tease / telephone / tell / tend / test / thank / think / throw / tick / tie / tip / tolerate / touch / tour / tow / trace / trade / train / transfer / transform / translate / transport / trap / travel / treat / tremble / trick / trust / try / turn / twist / type / undergo / understand / undertake / undo / unite / unlock / update / upset / urge / use / vanish / visit / vote / wait / wake / walk / wander / want / warn / wash / waste / watch / wave / wear / weigh / welcome / whisper / whistle / win / wind / wipe / wish / withdraw / witness / wonder / work / worry / worship / wrap / wrestle / write"
+      }
+    },
+    "43": {
+      "描述性形容词 - 性质与状态": {
+        "words": "abstract / absurd / abundant / acceptable / accessible / accurate / acid / active / actual / acute / adequate / adjustable / advanced / aggressive / agricultural / alike / alive / allergic / alternative / amazing / ambiguous / ambitious / ample / ancient / annual / anxious / apparent / appropriate / approximate / arbitrary / artificial / ashamed / asleep / athletic / atomic / attractive / automatic / autonomous / available / average / awake / aware / awesome / awful / awkward / backward / bad / bare / basic / beautiful / beneficial / bent / best / better / big / bitter / blank / blind / blonde / bloody / blue / blunt / bold / boring / born / brave / brief / bright / brilliant / broad / broken / busy / calm / capable / careful / careless / casual / cautious / central / certain / changeable / cheap / cheerful / chemical / chief / civil / classic / clean / clear / clever / close / clumsy / cold / colorful / comfortable / commercial / common / complete / complex / compulsory / confident / confidential / confused / conscious / conservative / considerable / consistent / constant / contemporary / content / contrary / convenient / conventional / cool / correct / corrupt / cosy / crazy / creative / critical / cruel / cultural / curious / current / cute / daily / damp / dangerous / dark / dead / deaf / dear / deep / delicate / delicious / delighted / demanding / democratic / dense / dependent / desperate / determined / different / difficult / digital / direct / dirty / disabled / disappointed / distant / distinct / diverse / divine / dizzy / domestic / dominant / double / doubtful / down / dramatic / drunk / dry / dull / dusty / dynamic / eager / early / earnest / easy / economic / effective / efficient / elderly / electric / electrical / electronic / elegant / embarrassed / empty / endless / energetic / enjoyable / enormous / enough / enthusiastic / entire / equal / essential / eternal / ethical / ethnic / even / eventual / everyday / evident / evil / exact / excellent / exciting / exclusive / expensive / expert / explicit / express / extensive / external / extra / extraordinary / extreme / fair / fake / false / familiar / famous / fancy / fantastic / far / fast / fat / fatal / favorable / favorite / feasible / federal / female / fertile / few / fierce / final / financial / fine / firm / fit / fixed / flat / flexible / fluent / fond / foolish / foreign / formal / former / fortunate / forward / fragile / fragrant / frank / free / frequent / fresh / friendly / frightened / front / frozen / fruitful / full / fun / fundamental / funny / furious / future / general / generous / gentle / genuine / gifted / glad / global / glorious / good / gradual / grand / grateful / great / greedy / green / grey / gross / guilty / handy / happy / hard / harmful / harsh / healthy / heavy / helpful / helpless / high / hollow / holy / honest / hopeful / hopeless / horrible / hot / huge / human / humble / humorous / hungry / ideal / identical / idle / ill / illegal / immediate / immense / impatient / important / impossible / impressive / improper / impure / independent / individual / indoor / industrial / inevitable / infectious / inferior / infinite / influential / initial / innocent / instant / intellectual / intelligent / intense / intensive / interested / interesting / interior / internal / international / intimate / invisible / irregular / isolated / jealous / jolly / joyful / junior / just / keen / key / kind / lame / large / last / late / latter / lazy / legal / level / liberal / light / likely / limited / liquid / literary / little / live / lively / local / lonely / long / loose / lost / loud / lovely / low / loyal / lucky / mad / magic / magnificent / main / major / male / manual / many / marvelous / massive / mature / maximum / mean / meaningful / medical / medieval / medium / mental / mere / merry / messy / mild / military / minimum / minor / miserable / missing / mixed / mobile / modern / modest / moral / more / most / motionless / mountainous / movable / much / muddy / multiple / musical / mysterious / naked / narrow / nasty / national / native / natural / naughty / near / neat / necessary / negative / nervous / neutral / new / nice / noble / noisy / normal / northern / nuclear / numb / numerous / objective / obscure / obvious / odd / offensive / official / old / open / optimistic / optional / oral / ordinary / organic / original / other / outdoor / outer / outgoing / outstanding / outward / oval / overall / overweight / own / painful / pale / parallel / partial / particular / passive / patient / peaceful / perfect / permanent / personal / physical / plain / pleasant / pleased / plentiful / plenty / pointed / poisonous / polite / political / poor / popular / portable / positive / possible / potential / powerful / practical / precious / precise / pregnant / preliminary / present / pressing / pretty / previous / primary / primitive / private / probable / productive / professional / profitable / profound / progressive / prominent / promising / proper / proud / public / punctual / pure / purple / puzzled / queer / quick / quiet / racial / radical / radioactive / random / rapid / rare / raw / ready / real / realistic / reasonable / recent / red / regular / relative / relevant / reliable / religious / reluctant / remarkable / remote / repeated / representative / republican / responsible / restless / rich / ridiculous / right / rigid / ripe / risky / rival / romantic / rotten / rough / round / royal / rude / rural / rush / sacred / sad / safe / salty / same / satisfactory / satisfied / scary / scattered / scientific / secret / secure / selfish / senior / sensitive / separate / serious / severe / sexual / shabby / shallow / shameful / sharp / short / shy / sick / significant / silent / silly / similar / simple / sincere / single / skilful / skilled / sleepy / slight / slim / slow / small / smart / smooth / so-called / social / socialist / soft / solar / solid / solo / some / sore / sorry / sound / sour / southern / spare / special / specific / splendid / spiritual / splendid / stable / stainless / standard / steady / steep / still / straight / strange / strict / strong / stubborn / stupid / subjective / subtle / successful / sudden / sufficient / suitable / sunny / super / superb / superior / supreme / sure / surprised / surprising / suspicious / sweet / swift / systematic / tall / tame / tasty / technical / technological / tedious / teenage / temporary / tender / tense / terrible / terrific / thankful / theoretical / thick / thin / thirsty / thorough / thoughtful / tidy / tight / tiny / tired / tiresome / total / tough / traditional / tragic / transparent / tremendous / tricky / tropical / troublesome / true / typical / ugly / ultimate / unable / unbearable / unbelievable / uncertain / uncomfortable / unconditional / unconscious / underground / understanding / uneasy / unemployed / unfair / unfit / unfortunate / unhappy / uniform / unique / universal / unknown / unlikely / unrest / unsafe / unsuitable / unusual / unwilling / upper / upright / upset / upstairs / urban / urgent / used / useful / useless / usual / vacant / vague / vain / valid / valuable / various / vast / verbal / vertical / very / violent / virtual / visible / visual / vital / vivid / voluntary / warm / waste / weak / wealthy / weird / welcome / well / well-known / western / wet / white / whole / wicked / wide / widespread / wild / willing / wise / wonderful / wooden / woollen / worldwide / worried / worse / worst / worth / worthless / worthwhile / worthy / wrong / yellow / young / yummy"
+      }
+    },
+    "44": {
+      "科学、自然与材料 - 科学与数学": {
+        "words": "acid / acre / alcohol / algebra / altitude / aluminium / ampere / analysis / angle / apparatus / appendix / arithmetic / astronomy / atom / biology / botany / carbon / cell / chemistry / circle / circuit / clone / compound / concept / concrete / crystal / cube / curve / cycle / data / degree / density / diagram / diameter / digital / dimension / dioxide / discovery / electricity / element / energy / engine / evolution / experiment / formula / friction / fuel / gas / gene / geometry / gravity / hydrogen / laboratory / laser / liquid / magnet / mass / mathematics / matter / mechanism / medium / metal / method / microscope / mineral / molecule / motion / network / nuclear / orbit / oxygen / parallel / percentage / physics / planet / plastic / pole / pollution / powder / pressure / process / psychology / radar / radiation / radioactive / range / ray / reaction / rectangle / reflection / research / robot / rocket / satellite / scale / science / section / series / signal / solar / solid / solution / sound / space / species / sphere / square / statistics / steam / steel / structure / substance / sum / surface / system / technique / technology / telescope / temperature / theory / thermometer / triangle / tube / unit / universe / vacuum / vapor / video / virus / volt / volume / wave / weight / width / zone"
+      }
+    },
+    "45": {
+      "科学、自然与材料 - 地理与自然现象": {
+        "words": "antarctic / arctic / ash / atmosphere / bay / canal / canyon / cave / clay / cliff / climate / coast / continent / creature / current / dam / darkness / dawn / daylight / desert / dew / disaster / dust / earthquake / ecology / equator / erosion / eruption / flood / fog / frost / globe / gulf / harbour / harvest / heat / hemisphere / horizon / hurricane / iceberg / jungle / landscape / lightning / mist / moisture / mud / nature / ocean / orbit / peak / plain / planet / pole / pollution / pond / rainbow / resource / scenery / shade / shadow / slope / soil / source / space / spring / storm / stream / sunrise / sunset / sunshine / swamp / thunder / tide / tornado / tunnel / typhoon / universe / valley / volcano / waterfall / weather / weed / wildlife / wind / world"
+      }
+    },
+    "46": {
+      "功能词与其他 - 位置与方向": {
+        "words": "aboard / above / across / after / against / ahead / along / alongside / amid / among / apart / around / aside / at / away / back / backward / behind / below / beneath / beside / between / beyond / by / down / downstairs / east / eastward / elsewhere / far / forward / from / here / in / indoors / inside / into / inward / near / nearby / north / northeast / northwest / off / on / onto / opposite / out / outdoors / outer / outside / outward / over / overhead / past / round / sideways / south / southeast / southwest / there / through / throughout / to / together / towards / under / underground / underneath / up / upon / upper / upright / upstairs / upward / via / west / westward / where / wherever / within / without"
+      }
+    },
+    "47": {
+      "功能词与其他 - 时间与频率": {
+        "words": "afterward / ago / already / always / annual / before / daily / during / early / eventually / ever / finally / forever / formerly / frequent / immediately / instant / just / last / late / later / meanwhile / monthly / never / next / now / nowadays / occasional / often / once / present / previous / rare / recent / regular / seldom / since / sometimes / soon / still / sudden / temporary / then / till / today / tomorrow / tonight / until / weekly / when / whenever / while / yearly / yesterday / yet"
+      }
+    },
+    "48": {
+      "功能词与其他 - 程度与方式": {
+        "words": "almost / also / altogether / anyhow / anyway / approximately / as / awfully / badly / barely / besides / clearly / deeply / deliberately / directly / easily / enough / especially / even / exactly / extremely / fairly / gently / gradually / greatly / hardly / highly / however / indeed / instead / largely / likely / little / mainly / maybe / merely / more / most / much / nearly / necessarily / neither / nor / not / only / otherwise / particularly / perfectly / perhaps / poorly / possibly / practically / precisely / pretty / probably / properly / purely / quite / rather / really / roughly / scarcely / seriously / simply / slightly / so / somehow / somewhat / terribly / therefore / thoroughly / thus / too / totally / truly / typically / unfortunately / very / well / widely / wildly"
+      }
+    },
+    "49": {
+      "遗漏的微小物体、工具与装置": {
+        "words": "anchor / arrow / axe / barrier / battery / blade / bolt / bomb / brake / broom / brush / bucket / bulb / button / cable / cage / chain / compass / cord / drill / file / filter / firework / flag / flashlight / frame / fuse / gear / grill / gun / hammer / handle / heater / hook / hose / iron / key / knob / ladder / lens / lever / lid / lock / magnet / mask / microscope / nail / needle / net / oar / oven / pad / paddle / pan / parachute / pin / pipe / plug / pole / pot / pump / racket / razor / rope / saw / scale / scissors / screw / shade / shaver / sheet / shovel / sieve / soap / socket / spade / spear / sponge / spoon / spray / stamp / stick / stove / string / switch / sword / tank / tap / tape / target / telescope / tent / thermometer / thermos / thread / torch / towel / trap / tray / tube / typewriter / tyre / tire / umbrella / vase / weapon / wedge / wheel / whip / whistle / wire / zip / zipper"
+      }
+    },
+    "50": {
+      "遗漏的计量、单位与符号 - 度量衡与货币": {
+        "words": "acre / ampere / bit / cent / centimetre / degree / dollar / dozen / foot / feet / franc / gallon / gram / hectare / hour / inch / joule / kilo / kilogram / kilometre / knot / litre / meter / metre / mile / millimetre / minute / ounce / penny / percent / percentage / pint / pound / second / ton / unit / volt / watt / weight / yard"
+      }
+    },
+    "51": {
+      "遗漏的计量、单位与符号 - 量词与容器": {
+        "words": "album / bag / barrel / basket / basin / bin / bottle / bowl / box / bunch / bundle / can / capsule / carton / case / crate / cup / cylinder / glass / jar / jug / kit / loaf / lump / pack / package / packet / pair / piece / pile / plate / pocket / pot / sack / set / sheet / slice / spoonful / stack / tin / tube"
+      }
+    },
+    "52": {
+      "遗漏的计量、单位与符号 - 符号与标志": {
+        "words": "accent / alphabet / badge / code / dot / figure / graph / label / letter / line / logo / mark / note / number / pattern / point / shape / sign / signal / signature / symbol / ticket / title / topic"
+      }
+    },
+    "53": {
+      "缩写与专用名词 - 缩写": {
+        "words": "AD / am / a.m. / BC / CD / CEO / Co. / Dept. / DIY / Dr / DVD / email / ID / IQ / IT / kg / km / Mr / Mrs / Ms / No. / OK / O.K. / PC / PE / pm / p.m. / TV / UFO / UK / UN / USA / VCD / VIP"
+      }
+    },
+    "54": {
+      "缩写与专用名词 - 特定地理区域": {
+        "words": "Africa / Antarctic / Arctic / Asia / Atlantic / Europe / North America / Oceania / Pacific / South America"
+      }
+    },
+    "55": {
+      "遗漏的特定地点与建筑部件": {
+        "words": "alley / arch / avenue / balcony / barrier / basement / bay / booth / border / boundary / brick / bridge / canal / castle / ceiling / cellar / cemetery / chimney / cinema / circus / clinic / club / corner / corridor / cottage / counter / court / courtyard / dam / department store / district / ditch / dock / dormitory / downtown / drain / edge / entrance / exit / fence / floor / fountain / gallery / garage / gate / ground / gutter / gym / gymnasium / hall / harbour / headquarters / hedge / highway / hotel / hut / inn / jail / kiosk / lab / laboratory / lane / lawn / library / lift / lobby / mall / market / monument / mosque / museum / palace / park / path / pavement / platform / playground / pool / port / prison / pub / pyramid / reception / resort / restaurant / roof / route / ruins / salon / shelter / shop / shrine / sidewalk / site / skyscraper / slope / square / stadium / stage / stair / station / statue / store / street / studio / suburb / subway / supermarket / temple / terminal / terrace / theatre / tomb / tower / town / track / trail / tunnel / university / valley / village / wall / warehouse / washroom / well / yard / zone / zoo"
+      }
+    },
+    "56": {
+      "遗漏的材料与自然物质": {
+        "words": "alloy / aluminium / ash / brass / brick / bronze / carbon / cement / chalk / charcoal / clay / cloth / coal / concrete / copper / cotton / crystal / diamond / dust / fabric / fiber / fibre / foam / fuel / fur / gas / glass / glue / gold / hydrogen / ice / ink / iron / ivory / lace / lead / leather / linen / liquid / marble / mercury / metal / mineral / mud / nylon / oil / oxygen / paper / petrol / plastic / platinum / powder / radium / rubber / sand / silk / silver / smoke / soil / solid / steam / steel / stone / straw / timber / tin / tobacco / vapor / wax / wood / wool / zinc"
+      }
+    },
+    "57": {
+      "高级补充抽象名词": {
+        "words": "abolition / acceleration / access / accommodation / accordance / account / accusation / achievement / acquisition / action / activity / adaptation / addition / adjustment / administration / admission / adolescence / adoption / advantage / adventure / advertisement / advice / affair / affection / agency / agenda / agreement / agriculture / aid / aim / alarm / alliance / allowance / ambition / amount / amusement / analysis / anger / anniversary / announcement / anxiety / apology / appeal / appearance / appetite / application / appointment / appreciation / approach / approval / architecture / argument / arithmetic / arrangement / arrival / art / article / aspect / assessment / assistance / association / assumption / atmosphere / attack / attempt / attention / attraction / authority / award / background / balance / ban / bargain / base / basis / battle / beauty / beginning / behavior / belief / benefit / birth / blame / bond / boom / boredom / bottom / boundary / brand / bravery / break / breakthrough / breath / budget / burden / burial / business / campaign / cancer / capability / capacity / capital / career / care / case / cause / caution / celebration / ceremony / challenge / champion / chance / change / chaos / character / charge / charity / charm / check / cheer / childhood / choice / circumstance / citizen / civilization / claim / class / climate / clue / coincidence / collection / collision / comfort / command / comment / commerce / commitment / committee / communication / communism / community / company / comparison / compassion / compensation / competence / competition / complaint / completion / complex / compliment / compromise / concentration / concept / concern / concert / conclusion / condition / conduct / conference / confidence / conflict / confusion / congratulation / connection / conscience / consciousness / consensus / consequence / conservation / consideration / constitution / construction / consumption / contact / content / contest / context / contract / contradiction / contrast / contribution / control / convenience / convention / conversation / cooperation / copy / corner / correction / cost / council / courage / course / courtesy / cover / creation / credit / crime / crisis / criterion / criticism / crop / crowd / cruelty / culture / cure / curiosity / currency / current / curriculum / custom / cut / cycle / damage / danger / darkness / data / date / dawn / day / deadline / deal / death / debate / debt / decade / decision / declaration / decline / decrease / deed / defence / defense / deficit / definition / degree / delay / delight / delivery / demand / democracy / demonstration / departure / dependence / deposit / depth / description / design / desire / despair / destination / destruction / detail / determination / development / devotion / diagram / dialogue / diary / diet / difference / difficulty / digestion / dignity / dilemma / dimension / dinner / direction / director / directory / dirt / disability / disadvantage / disagreement / disappearance / disaster / discipline / discount / discovery / discrimination / discussion / disease / disgrace / disgust / dish / dislike / dismissal / disorder / display / dispute / distance / distinction / distress / distribution / district / disturbance / diversity / division / divorce / doctrine / document / doubt / draft / drama / drawback / dream / dress / drill / drink / drive / drop / drought / drug / drum / duty"
+      }
+    }
+  }
+}

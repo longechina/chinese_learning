@@ -1,0 +1,284 @@
+{
+    "TEM-8": {
+      "0": {
+        "Magic / Supernatural / Sorcery": {
+          "words": "sorcerer n. / sorcery n."
+        }
+      },
+      "1": {
+        "Morality / Behavior / Character / Personality": {
+          "words": "sordid adj. / speechless adj. / staid adj. / staunch adj. / stealth n. / stupendous adj. / susceptible adj. / sympathetic adj. / symptomatic adj. / tolerable adj. / torrid adj. / unruly adj. / unsafe adj. / untimely adj. / unwholesome adj. / wary adj. / weird adj. / wretchedness n."
+        }
+      },
+      "2": {
+        "Body / Health / Medicine / Food / Nutrition": {
+          "words": "spinal adj. / spine n. / starvation n. / suckle vt. / surgery n. / tallow n. / tissue n. / tuna n. / vomit vt. / wean vert."
+        }
+      },
+      "3": {
+        "Actions / Skills / Communication / Work / Production": {
+          "words": "specialize vi. / speculation n. / speculative adj. / squash vt.; n. / stability n. / steadily adv. / stiffen vt. / stimulus n. / storehouse n. / stud n. / stun v. / subside v. / subsist v. / supplants v. / supplication n. / supporter n. / surmise n.; v. / surroundings n. / transact vt. / transformation n. / transit n. / translation n. / treatise n. / trickle vi.; n. / trustee n. / utilize vt. / vibrate vt.; vi. / widen vt.; vi. / wrangle v."
+        }
+      },
+      "4": {
+        "Objects / Tools / Materials / Animals / Plants / Nature": {
+          "words": "squash n. / stereo n.; adj. / sterling n. / stile n. / supersonic adj. / sultan n. / sundry adj. / telescope n. / telex n. / thorny adj. / tinge v. / tingle vi. / township n. / treble n. / tweed n. / upland n. / vane n. / verdure n. / vestige n. / wafer n. / wharf n. / whisker n."
+        }
+      },
+      "5": {
+        "People / Occupations / Groups / Social": {
+          "words": "subscriber n. / sultan n. / supporter n. / tourist n. / vagabond n.; adj. / wanderer n. / villager n."
+        }
+      },
+      "6": {
+        "Law / Politics / Governance / Religion": {
+          "words": "subjection n. / tribunal n."
+        }
+      },
+      "7": {
+        "Science / Education / Knowledge / Literature / Art": {
+          "words": "spontaneous adj. / stimulus n. / telescope n. / telex n. / translation n. / treatise n. / verification vt. / xerography n. / Xerox vt.; vi."
+        }
+      },
+      "8": {
+        "Emotions / Thought / Cognition": {
+          "words": "speculation n. / speculative adj. / surmise n.; v. / wistful adj."
+        }
+      },
+      "9": {
+        "Abstract Concepts / Miscellaneous": {
+          "words": "starch n. / stigma n. / triple n. / triumphal adj. / usage n. / variable adj.; n. / vaunt v. / vehement adj. / verdict n. / vicissitude n. / volley n. / zenith n. / zodiac n."
+        }
+      },
+      "10": {
+        "Technology / Tools / Materials": {
+          "words": "weld vt.; n. / waterproof adj"
+        }
+      },
+      "11": {
+        "Numbers / Measurement / Nutrition": {
+          "words": "numberless adj. / numeral n. / nutrition n."
+        }
+      },
+      "12": {
+        "Objects / Materials / Tools / Plants / Animals / Nature": {
+          "words": "oaken adj. / ornamental adj.; n. / orbit n.; vt. / oxygen n. / pastry n. / pedestal n. / pelt n. / pistil n. / pith n. / pivot n.; v. / primrose n. / protoplasm n. / pupa n. / sandstone n. / sapling n. / sedge n. / seedling n. / shingle n."
+        }
+      },
+      "13": {
+        "People / Occupations / Groups": {
+          "words": "observer n. / occupant n. / operator n. / oppressor n. / pagan n. / palmer n. / panel n. / partisan n. / pew n. / Pharaoh n. / politician n. / poster n. / potter n. / preacher n. / Quaker n. / rabble n. / reaper n. / regent n. / reservoir n. / seaman n. / seller n. / serf n. / sergeant n. / solicitor n."
+        }
+      },
+      "14": {
+        "Actions / Skills / Behavior / Communication": {
+          "words": "obstruct v. / originate vi.; vt. / outcry n. / outlive vt. / output n. / paralyse vt.; paralyze v. / perception n. / pervade v. / pervert v. / pique n. / poke vt. / pollute vt.; n. / predication n. / projection n. / proffer v.; n. / pry v. / radiance n. / raid n. / rally n.; vt.; vi. / ramble vi. / ratify vt. / ravage n. / reappear vi. / reassure v. / rebuff v. / reiterate v. / remodel v. / removal n. / repulse v.; n. / revert vi. / seethe v. / shred v. / shrug vt.; vi. / shuffle v. / sneak v."
+        }
+      },
+      "15": {
+        "Emotions / Personality / Character / Mind": {
+          "words": "obstinacy n. / ominous adj. / outrageous adj. / pathetic adj. / perplexity n. / persistent adj. / persuasive adj. / precious adj. / quarrelsome adj. / reckless adj. / resentment n. / ruthless adj. / sagacity n. / sane adj. / sanguine adj. / sentimental adj. / significant n. / sloth n."
+        }
+      },
+      "16": {
+        "Law / Politics / Governance / Religion": {
+          "words": "oppressor n. / partisan n. / Pharaoh n. / presidential adj. / prerogative n. / prevention n. / Quaker n. / regent n. / sergeant n."
+        }
+      },
+      "17": {
+        "Health / Medicine / Body": {
+          "words": "paralyse vt.; paralyze v. / precaution n. / pollution n. / quinine n. / saliva n."
+        }
+      },
+      "18": {
+        "Education / Knowledge / Literature / Art": {
+          "words": "ode n. / pamphlet n. / preface n. / presentation n. / projection n. / questionnaire n. / rhetoric n. / simile n."
+        }
+      },
+      "19": {
+        "Economy / Work / Production": {
+          "words": "output n. / productive adj. / prodigal adj.; n. / proffer v.; n. / popularity n. / populous adj. / preservation n. / preventive n."
+        }
+      },
+      "20": {
+        "Abstract Concepts / Miscellaneous": {
+          "words": "omen n. / occurrence n. / origin vi.; vt. / outbreak n. / precaution n. / perception n. / perplexity n. / probability n. / projection n. / probability n. / resemblance n. / responsibility n. / restriction n. / routine n. / rudiment n. / sequence n. / significant n."
+        }
+      },
+      "21": {
+        "People / Groups / Nationality / Social Classes": {
+          "words": "gentile n. / gentry n. / Dane n. / Danish n. / gypsy n. / herdsman n. / heretic n. / hostess n. / huntsman n. / invader n. / intruder n. / newcomer n. / Norman n."
+        }
+      },
+      "22": {
+        "Geography / Nature / Environment / Plants / Animals": {
+          "words": "geographical adj. / geranium n. / gold-smith n. / golf n. / hawthorn n. / hemlock n. / honeysuckle n. / herring n. / hybrid n. / hygiene n. / lair n. / lavender n. / leafy adj. / leech n. / linseed n. / mainland n. / marigold n. / maritime adj. / Mars n. / metalic adj. / mosquito n. / mountaineer n. / moat n. / molasses n. / mushroom n. / naturalist n. / nettle n."
+        }
+      },
+      "23": {
+        "Objects / Tools / Instruments / Materials": {
+          "words": "gig n. / gilt n. / gloss n. / hammock n. / hull n. / juggle vt. / laboratory n. / labyrinth n. / lobby n. / loft n. / loophole n. / mace n. / manual adj.; n. / mechanism n. / mesh n. / mortar n. / musket n. / needlework n. / network n."
+        }
+      },
+      "24": {
+        "Behavior / Character / Personality / Emotions": {
+          "words": "habitual adj. / haggard adj. / hairy adj. / heedless adj. / hostility n. / imminent adj. / impatience n. / imperious adj. / impetuous adj. / improper adj. / incapable adj. / inquisitive adj. / insane adj. / insolent adj. / intolerable adj. / irresistible adj. / judicious adj. / languid adj. / lamentable adj. / legitimate adj. / loath adj.; loth adj. / miraculous adj. / murderous adj. / mystic adj."
+        }
+      },
+      "25": {
+        "Actions / Processes / Movements / Skills": {
+          "words": "grab vt.; vi. / graft v. / harass v. / heighten vt. / hitch v. / identify vt. / impeach v. / impend vi. / imply vt. / incorporate vt. / inject vt. / inscribe vt. / intercept v. / intervene vi. / irrigate vt.; vi. / jam n.; vt. / jeer v. / jingle vt.; vi. / knead vt. / lament vt. / liberate vt. / mangle v. / mortify v. / negotiate vi. / neutralize v. / nominate vt."
+        }
+      },
+      "26": {
+        "Health / Medicine / Body": {
+          "words": "hygiene n. / influenza n. / malady n. / malaria n. / narcotic n."
+        }
+      },
+      "27": {
+        "Education / Knowledge / Writing / Literature": {
+          "words": "identify vt. / idolatry n. / imitation n. / instructor n. / intellect n. / initiate adj.; n. / journal n. / juvenile n."
+        }
+      },
+      "28": {
+        "Law / Politics / Governance / Military": {
+          "words": "impeach v. / injunction n. / international adj. / invader n. / intruder n. / Norman n. / nominate vt."
+        }
+      },
+      "29": {
+        "Economy / Work / Labor": {
+          "words": "manual adj.; n. / maintenance n. / negotiate vi. / network n. / novice n. / needy adj."
+        }
+      },
+      "30": {
+        "Art / Culture / Entertainment / Music": {
+          "words": "gig n. / gypsy vi. / gloss n. / glossy adj. / juggle vt."
+        }
+      },
+      "31": {
+        "Abstract Concepts / Miscellaneous": {
+          "words": "grandeur n. / grotesque adj. / guise n. / habitual adj. / haggard adj. / hiatus n. / hybrid n. / impending adj. / impressive adj. / inexorable adj. / initiative adj.; n. / invaluable adj. / irrepressible adj. / jovial adj. / judicious adj. / latent adj. / luxurious adj. / magnificent adj. / monumental adj. / monotonous adj. / morality n."
+        }
+      },
+      "32": {
+        "Law / Politics / Governance": {
+          "words": "crusade n. / daunt v. / dauntless adj. / decisive adj. / democratic adj. / despot n. / deportment n. / designate vt. / detachment n. / dissolution n. / distrust n. / domain n. / downfall n. / duel n. / duplicate n."
+        }
+      },
+      "33": {
+        "Science / Nature / Environment / Agriculture": {
+          "words": "cucumber n. / cull vt. / cultivator n. / diaphragm n. / diameter n. / digestive adj. / dolphin n. / drainage n. / drought n. / earthworm n. / earthen adj. / ebony n. / edible adj. / efficacy n. / efficient adj. / ember n. / epidemic adj. / evaporate vt.; vi. / evaporation n. / external adj. / filament n. / fertility n. / fen n. / ferment n.; v. / fermentation n. / fungus n."
+        }
+      },
+      "34": {
+        "Education / Knowledge / Communication": {
+          "words": "critical adj. / criticize vt.; vi. / analysis n. / diagram n. / diary n. / edify v. / editor n. / editorial n. / educational adj. / encyclopaedia n. / encyclopedia n. / enumerate v. / equation n. / era n. / espy v. / estimation n. / exposition n. / exhortation n."
+        }
+      },
+      "35": {
+        "Health / Medicine": {
+          "words": "dentist n. / digestive adj. / dolful adj. / druggist n. / feverish adj. / filarial adj."
+        }
+      },
+      "36": {
+        "Social / Relationships / Emotion": {
+          "words": "dearh n. / deliverer n. / delusion n. / dependence n. / depict vt. / deride v. / disciple n. / disapproval n. / dogged adj. / dole n. / doleful adj. / endear vt. / endurance n. / entreaty n. / entrust v.; intrust vt. / eagerness n. / effeminate adj. / emulation n. / encouragement n."
+        }
+      },
+      "37": {
+        "Military / War / Action / Movement": {
+          "words": "ambush n. / daunt v. / dauntless adj. / duel n. / drench vt. / dump vt. / exert vt. / exertion n. / explode vt.; vi. / explosion n. / explosive n.; adj. / flare vi.; vt. / flicker v. / forage n.; v. / generate vt."
+        }
+      },
+      "38": {
+        "Objects / Tools / Materials": {
+          "words": "cymbal n. / diagram n. / duplicate n. / farmhouse n. / filaments n. / flask n. / gauze n. / garret n. / garb n."
+        }
+      },
+      "39": {
+        "Art / Culture / Religion": {
+          "words": "crusade n. / diary n. / diadem n. / dirge n. / epistle n. / exhortation n. / fabulous adj. / fraternal n. / genteel adj."
+        }
+      },
+      "40": {
+        "Economy / Business": {
+          "words": "federation n. / expenditure n. / expend v. / formula n."
+        }
+      },
+      "41": {
+        "Character / Behavior / Personality": {
+          "words": "dauntless adj. / decisive adj. / devilish adj. / dogged adj. / eccentric adj. / energetic adj. / enthusiastic adj. / fervent adj. / frivolous adj. / frugal adj."
+        }
+      },
+      "42": {
+        "Miscellaneous / Abstract Concepts": {
+          "words": "critical adj. / dearth n. / decidedly adv. / degradation n. / deliberation n. / dexterity n. / diminutive adj. / diverse adj. / dramatic adj. / drape vi. / duplicate n. / eventual adj. / erroneous adj. / excommunicate vt. / exertion n. / exhale v. / exit n. / expectant n. / exultation n. / fabulous adj. / famish v. / fortitude n. / fragile adj."
+        }
+      },
+      "43": {
+        "Law / Politics / Governance": {
+          "words": "abolition n. / arbitrary adj. / archbishop n. / aristocrat n. / Baptiste n. / ballot n. / bankrupt adj.; vt. / consecrate n. / constitutional adj. / counteract v."
+        }
+      },
+      "44": {
+        "Education / Knowledge / Science": {
+          "words": "abstract adj. / academic adj. / accumulate vt.; vi. / accuracy n. / acknowledgment n. / acquisition n. / adaptation n. / adequate adj. / adjective n.; adj. / analysis n. / append x n. / appreciation n. / appropriation n. / astronomer n. / astronaut n. / atom n. / chemical adj. / chemist n. / concentration n. / conversion n. / convection n. / convex adj."
+        }
+      },
+      "45": {
+        "Health / Medicine": {
+          "words": "ailment n. / alert adj. / allay vt. / antitoxin n. / anxiety n. / auditable adj. / contagious adj. / contaminate vt. / cholera n. / bituminous adj."
+        }
+      },
+      "46": {
+        "Social / Relationships": {
+          "words": "admirer n. / adult n.; adj. / adviser n. / ally n. / allurement n. / befriender vt. / believer n. / companionship n. / compassionate adj. / competitor n. / credulous adj. / creed n."
+        }
+      },
+      "47": {
+        "Communication / Writing / Language": {
+          "words": "adjective n.; adj. / alphabet n. / articulate v. / code n. / coinage n. / conjunction n. / consonant n. / correspondence n. / counsel n. / counselor n.; counsellor n."
+        }
+      },
+      "48": {
+        "Emotion / Character / Behavior": {
+          "words": "ardent adj. / arrogance n. / arrogant adj. / audacity n. / beastly adj. / bland adj. / crafty adj. / clumsy adj. / courageous adj. / contentment n. / coolness n. / credulous adj."
+        }
+      },
+      "49": {
+        "Nature / Environment / Geography": {
+          "words": "alpine adj. / ancestral adj. / asparagus n. / asphalt n. / background n. / calico n. / carbon n. / carcass n. / carcase n. / casket n. / cereal n. / chasm n. / copse n."
+        }
+      },
+      "50": {
+        "Art / Culture / Religion": {
+          "words": "angelic adj. / annals n. / anthem n. / anther n. / archbishop n. / churchgoer n. / comeliness n. / commendation n."
+        }
+      },
+      "51": {
+        "Military / War / Action": {
+          "words": "ambush n. / archer n. / assert vt. / assault n. / avert v. / blunder vi.; n. / brandish vt. / boom n. / cramp n. / crank n.; vi."
+        }
+      },
+      "52": {
+        "Objects / Tools / Materials": {
+          "words": "balloon n. / bandage n. / bail n. / bale n. / beaver n. / burner n. / buoy n.; v. / camera n. / calico n. / capillary n. / charcoal n. / chemise n. / chassis n. / code n. / casket n."
+        }
+      },
+      "53": {
+        "Economy / Business": {
+          "words": "budget n. / compute vt.; vi. / confiscate v. / compensate n. / covetous adj. / competition n. / competitor n."
+        }
+      },
+      "54": {
+        "Movement / Physical / Mechanics": {
+          "words": "adhere vi. / adapt vt. / adjustment n. / ascent n. / circulate vt.; vi. / collapse vi. / converge v. / contrive n. / compress vt. / conform vt.; vi. / congregate v. / counteract v."
+        }
+      },
+      "55": {
+        "Miscellaneous / Abstract Concepts": {
+          "words": "ado n. / apace adv. / alongside prep. / assumption n. / astound vt. / astray adj. / attachment n. / available adj. / background n. / bland adj. / boom n. / bout n. / contentment n. / considerable adv. / consistent adj. / constancy n. / contingency n. / culmination n. / crisis n."
+        }
+      }
+    }
+  }

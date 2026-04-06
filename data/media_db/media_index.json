@@ -1,0 +1,14 @@
+{
+  "01.jpg": {
+    "type": "look_and_speak",
+    "courses": ["chinese_ch_01", "english_ch_01"]
+  },
+  "02.jpg": {
+    "type": "look_and_speak",
+    "courses": ["chinese_ch_01"]
+  },
+  "03.jpg": {
+    "type": "look_and_speak",
+    "courses": ["english_ch_02"]
+  }
+}
